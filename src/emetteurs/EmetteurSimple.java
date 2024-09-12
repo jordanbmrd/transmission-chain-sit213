@@ -3,12 +3,13 @@ package emetteurs;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
+import utils.Code;
 
 /**
  * Emetteur qui transmet parfaitement les informations reçues
- * sans altération.
+ * sans altération.s
  */
-public class EmetteurSimple extends Emetteur<Boolean, Boolean> {
+public class EmetteurSimple extends Emetteur<Boolean, Float> {
 
     /**
      * reçoit une information. Cette méthode, en fin d'exécution,
@@ -28,10 +29,10 @@ public class EmetteurSimple extends Emetteur<Boolean, Boolean> {
      */
     @Override
     public void emettre() throws InformationNonConformeException {
-        this.informationEmise = this.informationRecue;
+        this.informationEmise = conversionNA(this.informationRecue, Code.NRZ, 5, 0);
 
         // Émission vers les composants connectés
-        for (DestinationInterface<Boolean> destinationConnectee : destinationsConnectees) {
+        for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }
     }

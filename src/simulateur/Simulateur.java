@@ -10,6 +10,7 @@ import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurParfait;
+import visualisations.SondeAnalogique;
 import visualisations.SondeLogique;
 
 
@@ -62,17 +63,17 @@ public class Simulateur {
     /**
      * le  composant Emetteur de la chaine de transmission
      */
-    private Emetteur<Boolean, Boolean> emetteur = null;
+    private Emetteur<Boolean, Float> emetteur = null;
 
     /**
      * le  composant Transmetteur parfait logique de la chaine de transmission
      */
-    private Transmetteur<Boolean, Boolean> transmetteurLogique = null;
+    private Transmetteur<Float, Float> transmetteurLogique = null;
 
     /**
      * le  composant Destination de la chaine de transmission
      */
-    private Destination<Boolean> destination = null;
+    private Destination<Float> destination = null;
 
 
     /**
@@ -114,7 +115,7 @@ public class Simulateur {
         // Connexion des sondes (si l'option -s est pas utilisée)
         if (affichage) {
             this.source.connecter(new SondeLogique("source", 200));
-            this.transmetteurLogique.connecter(new SondeLogique("transmetteur", 200));
+            this.transmetteurLogique.connecter(new SondeAnalogique("transmetteur"));
         }
     }
 

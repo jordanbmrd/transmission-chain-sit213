@@ -4,7 +4,9 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 import sources.SourceInterface;
+import utils.Code;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -71,6 +73,36 @@ public abstract class Emetteur<R, E> implements DestinationInterface<R>, SourceI
      */
     public void deconnecter(DestinationInterface<E> destination) {
         destinationsConnectees.remove(destination);
+    }
+
+    public Information<Float> conversionNA(Information<Boolean> informationLogique, Code code, float aMax, float aMin) {
+        // Vérification des paramètres
+        if (aMin >= aMax) {
+            System.out.println("Error: aMin >= aMax");
+            return null;
+        }
+
+        if (aMax < 0) {
+            System.out.println("Error: aMax < 0");
+            return null;
+        }
+
+        if (code.equals(Code.NRZ) || code.equals(Code.NRZT)) {
+            if (aMin > 0) {
+                System.out.println("Error: aMin > 0");
+                return null;
+            }
+        }
+
+        // Conversion Numérique - Analogique
+        Information<Float> informationConvertie = new Information<>();
+
+        for (Boolean element : informationLogique) {
+            float convertedValue = element ? aMax : aMin;
+            informationConvertie.add(convertedValue);
+        }
+
+        return informationConvertie;
     }
 
     /**
