@@ -14,18 +14,18 @@ public class SondeAnalogique extends Sonde <Float> {
      * @param nom  le nom de la fenêtre d'affichage
      */
     public SondeAnalogique(String nom) {
-	super(nom);
+		super(nom);
     }
    	 
     public void recevoir (Information <Float> information) { 
-	informationRecue = information;
-	int nbElements = information.nbElements();
-	float [] table = new float[nbElements];
-	int i = 0;
-	for (float f : information) {
-            table[i] = f;
-            i++;
-	}
-	new VueCourbe (table, nom); 
+		informationRecue = information;
+		int nbElements = information.nbElements();
+		float [] table = new float[nbElements];
+		int i = 0;
+		for (float f : information) {
+				table[i] = f;
+				i++;
+		}
+		new VueCourbe (table, nom);
     }
 }

@@ -2,6 +2,8 @@ package simulateur;
 
 import destinations.Destination;
 import destinations.DestinationFinale;
+import emetteurs.Emetteur;
+import emetteurs.EmetteurSimple;
 import information.Information;
 import sources.Source;
 import sources.SourceAleatoire;
@@ -58,6 +60,11 @@ public class Simulateur {
     private Source<Boolean> source = null;
 
     /**
+     * le  composant Emetteur de la chaine de transmission
+     */
+    private Emetteur<Boolean, Boolean> emetteur = null;
+
+    /**
      * le  composant Transmetteur parfait logique de la chaine de transmission
      */
     private Transmetteur<Boolean, Boolean> transmetteurLogique = null;
@@ -95,11 +102,13 @@ public class Simulateur {
         }
 
         // Instanciation des composants
+        this.emetteur = new EmetteurSimple();
         this.transmetteurLogique = new TransmetteurParfait();
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants
-        this.source.connecter(this.transmetteurLogique);
+        this.source.connecter(this.emetteur);
+        this.emetteur.connecter(this.transmetteurLogique);
         this.transmetteurLogique.connecter(destination);
 
         // Connexion des sondes (si l'option -s est pas utilisée)
