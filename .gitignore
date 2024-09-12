@@ -2,6 +2,7 @@
 bin/
 docs/
 *.tar.gz
+BAUMARD.GUILLOU.MAQUENNE*
 
 ### Docs ###
 deliverables/~$*.docx

@@ -9,7 +9,7 @@ test_cases=(
     "-seed 1234"
 )
 
-# Si on est dans un pipeline GitLab (la variable d'environnement CI est définie)
+# Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
 if [ -z "$CI" ]; then
     test_cases+=("-s" "-s -seed 27" "-s -mess 12 -seed 1234" "-s -mess 01101101110")
 fi
