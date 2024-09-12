@@ -168,6 +168,20 @@ public class Simulateur {
             }
 
             //TODO : ajouter ci-après le traitement des nouvelles options
+            else if (args[i].matches("-code")) {
+                i++;
+                // traiter la valeur associee
+                messageString = args[i];
+                if (args[i].matches("NRZ")){
+                    //TODO : ajouter le code pour le cas NRZ
+                } else if (args[i].matches("NRZT")){
+                    //TODO : ajouter le code pour le cas NRZT
+                } else if (args[i].matches("RZ")){
+                    //TODO : ajouter le code pour le cas RZ
+                } else {
+                    throw new ArgumentsException("Valeur du parametre -code invalide : " + args[i]);
+                }
+            }
 
             else throw new ArgumentsException("Option invalide :" + args[i]);
         }
