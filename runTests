@@ -1,7 +1,36 @@
 #!/bin/bash
 
-# Compilation
-./compile
+# Répertoire des JAR
+LIB_DIR="libraries"
+
+# Fichiers JAR nécessaires
+JUNIT_JAR="$LIB_DIR/junit-4.13.1.jar"
+EASYMOCK_JAR="$LIB_DIR/easymock-5.4.0.jar"
+HAMCREST_JAR="$LIB_DIR/hamcrest-core-1.3.jar"
+
+# Emplacement des classes compilées
+BIN_DIR="bin"
+
+# Exécution des tests JUnit
+echo "Exécution des tests JUnit..."
+
+# Recherche des classes de test dans le package src/tests
+test_classes=$(find "$BIN_DIR" -name "*Test.class" | sed 's/bin\///;s/\.class//;s/\//./g')
+
+# Exécution des tests JUnit avec org.junit.runner.JUnitCore
+for test_class in $test_classes; do
+    echo "Running test: $test_class"
+    java -cp "$BIN_DIR:$JUNIT_JAR:$EASYMOCK_JAR:$HAMCREST_JAR" org.junit.runner.JUnitCore "$test_class"
+    if [ $? -ne 0 ]; then
+        echo "Échec du test : $test_class"
+        exit 1
+    fi
+done
+
+echo "Tous les tests JUnit sont passés avec succès"
+
+# Exécution des scénarios de tests personnalisés si nécessaire
+echo "Exécution des scénarios de tests personnalisés..."
 
 # Liste des scénarios de tests à exécuter
 test_cases=(

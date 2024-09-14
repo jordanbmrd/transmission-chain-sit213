@@ -3,8 +3,22 @@
 # Suppression du dossier bin/
 rm -rf bin/
 
-# Compilation du projet
-echo "Compiling into bin/ folder"
+# Création du dossier bin/
+mkdir -p bin/
+
+# Emplacement des JAR
+LIB_DIR="libraries"
+JAR_FILES=$(find "$LIB_DIR" -name "*.jar" | tr '\n' ':')
+
+# Compilation du projet (code source principal et tests)
+echo "Compiling project into bin/ folder"
+
 # shellcheck disable=SC2046
-javac -d bin/ $(find src/ -name "*.java")
+javac -cp "$JAR_FILES" -d bin/ $(find src/ -name "*.java")
+
+if [ $? -ne 0 ]; then
+    echo "Compilation failed!"
+    exit 1
+fi
+
 echo "Done!"
