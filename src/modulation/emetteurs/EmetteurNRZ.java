@@ -34,6 +34,9 @@ public class EmetteurNRZ extends Modulateur<Boolean, Float> {
      */
     @Override
     public void emettre() throws InformationNonConformeException {
+        if (this.informationRecue == null) {
+            throw new InformationNonConformeException();
+        }
         this.informationEmise = conversionNA(this.informationRecue, Code.NRZ, 5, 0);
 
         // Émission vers les composants connectés
@@ -51,9 +54,13 @@ public class EmetteurNRZ extends Modulateur<Boolean, Float> {
      * @param aMin la valeur minimale pour la conversion
      * @return l'information convertie en valeurs analogiques
      */
-    public Information<Float> conversionNA(Information<Boolean> informationLogique, Code code, float aMax, float aMin) {
-        if (!validerParametres(aMax, aMin, code)) {
+    public Information<Float> conversionNA(Information<Boolean> informationLogique, Code code, float aMax, float aMin) throws InformationNonConformeException {
+        if (validerParametres(aMax, aMin, code)) {
             return null;
+        }
+
+        if (informationLogique == null) {
+            throw new InformationNonConformeException();
         }
 
         Information<Float> informationConvertie = new Information<>();

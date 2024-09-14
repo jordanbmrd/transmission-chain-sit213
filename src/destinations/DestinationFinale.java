@@ -12,6 +12,9 @@ public class DestinationFinale extends Destination<Boolean> {
      */
     @Override
     public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
+        if (information == null) {
+            throw new InformationNonConformeException();
+        }
         this.informationRecue = information;
     }
 }

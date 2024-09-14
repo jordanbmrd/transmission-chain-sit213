@@ -19,7 +19,7 @@ public  abstract class Source <T> implements  SourceInterface <T> {
     /** 
      * l'information générée par la source
      */
-    protected Information <T>  informationGeneree;
+    public Information <T>  informationGeneree;
    	
     /** 
      * l'information émise par la source

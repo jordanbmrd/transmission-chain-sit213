@@ -50,9 +50,13 @@ public class RecepteurNRZ extends Modulateur<Float, Boolean> {
      * @param aMin la valeur minimale pour la conversion
      * @return l'information convertie en valeurs logiques
      */
-    public Information<Boolean> conversionAN(Information<Float> informationAnalogique, Code code, float aMax, float aMin) {
-        if (!validerParametres(aMax, aMin, code)) {
+    public Information<Boolean> conversionAN(Information<Float> informationAnalogique, Code code, float aMax, float aMin) throws InformationNonConformeException {
+        if (validerParametres(aMax, aMin, code)) {
             return null;
+        }
+
+        if (informationAnalogique == null) {
+            throw new InformationNonConformeException();
         }
 
         Information<Boolean> informationConvertie = new Information<>();

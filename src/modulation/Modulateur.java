@@ -94,23 +94,20 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
      * @param code le type de codage
      * @return true si les paramètres sont valides, false sinon
      */
-    protected boolean validerParametres(float aMax, float aMin, Code code) {
+    protected boolean validerParametres(float aMax, float aMin, Code code) throws InformationNonConformeException {
         if (aMin >= aMax) {
-            System.out.println("Erreur: aMin >= aMax");
-            return false;
+            throw new InformationNonConformeException("Erreur: aMin >= aMax");
         }
 
         if (aMax < 0) {
-            System.out.println("Erreur: aMax < 0");
-            return false;
+            throw new InformationNonConformeException("Erreur: aMax < 0");
         }
 
         if ((code.equals(Code.NRZ) || code.equals(Code.NRZT)) && aMin > 0) {
-            System.out.println("Erreur: aMin > 0 pour le codage NRZ/NRZT");
-            return false;
+            throw new InformationNonConformeException("Erreur: aMin > 0 pour le codage NRZ/NRZT");
         }
 
-        return true;
+        return false;
     }
 
     /**

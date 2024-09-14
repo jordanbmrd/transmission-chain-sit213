@@ -25,6 +25,9 @@ public class TransmetteurParfait<T> extends Transmetteur<T, T> {
      */
     @Override
     public void emettre() throws InformationNonConformeException {
+        if (this.informationRecue == null) {
+            throw new InformationNonConformeException();
+        }
         this.informationEmise = this.informationRecue;
 
         // Émission vers les composants connectés
