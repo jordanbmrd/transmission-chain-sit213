@@ -5,5 +5,6 @@ rm -rf bin/
 
 # Compilation du projet
 echo "Compiling into bin/ folder"
-javac -d bin/ src/**/*.java
+# shellcheck disable=SC2046
+javac -d bin/ $(find src/ -name "*.java")
 echo "Done!"

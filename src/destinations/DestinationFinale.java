@@ -3,7 +3,7 @@ package destinations;
 import information.Information;
 import information.InformationNonConformeException;
 
-public class DestinationFinale extends Destination<Float> {
+public class DestinationFinale extends Destination<Boolean> {
     /**
      * reçoit une information
      *
@@ -11,7 +11,7 @@ public class DestinationFinale extends Destination<Float> {
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
     @Override
-    public void recevoir(Information<Float> information) throws InformationNonConformeException {
+    public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
         this.informationRecue = information;
     }
 }

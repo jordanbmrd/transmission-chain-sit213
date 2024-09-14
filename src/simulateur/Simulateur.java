@@ -2,14 +2,16 @@ package simulateur;
 
 import destinations.Destination;
 import destinations.DestinationFinale;
-import emetteurs.Emetteur;
-import emetteurs.EmetteurSimple;
+import modulation.Modulateur;
+import modulation.emetteurs.EmetteurNRZ;
 import information.Information;
+import modulation.recepteurs.RecepteurNRZ;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurParfait;
+import utils.Code;
 import visualisations.SondeAnalogique;
 import visualisations.SondeLogique;
 
@@ -54,6 +56,15 @@ public class Simulateur {
      */
     private String messageString = "100";
 
+    /*
+    * Code à utiliser
+    * */
+    private Code code = null;
+
+    /*
+    * Taille de la période
+    * */
+    private int taillePeriode = 30;
 
     /**
      * le  composant Source de la chaine de transmission
@@ -63,17 +74,23 @@ public class Simulateur {
     /**
      * le  composant Emetteur de la chaine de transmission
      */
-    private Emetteur<Boolean, Float> emetteur = null;
+    private Modulateur<Boolean, Float> emetteur = null;
+
+    /**
+     * le composant Recepteur de la chaine de transmission
+     */
+    private Modulateur<Float, Boolean> recepteur = null;
 
     /**
      * le  composant Transmetteur parfait logique de la chaine de transmission
      */
-    private Transmetteur<Float, Float> transmetteurLogique = null;
+    private Transmetteur<Boolean, Boolean> transmetteurLogique = null;
+    private Transmetteur<Float, Float> transmetteurAnalogique = null;
 
     /**
      * le  composant Destination de la chaine de transmission
      */
-    private Destination<Float> destination = null;
+    private Destination<Boolean> destination = null;
 
 
     /**
@@ -103,19 +120,23 @@ public class Simulateur {
         }
 
         // Instanciation des composants
-        this.emetteur = new EmetteurSimple();
-        this.transmetteurLogique = new TransmetteurParfait();
+        this.emetteur = new EmetteurNRZ(taillePeriode);
+        //this.transmetteurLogique = new TransmetteurParfait<>();
+        this.transmetteurAnalogique = new TransmetteurParfait<>();
+        this.recepteur = new RecepteurNRZ(taillePeriode);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants
         this.source.connecter(this.emetteur);
-        this.emetteur.connecter(this.transmetteurLogique);
-        this.transmetteurLogique.connecter(destination);
+        this.emetteur.connecter(this.transmetteurAnalogique);
+        this.transmetteurAnalogique.connecter(this.recepteur);
+        this.recepteur.connecter(this.destination);
 
         // Connexion des sondes (si l'option -s est pas utilisée)
         if (affichage) {
             this.source.connecter(new SondeLogique("source", 200));
-            this.transmetteurLogique.connecter(new SondeAnalogique("transmetteur"));
+            this.emetteur.connecter(new SondeAnalogique("emetteur"));
+            this.recepteur.connecter(new SondeLogique("recepteur", 200));
         }
     }
 
@@ -138,9 +159,7 @@ public class Simulateur {
      * @throws ArgumentsException si un des arguments est incorrect.
      */
     private void analyseArguments(String[] args) throws ArgumentsException {
-
         for (int i = 0; i < args.length; i++) { // traiter les arguments 1 par 1
-
             if (args[i].matches("-s")) {
                 affichage = true;
             } else if (args[i].matches("-seed")) {
@@ -161,24 +180,20 @@ public class Simulateur {
                     nbBitsMess = args[i].length();
                 } else if (args[i].matches("[0-9]{1,6}")) { // de 1 à 6 chiffres
                     messageAleatoire = true;
-                    nbBitsMess = Integer.valueOf(args[i]);
+                    nbBitsMess = Integer.parseInt(args[i]);
                     if (nbBitsMess < 1)
                         throw new ArgumentsException("Valeur du parametre -mess invalide : " + nbBitsMess);
                 } else
                     throw new ArgumentsException("Valeur du parametre -mess invalide : " + args[i]);
-            }
-
-            //TODO : ajouter ci-après le traitement des nouvelles options
-            else if (args[i].matches("-code")) {
+            } else if (args[i].matches("-code")) {
                 i++;
                 // traiter la valeur associee
-                messageString = args[i];
-                if (args[i].matches("NRZ")){
-                    //TODO : ajouter le code pour le cas NRZ
-                } else if (args[i].matches("NRZT")){
-                    //TODO : ajouter le code pour le cas NRZT
-                } else if (args[i].matches("RZ")){
-                    //TODO : ajouter le code pour le cas RZ
+                if (args[i].matches(String.valueOf(Code.NRZ))){
+                    this.code = Code.NRZ;
+                } else if (args[i].matches(String.valueOf(Code.NRZT))){
+                    this.code = Code.NRZT;
+                } else if (args[i].matches(String.valueOf(Code.RZ))){
+                    this.code = Code.RZ;
                 } else {
                     throw new ArgumentsException("Valeur du parametre -code invalide : " + args[i]);
                 }
@@ -209,8 +224,8 @@ public class Simulateur {
      * @return La valeur du Taux dErreur Binaire.
      */
     public float calculTauxErreurBinaire() {
-        Information messageEmis = this.source.getInformationEmise();
-        Information messageRecu = this.destination.getInformationRecue();
+        Information<Boolean> messageEmis = this.source.getInformationEmise();
+        Information<Boolean> messageRecu = this.destination.getInformationRecue();
 
         // Vérification de la taille des messages
         if (messageEmis.nbElements() != messageRecu.nbElements()) {
@@ -222,7 +237,7 @@ public class Simulateur {
             return 0f;
         }
 
-        float nbErreurs = 0f;
+        int nbErreurs = 0;
 
         // Parcours des éléments pour comparer bit par bit
         for (int i = 0; i < nbBits; ++i) {
@@ -232,7 +247,7 @@ public class Simulateur {
         }
 
         // Calcul du taux d'erreur
-        return nbErreurs / nbBits;
+        return (float) nbErreurs / nbBits;
     }
 
 

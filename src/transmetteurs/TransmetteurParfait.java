@@ -4,7 +4,7 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 
-public class TransmetteurParfait extends Transmetteur<Float, Float> {
+public class TransmetteurParfait<T> extends Transmetteur<T, T> {
     /**
      * reçoit une information.  Cette méthode, en fin d'exécution,
      * appelle la méthode émettre.
@@ -13,7 +13,7 @@ public class TransmetteurParfait extends Transmetteur<Float, Float> {
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
     @Override
-    public void recevoir(Information<Float> information) throws InformationNonConformeException {
+    public void recevoir(Information<T> information) throws InformationNonConformeException {
         this.informationRecue = information;
         emettre();
     }
@@ -28,7 +28,7 @@ public class TransmetteurParfait extends Transmetteur<Float, Float> {
         this.informationEmise = this.informationRecue;
 
         // Émission vers les composants connectés
-        for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
+        for (DestinationInterface<T> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }
     }
