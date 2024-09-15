@@ -107,6 +107,10 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
             throw new InformationNonConformeException("Erreur: aMin > 0 pour le codage NRZ/NRZT");
         }
 
+        if ((code.equals(Code.RZ)) && aMin != 0) {
+            throw new InformationNonConformeException("Erreur: aMin != 0 pour le codage RZ");
+        }
+
         return false;
     }
 
