@@ -3,13 +3,9 @@ package simulateur;
 import destinations.Destination;
 import destinations.DestinationFinale;
 import modulation.Modulateur;
-import modulation.emetteurs.EmetteurNRZ;
-import modulation.emetteurs.EmetteurNRZT;
-import modulation.emetteurs.EmetteurRZ;
+import modulation.emetteurs.Emetteur;
 import information.Information;
-import modulation.recepteurs.RecepteurNRZ;
-import modulation.recepteurs.RecepteurNRZT;
-import modulation.recepteurs.RecepteurRZ;
+import modulation.recepteurs.Recepteur;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
@@ -130,12 +126,10 @@ public class Simulateur {
         }
 
         // Instanciation des composants
-        //this.emetteur = new EmetteurNRZ(taillePeriode);
-        this.emetteur = new EmetteurNRZT(taillePeriode, aMax, aMin);
+        this.emetteur = new Emetteur(taillePeriode, aMax, aMin, code);
         //this.transmetteurLogique = new TransmetteurParfait<>();
         this.transmetteurAnalogique = new TransmetteurParfait<>();
-        //this.recepteur = new RecepteurNRZ(taillePeriode);
-        this.recepteur = new RecepteurNRZT(taillePeriode, aMax, aMin);
+        this.recepteur = new Recepteur(taillePeriode, aMax, aMin);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants

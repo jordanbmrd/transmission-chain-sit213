@@ -41,6 +41,7 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
     * */
     protected float aMax;
     protected float aMin;
+    protected Code code;
 
     /**
      * Constructeur factorisant les initialisations communes aux
@@ -48,6 +49,16 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
      *
      * @param taillePeriode la taille de la période
      */
+    public Modulateur(int taillePeriode, float aMax, float aMin, Code code) {
+        this.destinationsConnectees = new ArrayList<>();
+        this.informationRecue = null;
+        this.informationEmise = null;
+        this.taillePeriode = taillePeriode;
+        this.aMax = aMax;
+        this.aMin = aMin;
+        this.code = code;
+    }
+
     public Modulateur(int taillePeriode, float aMax, float aMin) {
         this.destinationsConnectees = new ArrayList<>();
         this.informationRecue = null;
