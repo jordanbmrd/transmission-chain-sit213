@@ -71,32 +71,64 @@ public class Emetteur extends Modulateur<Boolean, Float> {
         }
         Information<Float> informationFinale = new Information<>();
         if (code.equals(Code.NRZ)) { informationFinale = informationConvertie; }
-        else { informationFinale = miseEnForme(informationConvertie, this.code); }
+        else { informationFinale = miseEnForme(informationLogique, informationConvertie, this.code); }
         return informationFinale;
     }
 
-    public Information<Float> miseEnForme(Information<Float> informationConvertie, Code code) {
+    public Information<Float> miseEnForme(Information<Boolean> informationLogique, Information<Float> informationConvertie, Code code) {
+        int delta = taillePeriode / 3;
         Information<Float> informationMiseEnForme = new Information<>();
+
         if (code.equals(Code.RZ)) {
             for (int i = 0; i < informationConvertie.nbElements(); i += taillePeriode) {
-                for (int j = 0; j < taillePeriode/3; j++) {
+                for (int j = 0; j < delta; j++) {
                     informationMiseEnForme.add(0.0F);
                 }
-                for (int k = taillePeriode/3; k < 2*taillePeriode/3; k++) {
+                for (int k = delta; k < 2*delta; k++) {
                     if (informationConvertie.iemeElement(i) == aMax) {
                         informationMiseEnForme.add(aMax);
                     } else {
                         informationMiseEnForme.add(aMin);
                     }
                 }
-                for (int l = 2*taillePeriode/3; l < taillePeriode; l++) {
+                for (int l = 2*delta; l < taillePeriode; l++) {
                     informationMiseEnForme.add(0.0F);
                 }
-
             }
         }
+
         else if (code.equals(Code.NRZT)) {
-            informationMiseEnForme = informationConvertie;
+            for (int i = 0; i < informationConvertie.nbElements(); i++) {
+                Boolean precedent = (i > 0) ? informationLogique.iemeElement(i - 1) : null;
+                Boolean current = informationLogique.iemeElement(i);
+                Boolean next = (i < informationConvertie.nbElements() - 1) ? informationLogique.iemeElement(i + 1) : null;
+
+                int missing = taillePeriode % 3;
+
+                if (current != null && current) {
+                    // Génération des valeurs pour un bit à 1
+                    for (int j = 0; j < delta; j++) {
+                        informationMiseEnForme.add((precedent != null && precedent) ? aMax : (float) j / delta * aMax);
+                    }
+                    for (int j = 0; j < delta + missing; j++) {
+                        informationMiseEnForme.add(aMax);
+                    }
+                    for (int j = 0; j < delta; j++) {
+                        informationMiseEnForme.add((next != null && next) ? aMax : (float) (delta - j) / delta * aMax);
+                    }
+                } else {
+                    // Génération des valeurs pour un bit à 0
+                    for (int j = 0; j < delta; j++) {
+                        informationMiseEnForme.add((precedent != null && !precedent) ? aMin : (float) j / delta * aMin);
+                    }
+                    for (int j = 0; j < delta + missing; j++) {
+                        informationMiseEnForme.add(aMin);
+                    }
+                    for (int j = 0; j < delta; j++) {
+                        informationMiseEnForme.add((next != null && !next) ? aMin : (float) (delta - j) / delta * aMin);
+                    }
+                }
+            }
         }
         return informationMiseEnForme;
     }

@@ -127,7 +127,6 @@ public class Simulateur {
 
         // Instanciation des composants
         this.emetteur = new Emetteur(taillePeriode, aMax, aMin, code);
-        //this.transmetteurLogique = new TransmetteurParfait<>();
         this.transmetteurAnalogique = new TransmetteurParfait<>();
         this.recepteur = new Recepteur(taillePeriode, aMax, aMin);
         this.destination = new DestinationFinale();
