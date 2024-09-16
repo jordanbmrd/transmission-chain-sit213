@@ -38,7 +38,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
         if (this.informationRecue == null) {
             throw new InformationNonConformeException();
         }
-        this.informationEmise = conversionNA(this.informationRecue, Code.NRZ);
+        this.informationEmise = conversionNA(this.informationRecue);
 
         // Émission vers les composants connectés
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
@@ -50,10 +50,9 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * Conversion numérique-analogique (NA) d'une information logique.
      *
      * @param informationLogique l'information logique à convertir
-     * @param code le type de codage utilisé
      * @return l'information convertie en valeurs analogiques
      */
-    public Information<Float> conversionNA(Information<Boolean> informationLogique, Code code) throws InformationNonConformeException {
+    public Information<Float> conversionNA(Information<Boolean> informationLogique) throws InformationNonConformeException {
         if (validerParametres(code)) {
             return null;
         }
@@ -98,10 +97,10 @@ public class Emetteur extends Modulateur<Boolean, Float> {
         }
 
         else if (code.equals(Code.NRZT)) {
-            for (int i = 0; i < informationConvertie.nbElements(); i++) {
+            for (int i = 0; i < informationLogique.nbElements(); i++) {
                 Boolean precedent = (i > 0) ? informationLogique.iemeElement(i - 1) : null;
                 Boolean current = informationLogique.iemeElement(i);
-                Boolean next = (i < informationConvertie.nbElements() - 1) ? informationLogique.iemeElement(i + 1) : null;
+                Boolean next = (i < informationLogique.nbElements() - 1) ? informationLogique.iemeElement(i + 1) : null;
 
                 int missing = taillePeriode % 3;
 

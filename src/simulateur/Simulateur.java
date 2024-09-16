@@ -59,7 +59,7 @@ public class Simulateur {
     /*
     * Code à utiliser
     * */
-    private Code code = null;
+    private Code code = Code.NRZ;   // Code par défaut : NRZ
 
     /*
     * Amplitudes
@@ -128,7 +128,7 @@ public class Simulateur {
         // Instanciation des composants
         this.emetteur = new Emetteur(taillePeriode, aMax, aMin, code);
         this.transmetteurAnalogique = new TransmetteurParfait<>();
-        this.recepteur = new Recepteur(taillePeriode, aMax, aMin);
+        this.recepteur = new Recepteur(taillePeriode, aMax, aMin, code);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants

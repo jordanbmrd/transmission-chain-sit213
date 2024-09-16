@@ -11,8 +11,8 @@ import utils.Code;
  * sans altération.s
  */
 public class Recepteur extends Modulateur<Float, Boolean> {
-    public Recepteur(int taillePeriode, float aMax, float aMin) {
-        super(taillePeriode, aMax, aMin);
+    public Recepteur(int taillePeriode, float aMax, float aMin, Code code) {
+        super(taillePeriode, aMax, aMin, code);
     }
 
     /**
@@ -33,7 +33,7 @@ public class Recepteur extends Modulateur<Float, Boolean> {
      */
     @Override
     public void emettre() throws InformationNonConformeException {
-        this.informationEmise = conversionAN(this.informationRecue, Code.NRZ);
+        this.informationEmise = conversionAN(this.informationRecue);
 
         // Émission vers les composants connectés
         for (DestinationInterface<Boolean> destinationConnectee : destinationsConnectees) {
@@ -45,10 +45,9 @@ public class Recepteur extends Modulateur<Float, Boolean> {
      * Conversion analogique-numérique (AN) d'une information analogique.
      *
      * @param informationAnalogique l'information analogique à convertir
-     * @param code le type de codage utilisé
      * @return l'information convertie en valeurs logiques
      */
-    public Information<Boolean> conversionAN(Information<Float> informationAnalogique, Code code) throws InformationNonConformeException {
+    public Information<Boolean> conversionAN(Information<Float> informationAnalogique) throws InformationNonConformeException {
         if (validerParametres(code)) {
             return null;
         }
