@@ -35,15 +35,15 @@ echo "Exécution des scénarios de tests personnalisés..."
 # Liste des scénarios de tests à exécuter
 test_cases=(
     "-mess 101000101"
-    "-seed 1234"
+    "-seed 1234 -code RZ"
 )
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
 if [ -z "$CI" ]; then
     test_cases+=(
-      "-s -code NRZT"
-      "-s -seed 27 -code RZ"
-      "-s -mess 12 -seed 1234 -code NRZ"
+      "-s -code NRZT -aMin -4 -aMax 4"
+      "-s -seed 27 -code RZ -aMin 0, -aMax 6"
+      "-s -mess 12 -seed 1234 -code NRZ -aMin -5 -aMax 5"
       "-s -mess 01101101110 -code NRZT"
     )
 fi

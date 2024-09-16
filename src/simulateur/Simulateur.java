@@ -139,9 +139,10 @@ public class Simulateur {
 
         // Connexion des sondes (si l'option -s est pas utilisée)
         if (affichage) {
-            this.source.connecter(new SondeLogique("source", 200));
-            this.emetteur.connecter(new SondeAnalogique("emetteur"));
-            this.recepteur.connecter(new SondeLogique("recepteur", 200));
+            this.source.connecter(new SondeLogique("source " + code, 200));
+            this.emetteur.connecter(new SondeAnalogique("emetteur " + code));
+            this.transmetteurAnalogique.connecter(new SondeAnalogique("transmetteur " + code));
+            this.recepteur.connecter(new SondeLogique("recepteur " + code, 200));
         }
     }
 
