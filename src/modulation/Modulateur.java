@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe Abstraite d'un composant émetteur d'informations dont
+ * Classe Abstraite d'un composant émetteur/récepteur d'informations dont
  * les éléments sont de type R en entrée et de type E en sortie.
  * L'entrée de l'émetteur implémente l'interface DestinationInterface,
  * la sortie de l'émetteur implémente l'interface SourceInterface.

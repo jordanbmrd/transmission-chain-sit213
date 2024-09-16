@@ -10,9 +10,9 @@ import utils.Code;
  * Emetteur qui transmet parfaitement les informations reçues
  * sans altération.s
  */
-public class EmetteurRZ extends Modulateur<Boolean, Float> {
+public class EmetteurNRZT extends Modulateur<Boolean, Float> {
 
-    public EmetteurRZ(int taillePeriode, float aMax, float aMin) {
+    public EmetteurNRZT(int taillePeriode, float aMax, float aMin) {
         super(taillePeriode, aMax, aMin);
     }
 
