@@ -87,7 +87,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
 
         return switch (code) {
             case NRZ -> informationConvertie; // Aucun traitement supplémentaire pour NRZ
-            case RZ, NRZT -> miseEnForme(informationLogique, informationConvertie, code);
+            case RZ, NRZT -> miseEnForme(informationLogique, informationConvertie);
         };
     }
 
@@ -97,10 +97,9 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      *
      * @param informationLogique l'information logique initiale
      * @param informationConvertie l'information analogique à mettre en forme
-     * @param code le type de codage à appliquer (RZ ou NRZT)
      * @return l'information analogique après mise en forme
      */
-    public Information<Float> miseEnForme(Information<Boolean> informationLogique, Information<Float> informationConvertie, Code code) {
+    public Information<Float> miseEnForme(Information<Boolean> informationLogique, Information<Float> informationConvertie) {
         int delta = taillePeriode / 3;
         Information<Float> informationMiseEnForme = new Information<>();
 
