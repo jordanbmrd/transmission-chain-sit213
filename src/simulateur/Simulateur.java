@@ -4,9 +4,11 @@ import destinations.Destination;
 import destinations.DestinationFinale;
 import modulation.Modulateur;
 import modulation.emetteurs.EmetteurNRZ;
+import modulation.emetteurs.EmetteurNRZT;
 import modulation.emetteurs.EmetteurRZ;
 import information.Information;
 import modulation.recepteurs.RecepteurNRZ;
+import modulation.recepteurs.RecepteurNRZT;
 import modulation.recepteurs.RecepteurRZ;
 import sources.Source;
 import sources.SourceAleatoire;
@@ -129,11 +131,11 @@ public class Simulateur {
 
         // Instanciation des composants
         //this.emetteur = new EmetteurNRZ(taillePeriode);
-        this.emetteur = new EmetteurRZ(taillePeriode, aMax, aMin);
+        this.emetteur = new EmetteurNRZT(taillePeriode, aMax, aMin);
         //this.transmetteurLogique = new TransmetteurParfait<>();
         this.transmetteurAnalogique = new TransmetteurParfait<>();
         //this.recepteur = new RecepteurNRZ(taillePeriode);
-        this.recepteur = new RecepteurRZ(taillePeriode, aMax, aMin);
+        this.recepteur = new RecepteurNRZT(taillePeriode, aMax, aMin);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants

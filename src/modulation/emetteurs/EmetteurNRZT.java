@@ -8,7 +8,7 @@ import utils.Code;
 
 /**
  * Emetteur qui transmet parfaitement les informations reçues
- * sans altération.s
+ * sans altération.
  */
 public class EmetteurNRZT extends Modulateur<Boolean, Float> {
 
@@ -37,7 +37,7 @@ public class EmetteurNRZT extends Modulateur<Boolean, Float> {
         if (this.informationRecue == null) {
             throw new InformationNonConformeException();
         }
-        this.informationEmise = conversionNA(this.informationRecue, Code.RZ);
+        this.informationEmise = conversionNA(this.informationRecue, Code.NRZT);
 
         // Émission vers les composants connectés
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
@@ -56,36 +56,46 @@ public class EmetteurNRZT extends Modulateur<Boolean, Float> {
         if (validerParametres(code)) {
             return null;
         }
-        if (informationLogique == null) {
+        if (informationLogique == null || informationLogique.nbElements() == 0) {
             throw new InformationNonConformeException();
         }
-        
-        Information<Float> informationConvertie = new Information<>();
-        for (Boolean element : informationLogique) {
-            float valeurConvertie = element ? aMax : aMin;
-            for (int i = 0; i < taillePeriode; i++) {
-                informationConvertie.add(valeurConvertie);
-            }
-        }
 
-        Information<Float> informationMiseEnForme = new Information<>();
-        for (int i = 0; i < informationConvertie.nbElements(); i += taillePeriode) {
-            for (int j = 0; j < taillePeriode/3; j++) {
-                informationMiseEnForme.add(0.0F);
-            }
-            for (int k = taillePeriode/3; k < 2*taillePeriode/3; k++) {
-                if (informationConvertie.iemeElement(i) == aMax) {
-                    informationMiseEnForme.add(aMax);
-                } else {
-                    informationMiseEnForme.add(aMin);
+        Information<Float> informationConvertie = new Information<>();
+        int taille = informationLogique.nbElements();
+
+        for (int i = 0; i < taille; i++) {
+            Boolean precedent = (i > 0) ? informationLogique.iemeElement(i - 1) : null;
+            Boolean current = informationLogique.iemeElement(i);
+            Boolean next = (i < taille - 1) ? informationLogique.iemeElement(i + 1) : null;
+
+            int delta = taillePeriode / 3;
+            int missing = taillePeriode % 3;
+
+            if (current != null && current) {
+                // Génération des valeurs pour un bit à 1
+                for (int j = 0; j < delta; j++) {
+                    informationConvertie.add((precedent != null && precedent) ? aMax : (float) j / delta * aMax);
+                }
+                for (int j = 0; j < delta + missing; j++) {
+                    informationConvertie.add(aMax);
+                }
+                for (int j = 0; j < delta; j++) {
+                    informationConvertie.add((next != null && next) ? aMax : (float) (delta - j) / delta * aMax);
+                }
+            } else {
+                // Génération des valeurs pour un bit à 0
+                for (int j = 0; j < delta; j++) {
+                    informationConvertie.add((precedent != null && !precedent) ? aMin : (float) j / delta * aMin);
+                }
+                for (int j = 0; j < delta + missing; j++) {
+                    informationConvertie.add(aMin);
+                }
+                for (int j = 0; j < delta; j++) {
+                    informationConvertie.add((next != null && !next) ? aMin : (float) (delta - j) / delta * aMin);
                 }
             }
-            for (int l = 2*taillePeriode/3; l < taillePeriode; l++) {
-                informationMiseEnForme.add(0.0F);
-            }
-
         }
 
-        return informationMiseEnForme;
+        return informationConvertie;
     }
 }

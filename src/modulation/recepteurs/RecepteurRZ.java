@@ -52,7 +52,6 @@ public class RecepteurRZ extends Modulateur<Float, Boolean> {
         if (validerParametres(code)) {
             return null;
         }
-        System.out.println(informationAnalogique);
         if (informationAnalogique == null) {
             throw new InformationNonConformeException();
         }

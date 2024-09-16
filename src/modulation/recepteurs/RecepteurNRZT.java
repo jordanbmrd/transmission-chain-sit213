@@ -33,7 +33,7 @@ public class RecepteurNRZT extends Modulateur<Float, Boolean> {
      */
     @Override
     public void emettre() throws InformationNonConformeException {
-        this.informationEmise = conversionAN(this.informationRecue, Code.RZ);
+        this.informationEmise = conversionAN(this.informationRecue, Code.NRZT);
 
         // Émission vers les composants connectés
         for (DestinationInterface<Boolean> destinationConnectee : destinationsConnectees) {
@@ -52,7 +52,6 @@ public class RecepteurNRZT extends Modulateur<Float, Boolean> {
         if (validerParametres(code)) {
             return null;
         }
-        System.out.println(informationAnalogique);
         if (informationAnalogique == null) {
             throw new InformationNonConformeException();
         }
