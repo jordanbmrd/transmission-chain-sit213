@@ -12,8 +12,8 @@ import utils.Code;
  */
 public class EmetteurNRZ extends Modulateur<Boolean, Float> {
 
-    public EmetteurNRZ(int taillePeriode) {
-        super(taillePeriode);
+    public EmetteurNRZ(int taillePeriode, float aMax, float aMin) {
+        super(taillePeriode, aMax, aMin);
     }
 
     /**
@@ -37,7 +37,7 @@ public class EmetteurNRZ extends Modulateur<Boolean, Float> {
         if (this.informationRecue == null) {
             throw new InformationNonConformeException();
         }
-        this.informationEmise = conversionNA(this.informationRecue, Code.NRZ, 5, 0);
+        this.informationEmise = conversionNA(this.informationRecue, Code.NRZ);
 
         // Émission vers les composants connectés
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
@@ -50,12 +50,10 @@ public class EmetteurNRZ extends Modulateur<Boolean, Float> {
      *
      * @param informationLogique l'information logique à convertir
      * @param code le type de codage utilisé
-     * @param aMax la valeur maximale pour la conversion
-     * @param aMin la valeur minimale pour la conversion
      * @return l'information convertie en valeurs analogiques
      */
-    public Information<Float> conversionNA(Information<Boolean> informationLogique, Code code, float aMax, float aMin) throws InformationNonConformeException {
-        if (validerParametres(aMax, aMin, code)) {
+    public Information<Float> conversionNA(Information<Boolean> informationLogique, Code code) throws InformationNonConformeException {
+        if (validerParametres(code)) {
             return null;
         }
 

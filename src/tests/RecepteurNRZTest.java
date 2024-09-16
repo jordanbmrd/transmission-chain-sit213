@@ -19,7 +19,7 @@ public class RecepteurNRZTest {
     @Before
     public void setUp() {
         // Initialize the RecepteurNRZ with a taillePeriode of 3 for testing
-        recepteurNRZ = new RecepteurNRZ(3);
+        recepteurNRZ = new RecepteurNRZ(3, 5, 0);
 
         // Create a mock for DestinationInterface
         mockDestination = EasyMock.createMock(DestinationInterface.class);
@@ -80,7 +80,7 @@ public class RecepteurNRZTest {
         expectedInformation.add(false);
 
         // Perform the AN conversion
-        Information<Boolean> convertedInformation = recepteurNRZ.conversionAN(analogInformation, Code.NRZ, 5f, 0f);
+        Information<Boolean> convertedInformation = recepteurNRZ.conversionAN(analogInformation, Code.NRZ);
 
         // Check that the converted information matches the expected Boolean output
         assertEquals("The converted information should match the expected NRZ Boolean values",
@@ -122,7 +122,7 @@ public class RecepteurNRZTest {
         Information<Float> emptyInformation = new Information<>();
 
         // Perform the AN conversion
-        Information<Boolean> convertedInformation = recepteurNRZ.conversionAN(emptyInformation, Code.NRZ, 5f, 0f);
+        Information<Boolean> convertedInformation = recepteurNRZ.conversionAN(emptyInformation, Code.NRZ);
 
         // Check that the converted information is empty
         assertEquals("The converted information should be empty", 0, convertedInformation.nbElements());
@@ -136,7 +136,7 @@ public class RecepteurNRZTest {
         analogInformation.add(0f); // false (NRZ: aMin)
 
         // Perform the AN conversion (should result in incomplete conversion)
-        Information<Boolean> convertedInformation = recepteurNRZ.conversionAN(analogInformation, Code.NRZ, 5f, 0f);
+        Information<Boolean> convertedInformation = recepteurNRZ.conversionAN(analogInformation, Code.NRZ);
 
         // Expected: no Boolean values because the period size doesn't match
         assertEquals("The converted information should be empty due to non-matching period size", 0, convertedInformation.nbElements());

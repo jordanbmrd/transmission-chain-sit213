@@ -36,17 +36,25 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
      */
     protected int taillePeriode;
 
+    /*
+    * Amplitudes
+    * */
+    protected float aMax;
+    protected float aMin;
+
     /**
      * Constructeur factorisant les initialisations communes aux
      * réalisations de la classe abstraite Emetteur.
      *
      * @param taillePeriode la taille de la période
      */
-    public Modulateur(int taillePeriode) {
+    public Modulateur(int taillePeriode, float aMax, float aMin) {
         this.destinationsConnectees = new ArrayList<>();
         this.informationRecue = null;
         this.informationEmise = null;
         this.taillePeriode = taillePeriode;
+        this.aMax = aMax;
+        this.aMin = aMin;
     }
 
     /**
@@ -89,26 +97,24 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
     /**
      * Méthode pour valider les paramètres aMin, aMax et le type de codage.
      *
-     * @param aMax la valeur maximale
-     * @param aMin la valeur minimale
      * @param code le type de codage
      * @return true si les paramètres sont valides, false sinon
      */
-    protected boolean validerParametres(float aMax, float aMin, Code code) throws InformationNonConformeException {
+    protected boolean validerParametres(Code code) throws InformationNonConformeException {
         if (aMin >= aMax) {
-            throw new InformationNonConformeException("Erreur: aMin >= aMax");
+            throw new InformationNonConformeException("Erreur: aMin doit être strictement inférieur à aMax");
         }
 
         if (aMax < 0) {
-            throw new InformationNonConformeException("Erreur: aMax < 0");
+            throw new InformationNonConformeException("Erreur: aMax doit être supérieur ou égal à 0");
         }
 
         if ((code.equals(Code.NRZ) || code.equals(Code.NRZT)) && aMin > 0) {
-            throw new InformationNonConformeException("Erreur: aMin > 0 pour le codage NRZ/NRZT");
+            throw new InformationNonConformeException("Erreur: aMin doit être inférieur ou égal à 0 pour le codage NRZ/NRZT");
         }
 
         if ((code.equals(Code.RZ)) && aMin != 0) {
-            throw new InformationNonConformeException("Erreur: aMin != 0 pour le codage RZ");
+            throw new InformationNonConformeException("Erreur: aMin doit être égal à 0 pour le codage RZ");
         }
 
         return false;

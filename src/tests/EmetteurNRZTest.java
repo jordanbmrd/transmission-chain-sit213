@@ -19,7 +19,7 @@ public class EmetteurNRZTest {
     @Before
     public void setUp() {
         // Initialize the EmetteurNRZ with a taillePeriode of 3 for testing
-        emetteurNRZ = new EmetteurNRZ(3);
+        emetteurNRZ = new EmetteurNRZ(3, 5, 0);
 
         // Create a mock for DestinationInterface
         mockDestination = EasyMock.createMock(DestinationInterface.class);
@@ -80,7 +80,7 @@ public class EmetteurNRZTest {
         expectedInformation.add(0f);
 
         // Perform the NA conversion
-        Information<Float> convertedInformation = emetteurNRZ.conversionNA(information, Code.NRZ, 5f, 0f);
+        Information<Float> convertedInformation = emetteurNRZ.conversionNA(information, Code.NRZ);
 
         // Check that the converted information matches the expected output
         assertEquals("The converted information should match the expected NRZ analog values",
@@ -127,7 +127,7 @@ public class EmetteurNRZTest {
         Information<Boolean> emptyInformation = new Information<>();
 
         // Perform the NA conversion
-        Information<Float> convertedInformation = emetteurNRZ.conversionNA(emptyInformation, Code.NRZ, 5f, 0f);
+        Information<Float> convertedInformation = emetteurNRZ.conversionNA(emptyInformation, Code.NRZ);
 
         // Check that the converted information is empty
         assertEquals("The converted information should be empty", 0, convertedInformation.nbElements());

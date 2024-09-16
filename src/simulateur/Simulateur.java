@@ -64,6 +64,12 @@ public class Simulateur {
     private Code code = null;
 
     /*
+    * Amplitudes
+    * */
+    private float aMax = 1f;
+    private float aMin = 0f;
+
+    /*
     * Taille de la période
     * */
     private int taillePeriode = 30;
@@ -123,11 +129,11 @@ public class Simulateur {
 
         // Instanciation des composants
         //this.emetteur = new EmetteurNRZ(taillePeriode);
-        this.emetteur = new EmetteurRZ(taillePeriode);
+        this.emetteur = new EmetteurRZ(taillePeriode, aMax, aMin);
         //this.transmetteurLogique = new TransmetteurParfait<>();
         this.transmetteurAnalogique = new TransmetteurParfait<>();
         //this.recepteur = new RecepteurNRZ(taillePeriode);
-        this.recepteur = new RecepteurRZ(taillePeriode);
+        this.recepteur = new RecepteurRZ(taillePeriode, aMax, aMin);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants
@@ -171,7 +177,7 @@ public class Simulateur {
                 i++;
                 // traiter la valeur associee
                 try {
-                    seed = Integer.valueOf(args[i]);
+                    seed = Integer.parseInt(args[i]);
                 } catch (Exception e) {
                     throw new ArgumentsException("Valeur du parametre -seed  invalide :" + args[i]);
                 }
@@ -200,6 +206,22 @@ public class Simulateur {
                     this.code = Code.RZ;
                 } else {
                     throw new ArgumentsException("Valeur du parametre -code invalide : " + args[i]);
+                }
+            } else if (args[i].matches("-aMax")) {
+                i++;
+                // traiter la valeur associee
+                try {
+                    aMax = Float.parseFloat(args[i]);
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du parametre -aMax  invalide :" + args[i]);
+                }
+            } else if (args[i].matches("-aMin")) {
+                i++;
+                // traiter la valeur associee
+                try {
+                    aMin = Float.parseFloat(args[i]);
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du parametre -aMin  invalide :" + args[i]);
                 }
             }
 
