@@ -40,7 +40,12 @@ test_cases=(
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
 if [ -z "$CI" ]; then
-    test_cases+=("-s" "-s -seed 27" "-s -mess 12 -seed 1234" "-s -mess 01101101110")
+    test_cases+=(
+      "-s -code NRZT"
+      "-s -seed 27 -code RZ"
+      "-s -mess 12 -seed 1234 -code NRZ"
+      "-s -mess 01101101110 -code NRZT"
+    )
 fi
 
 # Initialisation du compteur d'échecs
