@@ -10,137 +10,154 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe Abstraite d'un composant émetteur/récepteur d'informations dont
- * les éléments sont de type R en entrée et de type E en sortie.
- * L'entrée de l'émetteur implémente l'interface DestinationInterface,
- * la sortie de l'émetteur implémente l'interface SourceInterface.
+ * Classe abstraite représentant un modulateur (émetteur/récepteur) d'informations.
+ * Le modulateur reçoit des informations de type R et émet des informations de type E.
+ * Un modulateur peut être relié à plusieurs destinations connectées.
+ *
+ * @param <R> Type des informations reçues (entrée)
+ * @param <E> Type des informations émises (sortie)
  */
 public abstract class Modulateur<R, E> implements DestinationInterface<R>, SourceInterface<E> {
+
     /**
-     * La liste des composants destination connectés en sortie de l'émetteur.
+     * Liste des destinations connectées à la sortie du modulateur.
+     * Ces destinations recevront l'information après modulation.
      */
     protected List<DestinationInterface<E>> destinationsConnectees;
 
     /**
-     * L'information reçue en entrée de l'émetteur.
+     * L'information reçue en entrée du modulateur.
      */
     protected Information<R> informationRecue;
 
     /**
-     * L'information émise en sortie de l'émetteur.
+     * L'information émise en sortie du modulateur après traitement.
      */
     protected Information<E> informationEmise;
 
     /**
-     * Taille de la période.
+     * Taille de la période utilisée pour la modulation.
      */
     protected int taillePeriode;
 
-    /*
-    * Amplitudes
-    * */
+    /**
+     * Valeur analogique maximale (ex : amplitude max pour une onde).
+     */
     protected float aMax;
+
+    /**
+     * Valeur analogique minimale (ex : amplitude min pour une onde).
+     */
     protected float aMin;
+
+    /**
+     * Type de codage utilisé pour la modulation (ex : NRZ, RZ, NRZT).
+     */
     protected Code code;
 
     /**
-     * Constructeur factorisant les initialisations communes aux
-     * réalisations de la classe abstraite Emetteur.
+     * Constructeur du modulateur.
+     * Initialise les paramètres communs à tous les modulateurs.
      *
-     * @param taillePeriode la taille de la période
+     * @param taillePeriode La taille de la période de modulation
+     * @param aMax L'amplitude maximale
+     * @param aMin L'amplitude minimale
+     * @param code Le type de codage utilisé pour la modulation
      */
     public Modulateur(int taillePeriode, float aMax, float aMin, Code code) {
-        this.destinationsConnectees = new ArrayList<>();
-        this.informationRecue = null;
-        this.informationEmise = null;
-        this.taillePeriode = taillePeriode;
-        this.aMax = aMax;
-        this.aMin = aMin;
-        this.code = code;
-    }
-
-    public Modulateur(int taillePeriode, float aMax, float aMin) {
-        this.destinationsConnectees = new ArrayList<>();
-        this.informationRecue = null;
-        this.informationEmise = null;
-        this.taillePeriode = taillePeriode;
-        this.aMax = aMax;
-        this.aMin = aMin;
+        this.destinationsConnectees = new ArrayList<>(); // Initialisation des destinations connectées
+        this.informationRecue = null;  // L'information reçue est initialement nulle
+        this.informationEmise = null;  // L'information émise est initialement nulle
+        this.taillePeriode = taillePeriode;  // Définit la taille de la période
+        this.aMax = aMax;  // Définit l'amplitude maximale
+        this.aMin = aMin;  // Définit l'amplitude minimale
+        this.code = code;  // Définit le type de codage
     }
 
     /**
-     * Retourne la dernière information reçue en entrée de l'émetteur.
+     * Retourne l'information reçue par le modulateur.
      *
-     * @return l'information reçue
+     * @return L'information reçue
      */
     public Information<R> getInformationRecue() {
         return this.informationRecue;
     }
 
     /**
-     * Retourne la dernière information émise en sortie de l'émetteur.
+     * Retourne l'information émise par le modulateur.
      *
-     * @return l'information émise
+     * @return L'information émise
      */
     public Information<E> getInformationEmise() {
         return this.informationEmise;
     }
 
     /**
-     * Connecte une destination à la sortie de l'émetteur.
+     * Connecte une destination à la sortie du modulateur.
+     * Cette destination recevra les informations émises par le modulateur.
      *
-     * @param destination la destination à connecter
+     * @param destination La destination à connecter
      */
     @Override
     public void connecter(DestinationInterface<E> destination) {
-        destinationsConnectees.add(destination);
+        destinationsConnectees.add(destination);  // Ajoute la destination à la liste des destinations connectées
     }
 
     /**
-     * Déconnecte une destination de la sortie de l'émetteur.
+     * Déconnecte une destination de la sortie du modulateur.
      *
-     * @param destination la destination à déconnecter
+     * @param destination La destination à déconnecter
      */
     public void deconnecter(DestinationInterface<E> destination) {
-        destinationsConnectees.remove(destination);
+        destinationsConnectees.remove(destination);  // Supprime la destination de la liste
     }
 
     /**
-     * Méthode pour valider les paramètres aMin, aMax et le type de codage.
+     * Valide les paramètres du modulateur (aMin, aMax et le type de codage).
+     * Vérifie la cohérence des valeurs d'amplitudes et des règles spécifiques à chaque codage.
      *
-     * @param code le type de codage
+     * @param code Le type de codage utilisé
      * @return true si les paramètres sont valides, false sinon
+     * @throws InformationNonConformeException si les paramètres sont invalides
      */
     protected boolean validerParametres(Code code) throws InformationNonConformeException {
+        // Vérifie que aMin est strictement inférieur à aMax
         if (aMin >= aMax) {
             throw new InformationNonConformeException("Erreur: aMin doit être strictement inférieur à aMax");
         }
 
+        // Vérifie que aMax est supérieur ou égal à 0
         if (aMax < 0) {
             throw new InformationNonConformeException("Erreur: aMax doit être supérieur ou égal à 0");
         }
 
+        // Pour NRZ et NRZT, aMin doit être inférieur ou égal à 0
         if ((code.equals(Code.NRZ) || code.equals(Code.NRZT)) && aMin > 0) {
             throw new InformationNonConformeException("Erreur: aMin doit être inférieur ou égal à 0 pour le codage NRZ/NRZT");
         }
 
-        if ((code.equals(Code.RZ)) && aMin != 0) {
+        // Pour RZ, aMin doit être exactement égal à 0
+        if (code.equals(Code.RZ) && aMin != 0) {
             throw new InformationNonConformeException("Erreur: aMin doit être égal à 0 pour le codage RZ");
         }
 
-        return false;
+        return true;  // Retourne true si les paramètres sont valides
     }
 
     /**
-     * Reçoit une information et appelle la méthode émettre.
+     * Méthode abstraite pour recevoir une information.
+     * Les sous-classes doivent implémenter cette méthode pour traiter
+     * l'information reçue et appeler la méthode {@code emettre}.
      *
-     * @param information l'information reçue
+     * @param information L'information reçue
      * @throws InformationNonConformeException si l'information est non conforme
      */
     public abstract void recevoir(Information<R> information) throws InformationNonConformeException;
 
     /**
-     * Émet l'information construite par l'émetteur.
+     * Méthode abstraite pour émettre l'information traitée.
+     * Les sous-classes doivent implémenter cette méthode pour émettre
+     * l'information après traitement.
      *
      * @throws InformationNonConformeException si l'information est non conforme
      */
