@@ -104,8 +104,10 @@ public class EmetteurTest {
         assertTrue(atteintMax);
 
         // Utilisation de la sonde pour visualiser les valeurs
+        SondeAnalogique sondeAnalogique = new SondeAnalogique("Sonde NRZT");
+        this.emetteurNRZT.connecter(sondeAnalogique);
         emetteurNRZT.recevoir(information);
         emetteurNRZT.emettre();
-        this.emetteurNRZT.connecter(new SondeAnalogique("Sonde NRZT"));
+        sondeAnalogique.recevoir(emetteurNRZT.getInformationEmise());
     }
 }
