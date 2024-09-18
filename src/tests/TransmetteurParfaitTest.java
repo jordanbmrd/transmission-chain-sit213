@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import transmetteurs.TransmetteurParfait;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class TransmetteurParfaitTest {
 
@@ -46,8 +46,7 @@ public class TransmetteurParfaitTest {
         EasyMock.verify(mockDestination);
 
         // Check that the received and emitted information are the same
-        assertEquals("The emitted information should be the same as the received information",
-                information, transmetteurParfait.getInformationEmise());
+        assertEquals("The emitted information should be the same as the received information", information, transmetteurParfait.getInformationEmise());
     }
 
     @Test
@@ -77,8 +76,7 @@ public class TransmetteurParfaitTest {
         EasyMock.verify(mockDestination1, mockDestination2);
 
         // Check that the emitted information is correct
-        assertEquals("The emitted information should match the received information",
-                information, transmetteurParfait.getInformationEmise());
+        assertEquals("The emitted information should match the received information", information, transmetteurParfait.getInformationEmise());
     }
 
     @Test(expected = InformationNonConformeException.class)
@@ -103,7 +101,6 @@ public class TransmetteurParfaitTest {
         EasyMock.verify(mockDestination);
 
         // Check that the emitted information is empty
-        assertEquals("The emitted information should be empty",
-                emptyInformation, transmetteurParfait.getInformationEmise());
+        assertEquals("The emitted information should be empty", emptyInformation, transmetteurParfait.getInformationEmise());
     }
 }

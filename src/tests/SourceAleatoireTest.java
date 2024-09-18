@@ -26,14 +26,12 @@ public class SourceAleatoireTest {
         sourceAleatoire = new SourceAleatoire(sequenceLength);
 
         // Check that the size of the generated information is correct
-        assertEquals("The generated sequence should have the correct length",
-                sequenceLength, sourceAleatoire.informationGeneree.nbElements());
+        assertEquals("The generated sequence should have the correct length", sequenceLength, sourceAleatoire.informationGeneree.nbElements());
 
         // Since it's randomly generated, we cannot test the exact values, but we can
         // check if the information contains only boolean values (true/false).
         for (int i = 0; i < sequenceLength; i++) {
-            assertNotNull("Each bit in the sequence should be a Boolean value",
-                    sourceAleatoire.informationGeneree.iemeElement(i));
+            assertNotNull("Each bit in the sequence should be a Boolean value", sourceAleatoire.informationGeneree.iemeElement(i));
         }
     }
 
@@ -50,8 +48,7 @@ public class SourceAleatoireTest {
             expectedInformation.add(random.nextBoolean());
         }
 
-        assertEquals("The generated sequence with seed should match the expected sequence",
-                expectedInformation, sourceAleatoire.informationGeneree);
+        assertEquals("The generated sequence with seed should match the expected sequence", expectedInformation, sourceAleatoire.informationGeneree);
     }
 
     @Test
@@ -60,8 +57,7 @@ public class SourceAleatoireTest {
         int sequenceLength = 5;
         sourceAleatoire = new SourceAleatoire(sequenceLength);
 
-        assertEquals("The emitted information should match the generated information",
-                sourceAleatoire.informationGeneree, sourceAleatoire.getInformationEmise());
+        assertEquals("The emitted information should match the generated information", sourceAleatoire.informationGeneree, sourceAleatoire.getInformationEmise());
     }
 
     @Test
@@ -69,7 +65,7 @@ public class SourceAleatoireTest {
         // Test with a zero-length sequence
         sourceAleatoire = new SourceAleatoire(0);
 
-        assertEquals("The generated information should be empty for a zero-length sequence", 0, sourceAleatoire.informationGeneree.nbElements());
+        assertEquals("The generated information should be empty", 0, sourceAleatoire.informationGeneree.nbElements());
     }
 
     @Test
@@ -80,8 +76,7 @@ public class SourceAleatoireTest {
         SourceAleatoire source1 = new SourceAleatoire(sequenceLength, seed);
         SourceAleatoire source2 = new SourceAleatoire(sequenceLength, seed);
 
-        assertEquals("The two generated sequences with the same seed should be identical",
-                source1.informationGeneree, source2.informationGeneree);
+        assertEquals("The two generated sequences with the same seed should be identical", source1.informationGeneree, source2.informationGeneree);
     }
 
     @Test
@@ -91,7 +86,6 @@ public class SourceAleatoireTest {
         SourceAleatoire source1 = new SourceAleatoire(sequenceLength, 12345);
         SourceAleatoire source2 = new SourceAleatoire(sequenceLength, 67890);
 
-        assertNotEquals("Sequences generated with different seeds should not be identical",
-                source1.informationGeneree, source2.informationGeneree);
+        assertNotEquals("Sequences generated with different seeds should not be identical", source1.informationGeneree, source2.informationGeneree);
     }
 }

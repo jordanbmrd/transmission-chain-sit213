@@ -1,12 +1,12 @@
 package tests;
 
+import destinations.DestinationFinale;
 import information.Information;
 import information.InformationNonConformeException;
-import destinations.DestinationFinale;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class DestinationFinaleTest {
 
@@ -30,8 +30,7 @@ public class DestinationFinaleTest {
         destinationFinale.recevoir(information);
 
         // Verify that the received information matches the input
-        assertEquals("The received information should match the input information",
-                information, destinationFinale.getInformationRecue());
+        assertEquals("The received information should match the input information", information, destinationFinale.getInformationRecue());
     }
 
     @Test(expected = InformationNonConformeException.class)
@@ -62,7 +61,6 @@ public class DestinationFinaleTest {
         destinationFinale.recevoir(singleElementInformation);
 
         // Verify that the received information matches the input
-        assertEquals("The received information should contain one element",
-                singleElementInformation, destinationFinale.getInformationRecue());
+        assertEquals("The received information should contain one element", singleElementInformation, destinationFinale.getInformationRecue());
     }
 }
