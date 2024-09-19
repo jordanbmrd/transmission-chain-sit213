@@ -2,7 +2,6 @@
 bin/
 docs/
 *.tar.gz
-BAUMARD.GUILLOU.MAQUENNE*
 *.iml
 
 ### Docs ###
