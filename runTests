@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Couleurs pour l'affichage
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
 # Répertoire des JAR
 LIB_DIR="libraries"
 
@@ -12,39 +19,45 @@ HAMCREST_JAR="$LIB_DIR/hamcrest-core-1.3.jar"
 BIN_DIR="bin"
 
 # Exécution des tests JUnit
-echo "Exécution des tests JUnit..."
+echo -e "${BLUE}Exécution des tests JUnit...${NC}"
 
 # Recherche des classes de test dans le package src/tests
 test_classes=$(find "$BIN_DIR" -name "*Test.class" | sed 's/bin\///;s/\.class//;s/\//./g')
 
 # Exécution des tests JUnit avec org.junit.runner.JUnitCore
 for test_class in $test_classes; do
-    echo "Running test: $test_class"
+    echo -e "${YELLOW}Running test: $test_class${NC}"
     java -cp "$BIN_DIR:$JUNIT_JAR:$EASYMOCK_JAR:$HAMCREST_JAR" org.junit.runner.JUnitCore "$test_class"
     if [ $? -ne 0 ]; then
-        echo "Échec du test : $test_class"
+        echo -e "${RED}Échec du test : $test_class${NC}"
         exit 1
     fi
 done
 
-echo "Tous les tests JUnit sont passés avec succès"
+echo -e "${GREEN}Tous les tests JUnit sont passés avec succès${NC}"
 
 # Exécution des scénarios de tests personnalisés si nécessaire
-echo "Exécution des scénarios de tests personnalisés..."
+echo -e "${BLUE}Exécution des scénarios de tests personnalisés...${NC}"
 
 # Liste des scénarios de tests à exécuter
 test_cases=(
-    "-mess 101000101"
-    "-seed 1234 -code RZ"
+    "-mess 10"                       # Test avec un message aléatoire de 10 bits
+    "-mess 1010101"                  # Test avec un message fixe
+    "-mess 110011 -code NRZ"          # Test avec codage NRZ
+    "-mess 0010011 -code RZ"          # Test avec codage RZ
+    "-aMax 5 -aMin -5 -code NRZT"    # Test avec des amplitudes extrêmes
+    "-mess 50 -seed 1234"            # Test avec une seed spécifique
+    "-mess 1001110011100110001111000011110001110000011100000111000011110000111110000000000"  # Message long
+    "-mess 1000000"                  # Test avec un message d'un million de bits
 )
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
 if [ -z "$CI" ]; then
     test_cases+=(
-      "-s -code NRZT -aMin -4 -aMax 4"
-      "-s -seed 27 -code RZ -aMin 0, -aMax 6"
-      "-s -mess 12 -seed 1234 -code NRZ -aMin -5 -aMax 5"
-      "-s -mess 01101101110 -code NRZT"
+        "-s -code NRZT -aMin -4 -aMax 4"
+        "-s -seed 27 -code RZ -aMin 0 -aMax 6"
+        "-s -mess 12 -seed 1234 -code NRZ -aMin -5 -aMax 5"
+        "-s -mess 01101101110 -code NRZT"
     )
 fi
 
@@ -53,17 +66,20 @@ failed_tests=0
 
 # Boucle sur les scénarios de tests
 for test_case in "${test_cases[@]}"; do
-    ./simulateur "$test_case"
+    echo -e "${YELLOW}Exécution du test : ./simulateur $test_case${NC}"
+    ./simulateur $test_case
     if [ $? -ne 0 ]; then
-        echo "Échec du test : $test_case"
+        echo -e "${RED}Échec du test : $test_case${NC}"
         ((failed_tests++))
+    else
+        echo -e "${GREEN}Test réussi : $test_case${NC}"
     fi
 done
 
 # Résumé des résultats des tests
 if [ "$failed_tests" -ne 0 ]; then
-    echo -e "\n$failed_tests tests échoués sur ${#test_cases[@]}"
+    echo -e "\n${RED}$failed_tests tests échoués sur ${#test_cases[@]}${NC}"
     exit 1
 else
-    echo "Tous les tests sont passés avec succès"
+    echo -e "${GREEN}Tous les tests sont passés avec succès${NC}"
 fi

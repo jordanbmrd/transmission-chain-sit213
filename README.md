@@ -4,14 +4,12 @@
 
 ### Ajout de nouveaux flags au CLI
 
-- `-code [string]`: Choix du code à utiliser. **Pas de valeur par défaut**. Les options disponibles sont :
+- `-code [string]`: Choix du code à utiliser. Valeur par défaut : NRZ. Les options disponibles sont :
   - `NRZ`
   - `NRZT`
   - `RZ`
-- `-aMax [float]`: Choix de l'amplitude max.
-- `-aMin [float]`: Choix de l'amplitude min.
-
-Tous les flags sont obligatoires. Une erreur est renvoyée sinon.
+- `-aMax [float]`: Choix de l'amplitude max. Valeur par défaut : 1.
+- `-aMin [float]`: Choix de l'amplitude min. Valeur par défaut : 0.
 
 ### Ajout du répertoire `librairies`
 
