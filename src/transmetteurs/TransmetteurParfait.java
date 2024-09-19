@@ -4,13 +4,19 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 
+/**
+ * Classe représentant un transmetteur parfait qui relaie directement
+ * l'information reçue vers les destinations connectées sans altération.
+ *
+ * @param <T> le type des informations transmises.
+ */
 public class TransmetteurParfait<T> extends Transmetteur<T, T> {
+
     /**
-     * reçoit une information.  Cette méthode, en fin d'exécution,
-     * appelle la méthode émettre.
+     * Reçoit une information et la transmet.
      *
-     * @param information l'information  reçue
-     * @throws InformationNonConformeException si l'Information comporte une anomalie
+     * @param information l'information reçue.
+     * @throws InformationNonConformeException si l'information est nulle ou non conforme.
      */
     @Override
     public void recevoir(Information<T> information) throws InformationNonConformeException {
@@ -19,9 +25,9 @@ public class TransmetteurParfait<T> extends Transmetteur<T, T> {
     }
 
     /**
-     * émet l'information construite par le transmetteur
+     * Émet l'information reçue vers les destinations connectées.
      *
-     * @throws InformationNonConformeException si l'Information comporte une anomalie
+     * @throws InformationNonConformeException si l'information est nulle.
      */
     @Override
     public void emettre() throws InformationNonConformeException {
@@ -29,8 +35,6 @@ public class TransmetteurParfait<T> extends Transmetteur<T, T> {
             throw new InformationNonConformeException();
         }
         this.informationEmise = this.informationRecue;
-
-        // Émission vers les composants connectés
         for (DestinationInterface<T> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }

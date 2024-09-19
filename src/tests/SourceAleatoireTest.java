@@ -9,35 +9,43 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
+/**
+ * Classe de test pour la classe {@link sources.SourceAleatoire}.
+ * Vérifie la génération aléatoire d'une séquence de bits, ainsi que la reproductibilité
+ * avec une seed fixe.
+ */
 public class SourceAleatoireTest {
 
     private SourceAleatoire sourceAleatoire;
 
+    /**
+     * Initialise une séquence aléatoire de 5 bits pour les tests.
+     */
     @Before
     public void setUp() {
-        // Initialize with a sequence of 5 random bits for testing
         sourceAleatoire = new SourceAleatoire(5);
     }
 
+    /**
+     * Teste le constructeur sans seed, avec une séquence de longueur définie.
+     */
     @Test
     public void testConstructorWithRandomBits() {
-        // Test constructor without seed, sequence size 5
         int sequenceLength = 5;
         sourceAleatoire = new SourceAleatoire(sequenceLength);
 
-        // Check that the size of the generated information is correct
-        assertEquals("The generated sequence should have the correct length", sequenceLength, sourceAleatoire.informationGeneree.nbElements());
+        assertEquals("La séquence générée doit avoir la longueur spécifiée", sequenceLength, sourceAleatoire.informationGeneree.nbElements());
 
-        // Since it's randomly generated, we cannot test the exact values, but we can
-        // check if the information contains only boolean values (true/false).
         for (int i = 0; i < sequenceLength; i++) {
-            assertNotNull("Each bit in the sequence should be a Boolean value", sourceAleatoire.informationGeneree.iemeElement(i));
+            assertNotNull("Chaque élément de la séquence doit être un Boolean", sourceAleatoire.informationGeneree.iemeElement(i));
         }
     }
 
+    /**
+     * Teste le constructeur avec une seed fixe pour garantir la reproductibilité des résultats.
+     */
     @Test
     public void testConstructorWithSeed() {
-        // Test constructor with a fixed seed for reproducibility
         int sequenceLength = 5;
         int seed = 42;
         sourceAleatoire = new SourceAleatoire(sequenceLength, seed);
@@ -48,44 +56,52 @@ public class SourceAleatoireTest {
             expectedInformation.add(random.nextBoolean());
         }
 
-        assertEquals("The generated sequence with seed should match the expected sequence", expectedInformation, sourceAleatoire.informationGeneree);
+        assertEquals("La séquence générée avec une graine fixe doit correspondre à la séquence attendue", expectedInformation, sourceAleatoire.informationGeneree);
     }
 
+    /**
+     * Teste la méthode {@code getInformationEmise} et vérifie que l'information émise est correcte.
+     */
     @Test
     public void testInformationEmise() {
-        // Test that informationEmise is the same as informationGeneree
         int sequenceLength = 5;
         sourceAleatoire = new SourceAleatoire(sequenceLength);
 
-        assertEquals("The emitted information should match the generated information", sourceAleatoire.informationGeneree, sourceAleatoire.getInformationEmise());
+        assertEquals("L'information émise doit correspondre à l'information générée", sourceAleatoire.informationGeneree, sourceAleatoire.getInformationEmise());
     }
 
+    /**
+     * Teste la génération d'une séquence de longueur zéro.
+     */
     @Test
     public void testZeroLengthSequence() {
-        // Test with a zero-length sequence
         sourceAleatoire = new SourceAleatoire(0);
 
-        assertEquals("The generated information should be empty", 0, sourceAleatoire.informationGeneree.nbElements());
+        assertEquals("L'information générée doit être vide", 0, sourceAleatoire.informationGeneree.nbElements());
     }
 
+    /**
+     * Vérifie la reproductibilité des séquences générées avec la même seed.
+     */
     @Test
     public void testSequenceWithSeedReproducibility() {
-        // Test reproducibility of the generated sequence with the same seed
         int sequenceLength = 10;
         int seed = 12345;
         SourceAleatoire source1 = new SourceAleatoire(sequenceLength, seed);
         SourceAleatoire source2 = new SourceAleatoire(sequenceLength, seed);
 
-        assertEquals("The two generated sequences with the same seed should be identical", source1.informationGeneree, source2.informationGeneree);
+        assertEquals("Les séquences générées avec la même graine doivent être identiques", source1.informationGeneree, source2.informationGeneree);
     }
 
+    /**
+     * Vérifie que différentes seeds produisent des séquences différentes.
+     */
     @Test
     public void testDifferentSeedsProduceDifferentSequences() {
-        // Test that different seeds produce different sequences
         int sequenceLength = 10;
         SourceAleatoire source1 = new SourceAleatoire(sequenceLength, 12345);
         SourceAleatoire source2 = new SourceAleatoire(sequenceLength, 67890);
 
-        assertNotEquals("Sequences generated with different seeds should not be identical", source1.informationGeneree, source2.informationGeneree);
+        assertNotEquals("Les séquences générées avec des graines différentes ne doivent pas être identiques", source1.informationGeneree, source2.informationGeneree);
     }
 }

@@ -7,29 +7,29 @@ import modulation.Modulateur;
 import utils.Code;
 
 /**
- * Classe représentant un émetteur qui transmet les informations
- * logiques sous forme analogique, en utilisant différents types de codages.
+ * Classe représentant un émetteur qui transforme des informations logiques en signaux analogiques
+ * et les transmet à des destinations connectées en fonction du codage spécifié.
  */
 public class Emetteur extends Modulateur<Boolean, Float> {
 
     /**
-     * Constructeur de l'émetteur.
+     * Constructeur de l'émetteur qui initialise la période de modulation, les valeurs d'amplitude,
+     * et le type de codage utilisé.
      *
-     * @param taillePeriode la taille de la période
-     * @param aMax valeur analogique maximale
-     * @param aMin valeur analogique minimale
-     * @param code le type de codage utilisé
+     * @param taillePeriode la durée d'une période de modulation.
+     * @param aMax la valeur analogique maximale.
+     * @param aMin la valeur analogique minimale.
+     * @param code le type de codage utilisé (ex : NRZ, RZ, NRZT).
      */
     public Emetteur(int taillePeriode, float aMax, float aMin, Code code) {
         super(taillePeriode, aMax, aMin, code);
     }
 
     /**
-     * Reçoit une information logique (binaire).
-     * Cette méthode appelle ensuite la méthode {@code emettre} pour traiter l'information.
+     * Reçoit une information binaire (logique).
      *
-     * @param information l'information logique reçue
-     * @throws InformationNonConformeException si l'information reçue est nulle ou non conforme
+     * @param information l'information logique reçue.
+     * @throws InformationNonConformeException si l'information reçue est nulle ou non conforme.
      */
     @Override
     public void recevoir(Information<Boolean> information) throws InformationNonConformeException {
@@ -39,45 +39,36 @@ public class Emetteur extends Modulateur<Boolean, Float> {
 
     /**
      * Émet l'information convertie sous forme analogique.
-     * Appelle la méthode de conversion pour transformer l'information logique.
      *
-     * @throws InformationNonConformeException si l'information reçue est nulle
+     * @throws InformationNonConformeException si l'information reçue est nulle.
      */
     @Override
     public void emettre() throws InformationNonConformeException {
         if (this.informationRecue == null) {
             throw new InformationNonConformeException("L'information reçue est nulle");
         }
-        // Conversion de l'information logique en information analogique
         this.informationEmise = conversionNA(this.informationRecue);
-
-        // Émission de l'information convertie à toutes les destinations connectées
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }
     }
 
     /**
-     * Conversion numérique-analogique (NA) de l'information logique.
-     * Selon le type de codage choisi (NRZ, RZ, NRZT), la conversion peut varier.
+     * Convertit une information logique en signal analogique selon le codage spécifié.
      *
-     * @param informationLogique l'information logique à convertir
-     * @return l'information convertie sous forme analogique
-     * @throws InformationNonConformeException si l'information logique est nulle ou invalide
+     * @param informationLogique l'information logique à convertir.
+     * @return l'information convertie sous forme analogique.
+     * @throws InformationNonConformeException si l'information logique est nulle ou invalide.
      */
     public Information<Float> conversionNA(Information<Boolean> informationLogique) throws InformationNonConformeException {
         if (!validerParametres(code)) {
             return null;
         }
-
         if (informationLogique == null) {
             throw new InformationNonConformeException("Information logique non conforme");
         }
 
-        // Crée une information analogique vide
         Information<Float> informationConvertie = new Information<>();
-
-        // Remplissage de l'information analogique avec les valeurs correspondantes (aMax ou aMin)
         for (Boolean element : informationLogique) {
             float valeurConvertie = element ? aMax : aMin;
             for (int i = 0; i < taillePeriode; i++) {
@@ -86,18 +77,17 @@ public class Emetteur extends Modulateur<Boolean, Float> {
         }
 
         return switch (code) {
-            case NRZ -> informationConvertie; // Aucun traitement supplémentaire pour NRZ
+            case NRZ -> informationConvertie;
             case RZ, NRZT -> miseEnForme(informationLogique, informationConvertie);
         };
     }
 
     /**
-     * Applique une mise en forme spécifique selon le codage choisi (RZ ou NRZT).
-     * Cette méthode modifie la forme des symboles dans le signal analogique.
+     * Applique une mise en forme du signal en fonction du type de codage (RZ ou NRZT).
      *
-     * @param informationLogique l'information logique initiale
-     * @param informationConvertie l'information analogique à mettre en forme
-     * @return l'information analogique après mise en forme
+     * @param informationLogique l'information logique initiale.
+     * @param informationConvertie l'information analogique à mettre en forme.
+     * @return l'information analogique après mise en forme.
      */
     public Information<Float> miseEnForme(Information<Boolean> informationLogique, Information<Float> informationConvertie) {
         int delta = taillePeriode / 3;

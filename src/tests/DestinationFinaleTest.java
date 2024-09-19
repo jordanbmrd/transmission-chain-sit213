@@ -8,59 +8,79 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Classe de test pour la classe {@link destinations.DestinationFinale}.
+ * Vérifie que la destination finale reçoit et stocke correctement les informations binaires.
+ */
 public class DestinationFinaleTest {
 
     private DestinationFinale destinationFinale;
 
+    /**
+     * Initialisation de l'objet {@link DestinationFinale} avant chaque test.
+     */
     @Before
     public void setUp() {
-        // Initialize the DestinationFinale instance
         destinationFinale = new DestinationFinale();
     }
 
+    /**
+     * Teste la réception d'une information valide par la destination finale.
+     *
+     * @throws InformationNonConformeException si l'information est non conforme.
+     */
     @Test
     public void testRecevoirValidInformation() throws InformationNonConformeException {
-        // Prepare valid information to be received
+        // Prépare une information valide et vérifie sa réception
         Information<Boolean> information = new Information<>();
         information.add(true);
         information.add(false);
         information.add(true);
 
-        // Call recevoir to store the information
         destinationFinale.recevoir(information);
 
-        // Verify that the received information matches the input
-        assertEquals("The received information should match the input information", information, destinationFinale.getInformationRecue());
+        assertEquals("L'information reçue doit correspondre à l'information d'entrée", information, destinationFinale.getInformationRecue());
     }
 
+    /**
+     * Vérifie que la réception d'une information nulle lève une exception.
+     *
+     * @throws InformationNonConformeException attendue si l'information est nulle.
+     */
     @Test(expected = InformationNonConformeException.class)
     public void testRecevoirWithNullInformationThrowsException() throws InformationNonConformeException {
-        // Call recevoir with null information, expecting an exception
+        // Appel avec une information nulle, exception attendue
         destinationFinale.recevoir(null);
     }
 
+    /**
+     * Teste la réception d'une information vide.
+     *
+     * @throws InformationNonConformeException si l'information reçue est non conforme.
+     */
     @Test
     public void testRecevoirEmptyInformation() throws InformationNonConformeException {
-        // Prepare empty information
+        // Prépare une information vide et vérifie sa réception
         Information<Boolean> emptyInformation = new Information<>();
 
-        // Call recevoir with the empty information
         destinationFinale.recevoir(emptyInformation);
 
-        // Verify that the received information is empty
-        assertEquals("The received information should be empty", 0, destinationFinale.getInformationRecue().nbElements());
+        assertEquals("L'information reçue doit être vide", 0, destinationFinale.getInformationRecue().nbElements());
     }
 
+    /**
+     * Teste la réception d'une information avec un seul élément.
+     *
+     * @throws InformationNonConformeException si l'information reçue est non conforme.
+     */
     @Test
     public void testRecevoirSingleElementInformation() throws InformationNonConformeException {
-        // Prepare information with a single element
+        // Prépare une information avec un seul élément
         Information<Boolean> singleElementInformation = new Information<>();
         singleElementInformation.add(true);
 
-        // Call recevoir with the single element information
         destinationFinale.recevoir(singleElementInformation);
 
-        // Verify that the received information matches the input
-        assertEquals("The received information should contain one element", singleElementInformation, destinationFinale.getInformationRecue());
+        assertEquals("L'information reçue doit contenir un seul élément", singleElementInformation, destinationFinale.getInformationRecue());
     }
 }

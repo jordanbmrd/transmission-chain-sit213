@@ -120,7 +120,7 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
      * @return true si les paramètres sont valides, false sinon
      * @throws InformationNonConformeException si les paramètres sont invalides
      */
-    protected boolean validerParametres(Code code) throws InformationNonConformeException {
+    public boolean validerParametres(Code code) throws InformationNonConformeException {
         // Vérifie que aMin est strictement inférieur à aMax
         if (aMin >= aMax) {
             throw new InformationNonConformeException("Erreur: aMin doit être strictement inférieur à aMax");
