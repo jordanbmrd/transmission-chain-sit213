@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# shellcheck disable=SC2068
+java -cp bin/ simulateur.Simulateur $@

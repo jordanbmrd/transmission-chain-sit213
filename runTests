@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Compilation
+./compile
+
+# Liste des scénarios de tests à exécuter
+test_cases=(
+    "-mess 101000101"
+    "-seed 1234"
+)
+
+# Initialisation du compteur d'échecs
+failed_tests=0
+
+# Boucle sur les scénarios de tests
+for test_case in "${test_cases[@]}"; do
+    ./simulateur "$test_case"
+    if [ $? -ne 0 ]; then
+        echo "Échec du test : $test_case"
+        ((failed_tests++))
+    fi
+done
+
+# Résumé des résultats des tests
+if [ "$failed_tests" -ne 0 ]; then
+    echo -e "\n$failed_tests tests échoués sur ${#test_cases[@]}"
+    exit 1
+else
+    echo "Tous les tests sont passés avec succès"
+fi

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Suppression du dossier bin/
+rm -rf bin/
+
+# Compilation du projet
+echo "Compiling into bin/ folder"
+javac -d bin/ src/**/*.java
+echo "Done!"

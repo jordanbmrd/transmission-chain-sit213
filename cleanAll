@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Suppression :
+# - des archives générées
+# - des fichiers compilés
+# - de la Javadoc générée
+
+echo "Cleaning..."
+rm -f *.tar.gz
+rm -rf bin/*
+rm -rf docs/*
+echo "Done!"

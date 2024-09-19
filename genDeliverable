@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Clean le projet
+./cleanAll
+
+# Récupération des dernières sources du projet
+# echo "Récupération de la dernière version du projet"
+# git pull --quiet
+
+# Création de l'archive
+echo "Creating archive..."
+tar --exclude='genDeliverable' --exclude='Deploiement' --exclude='Parametrage' --exclude='.git' --exclude='deliverables/' -czf BAUMARD.GUILLOU.MAQUENNE.SIT213.Etape1.tar.gz *
+echo "Archive created with success!"

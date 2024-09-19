@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Suppression du dossier docs/
+rm -rf docs/
+
+# Génération de la Javadoc
+echo "Generating javadoc into /docs folder"
+javadoc -d ./docs -quiet ./src/**/*.java -Xdoclint:none
+echo "Done!"

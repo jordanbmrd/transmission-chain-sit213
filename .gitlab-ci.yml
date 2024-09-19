@@ -1,0 +1,39 @@
+workflow:
+  rules:
+    - if: '$CI_MERGE_REQUEST_ID && $CI_COMMIT_BRANCH == "main"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+
+stages:
+  - test
+  - build
+  - deploy
+
+# Test stage
+run-tests:
+  stage: test
+  image: openjdk:24-slim-bookworm
+  script:
+    - chmod +x ./runTests
+    - ./runTests
+
+# Build stage: Generate Javadoc
+generate_javadoc:
+  stage: build
+  image: openjdk:24-slim-bookworm
+  script:
+    - chmod +x ./genDoc
+    - ./genDoc
+  artifacts:
+    paths:
+      - docs
+
+# Deploy stage: Deploy Javadoc to GitLab Pages
+pages:
+  stage: deploy
+  script:
+    - mv docs public
+  artifacts:
+    paths:
+      - public
