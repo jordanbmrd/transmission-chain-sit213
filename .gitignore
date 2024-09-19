@@ -3,6 +3,7 @@ bin/
 docs/
 *.tar.gz
 BAUMARD.GUILLOU.MAQUENNE*
+*.iml
 
 ### Docs ###
 deliverables/~$*.docx
@@ -21,7 +22,6 @@ out/
 .settings
 .springBeans
 .sts4-cache
-bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
