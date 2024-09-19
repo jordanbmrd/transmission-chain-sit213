@@ -3,7 +3,12 @@
 # Suppression du dossier docs/
 rm -rf docs/
 
+# Emplacement des JAR
+LIB_DIR="libraries"
+JAR_FILES=$(find "$LIB_DIR" -name "*.jar" | tr '\n' ':')
+
 # Génération de la Javadoc
 echo "Generating javadoc into /docs folder"
-javadoc -d ./docs -quiet ./src/**/*.java -Xdoclint:none
+# shellcheck disable=SC2046
+javadoc -d ./docs -classpath "$JAR_FILES" -quiet $(find src/ -name "*.java") -Xdoclint:none
 echo "Done!"
