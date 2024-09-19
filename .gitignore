@@ -5,7 +5,7 @@ docs/
 *.iml
 
 ### Docs ###
-deliverables/~$*.docx
+deliverables/**/~$*.docx
 
 ### IntelliJ IDEA ###
 .idea/
