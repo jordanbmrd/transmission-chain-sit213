@@ -9,5 +9,5 @@
 
 # Création de l'archive
 echo "Creating archive..."
-tar --no-xattrs --exclude='genDeliverable' --exclude='Deploiement' --exclude='Parametrage' --exclude='.git' --exclude='deliverables/' --exclude='libraries/' -czf BAUMARD.GUILLOU.MAQUENNE.SIT213.Etape2.tar.gz *
+tar --no-xattrs --exclude='genDeliverable' --exclude='Deploiement' --exclude='Parametrage' --exclude='.git' --exclude='deliverables/' --exclude='libraries/' -czf B2.BAUMARD.GUERRY.GUILLOU.MAQUENNE.PERE.logiciel.Etape2.tar.gz *
 echo "Archive created with success!"
