@@ -4,7 +4,7 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 import modulation.Modulateur;
-import utils.Code;
+import utils.Form;
 
 /**
  * Classe représentant un émetteur qui transforme des informations logiques en signaux analogiques
@@ -19,10 +19,10 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * @param taillePeriode la durée d'une période de modulation.
      * @param aMax la valeur analogique maximale.
      * @param aMin la valeur analogique minimale.
-     * @param code le type de codage utilisé (ex : NRZ, RZ, NRZT).
+     * @param form le type de codage utilisé (ex : NRZ, RZ, NRZT).
      */
-    public Emetteur(int taillePeriode, float aMax, float aMin, Code code) {
-        super(taillePeriode, aMax, aMin, code);
+    public Emetteur(int taillePeriode, float aMax, float aMin, Form form) {
+        super(taillePeriode, aMax, aMin, form);
     }
 
     /**
@@ -61,7 +61,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * @throws InformationNonConformeException si l'information logique est nulle ou invalide.
      */
     public Information<Float> conversionNA(Information<Boolean> informationLogique) throws InformationNonConformeException {
-        if (!validerParametres(code)) {
+        if (!validerParametres(form)) {
             return null;
         }
         if (informationLogique == null) {
@@ -76,9 +76,9 @@ public class Emetteur extends Modulateur<Boolean, Float> {
             }
         }
 
-        return switch (code) {
+        return switch (form) {
             case NRZ -> informationConvertie;
-            case RZ, NRZT -> miseEnForme(informationLogique, informationConvertie);
+            case RZ, NRZT -> miseEnForme(informationLogique);
         };
     }
 
@@ -86,26 +86,31 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * Applique une mise en forme du signal en fonction du type de codage (RZ ou NRZT).
      *
      * @param informationLogique l'information logique initiale.
-     * @param informationConvertie l'information analogique à mettre en forme.
      * @return l'information analogique après mise en forme.
      */
-    public Information<Float> miseEnForme(Information<Boolean> informationLogique, Information<Float> informationConvertie) {
+    public Information<Float> miseEnForme(Information<Boolean> informationLogique) {
         int delta = taillePeriode / 3;
+        int missing;
         Information<Float> informationMiseEnForme = new Information<>();
 
-        switch (code) {
+        switch (form) {
             case RZ:
                 // Codage RZ : ajouter des périodes de repos (0) entre les symboles
-                for (int i = 0; i < informationConvertie.nbElements(); i += taillePeriode) {
-                    for (int j = 0; j < delta; j++) {
-                        informationMiseEnForme.add(0.0F); // Repos avant la partie active
+                missing = taillePeriode - delta * 3;
+                for (boolean information : informationLogique) {
+                    for (int i = 0; i < delta; i++) {
+                        informationMiseEnForme.add(0f); // 0 avant la partie active
                     }
-                    for (int k = delta; k < 2 * delta; k++) {
-                        // Ajoute la partie active du signal
-                        informationMiseEnForme.add(informationConvertie.iemeElement(i) == aMax ? aMax : aMin);
+                    for (int i = 0; i < delta + missing; i++) {
+                        // Ajout de la partie active du signal
+                        if (information) {
+                            informationMiseEnForme.add(aMax);
+                        } else {
+                            informationMiseEnForme.add(aMin);
+                        }
                     }
-                    for (int l = 2 * delta; l < taillePeriode; l++) {
-                        informationMiseEnForme.add(0.0F); // Repos après la partie active
+                    for (int i = 0; i < delta; i++) {
+                        informationMiseEnForme.add(0f); // 0 après la partie active
                     }
                 }
                 break;
@@ -117,7 +122,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
                     Boolean current = informationLogique.iemeElement(i);
                     Boolean next = (i < informationLogique.nbElements() - 1) ? informationLogique.iemeElement(i + 1) : null;
 
-                    int missing = taillePeriode % 3;
+                    missing = taillePeriode % 3;
 
                     // Génération des symboles en fonction de la transition entre les bits
                     if (current != null && current) {
@@ -147,7 +152,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
                 break;
 
             default:
-                throw new IllegalArgumentException("Type de codage inconnu : " + code);
+                throw new IllegalArgumentException("Type de codage inconnu : " + form);
         }
 
         return informationMiseEnForme;

@@ -4,7 +4,7 @@
 
 ### Ajout de nouveaux flags au CLI
 
-- `-form [string]`: Choix du code à utiliser. Valeur par défaut : RZ. Les options disponibles sont :
+- `-form [string]`: Choix du form à utiliser. Valeur par défaut : RZ. Les options disponibles sont :
   - `NRZ`
   - `NRZT`
   - `RZ`
@@ -23,11 +23,11 @@ Il contient les fichiers suivant :
 
 ### Contenu de l'archive à livrer
 
-- `bin/`: Répertoire contenant le code compilé.
+- `bin/`: Répertoire contenant le form compilé.
 - `docs/`: Documentation générée automatiquement sous forme de Javadoc.
-- `src/`: Répertoire contenant le code source du projet.
+- `src/`: Répertoire contenant le form source du projet.
 - `cleanAll`: Script Bash qui nettoie le projet en supprimant l'archive générée, les fichiers compilés et la documentation.
 - `compile`: Script Bash utilisé pour compiler le projet.
-- `genDoc`: Script Bash pour générer la documentation Javadoc à partir du code source.
+- `genDoc`: Script Bash pour générer la documentation Javadoc à partir du form source.
 - `runTests`: Script Bash qui exécute les tests pour vérifier le bon fonctionnement du projet.
 - `README.md`: Fichier de documentation (ce fichier) qui détaille les composants et scripts du projet.

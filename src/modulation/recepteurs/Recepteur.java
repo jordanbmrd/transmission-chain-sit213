@@ -4,7 +4,7 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 import modulation.Modulateur;
-import utils.Code;
+import utils.Form;
 
 /**
  * Classe représentant un récepteur qui convertit des informations analogiques en informations logiques.
@@ -18,10 +18,10 @@ public class Recepteur extends Modulateur<Float, Boolean> {
      * @param taillePeriode la durée d'une période d'échantillonnage.
      * @param aMax la valeur analogique maximale.
      * @param aMin la valeur analogique minimale.
-     * @param code le type de codage utilisé (ex : NRZ, RZ, NRZT).
+     * @param form le type de codage utilisé (ex : NRZ, RZ, NRZT).
      */
-    public Recepteur(int taillePeriode, float aMax, float aMin, Code code) {
-        super(taillePeriode, aMax, aMin, code);
+    public Recepteur(int taillePeriode, float aMax, float aMin, Form form) {
+        super(taillePeriode, aMax, aMin, form);
     }
 
     /**
@@ -61,7 +61,7 @@ public class Recepteur extends Modulateur<Float, Boolean> {
      */
     public Information<Boolean> conversionAN(Information<Float> informationAnalogique) throws InformationNonConformeException {
         // Vérification de la validité des paramètres
-        if (!validerParametres(code)) {
+        if (!validerParametres(form)) {
             return null;
         }
 

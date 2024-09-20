@@ -10,8 +10,9 @@ import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
+import transmetteurs.TransmetteurGaussien;
 import transmetteurs.TransmetteurParfait;
-import utils.Code;
+import utils.Form;
 import visualisations.SondeAnalogique;
 import visualisations.SondeLogique;
 
@@ -62,7 +63,7 @@ public class Simulateur {
     /**
      * Le type de codage utilisé pour la modulation (par défaut NRZ).
      */
-    private Code code = Code.RZ;
+    private Form form = Form.RZ;
 
     /**
      * La valeur d'amplitude maximale pour la modulation.
@@ -133,9 +134,9 @@ public class Simulateur {
         }
 
         // Instanciation des composants
-        this.emetteur = new Emetteur(taillePeriode, aMax, aMin, code);
+        this.emetteur = new Emetteur(taillePeriode, aMax, aMin, form);
         this.transmetteurAnalogique = new TransmetteurParfait<>();
-        this.recepteur = new Recepteur(taillePeriode, aMax, aMin, code);
+        this.recepteur = new Recepteur(taillePeriode, aMax, aMin, form);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants
@@ -146,10 +147,10 @@ public class Simulateur {
 
         // Connexion des sondes (si l'option -s est utilisée)
         if (affichage) {
-            this.source.connecter(new SondeLogique("Source " + code, 200));
-            this.emetteur.connecter(new SondeAnalogique("Emetteur " + code));
-            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur " + code));
-            this.recepteur.connecter(new SondeLogique("Recepteur " + code, 200));
+            this.source.connecter(new SondeLogique("Source " + form, 200));
+            this.emetteur.connecter(new SondeAnalogique("Emetteur " + form));
+            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur " + form));
+            this.recepteur.connecter(new SondeLogique("Recepteur " + form, 200));
         }
     }
 
@@ -203,13 +204,13 @@ public class Simulateur {
                 i++;
                 switch (args[i]) {
                     case "NRZ":
-                        this.code = Code.NRZ;
+                        this.form = Form.NRZ;
                         break;
                     case "NRZT":
-                        this.code = Code.NRZT;
+                        this.form = Form.NRZT;
                         break;
                     case "RZ":
-                        this.code = Code.RZ;
+                        this.form = Form.RZ;
                         break;
                     default:
                         throw new ArgumentsException("Valeur du paramètre -code invalide : " + args[i]);

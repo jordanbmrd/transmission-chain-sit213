@@ -1,5 +1,5 @@
 package utils;
 
-public enum Code {
+public enum Form {
     NRZ, NRZT, RZ
 }

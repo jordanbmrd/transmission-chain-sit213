@@ -5,8 +5,7 @@ import information.InformationNonConformeException;
 import modulation.emetteurs.Emetteur;
 import org.junit.Before;
 import org.junit.Test;
-import utils.Code;
-import visualisations.SondeAnalogique;
+import utils.Form;
 
 import static org.junit.Assert.*;
 
@@ -31,10 +30,10 @@ public class EmetteurTest {
      */
     @Before
     public void setUp() {
-        emetteurRZ = new Emetteur(10, 1.0f, 0.0f, Code.RZ);
-        emetteurNRZ = new Emetteur(10, 1.0f, 0.0f, Code.NRZ);
-        emetteurNRZNeg = new Emetteur(10, 1.0f, -1.0f, Code.NRZ);
-        emetteurNRZT = new Emetteur(10, 1.0f, 0.0f, Code.NRZT);
+        emetteurRZ = new Emetteur(10, 1.0f, 0.0f, Form.RZ);
+        emetteurNRZ = new Emetteur(10, 1.0f, 0.0f, Form.NRZ);
+        emetteurNRZNeg = new Emetteur(10, 1.0f, -1.0f, Form.NRZ);
+        emetteurNRZT = new Emetteur(10, 1.0f, 0.0f, Form.NRZT);
     }
 
     /**

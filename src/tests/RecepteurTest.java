@@ -7,7 +7,7 @@ import org.junit.Test;
 import information.Information;
 import information.InformationNonConformeException;
 import modulation.recepteurs.Recepteur;
-import utils.Code;
+import utils.Form;
 import destinations.DestinationInterface;
 
 /**
@@ -29,7 +29,7 @@ public class RecepteurTest {
      */
     @Before
     public void setUp() {
-        recepteur = new Recepteur(2, 1.0f, 0.0f, Code.NRZ);
+        recepteur = new Recepteur(2, 1.0f, 0.0f, Form.NRZ);
         mockDestination = createMock(DestinationInterface.class);
         recepteur.connecter(mockDestination);
 
@@ -108,7 +108,7 @@ public class RecepteurTest {
      */
     @Test
     public void testValiderParametres() throws InformationNonConformeException {
-        assertTrue(recepteur.validerParametres(Code.NRZ));
+        assertTrue(recepteur.validerParametres(Form.NRZ));
     }
 
     /**
@@ -118,8 +118,8 @@ public class RecepteurTest {
      */
     @Test(expected = InformationNonConformeException.class)
     public void testValiderParametresInvalide() throws InformationNonConformeException {
-        Recepteur recepteurInvalide = new Recepteur(2, 0.0f, 1.0f, Code.NRZ);
-        recepteurInvalide.validerParametres(Code.NRZ);
+        Recepteur recepteurInvalide = new Recepteur(2, 0.0f, 1.0f, Form.NRZ);
+        recepteurInvalide.validerParametres(Form.NRZ);
     }
 
     /**
