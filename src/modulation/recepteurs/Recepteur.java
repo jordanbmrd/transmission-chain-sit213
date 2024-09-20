@@ -87,8 +87,10 @@ public class Recepteur extends Modulateur<Float, Boolean> {
             // À la fin de la période, ajout de la valeur dans l'information décodée
             if (compteur == nbEch) {
                 moyenne /= (float) nbEch / 3;
+
                 boolean value = moyenne > (aMax + aMin) / 2;
                 informationConvertie.add(value);
+
                 compteur = 0;
                 moyenne = 0;
             }

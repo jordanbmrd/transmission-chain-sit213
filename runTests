@@ -52,6 +52,12 @@ test_cases=(
     "-mess 50 -seed 1234"            # Test avec une seed spécifique
     "-mess 1001110011100110001111000011110001110000011100000111000011110000111110000000000"  # Message long
     "-mess 1000000"                  # Test avec un message d'un million de bits
+
+    "-mess 1010101 -snrpb 0.1"       # SNR par bit très faible
+    "-mess 110011 -snrpb 50"         # SNR par bit élevé
+    "-mess 0010011 -form NRZ -snrpb 30"  # SNR par bit avec format NRZ
+    "-mess 0010011 -form RZ -snrpb 30"    # SNR par bit avec format RZ
+    "-ampl -3 3 -form NRZT -snrpb 30"  # SNR par bit avec amplitudes personnalisées
 )
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
@@ -61,6 +67,9 @@ if [ -z "$CI" ]; then
         "-s -seed 27 -form RZ -ampl 0 6"
         "-s -mess 12 -seed 1234 -form NRZ -ampl -5 5"
         "-s -mess 01101101110 -form NRZT"
+        "-s -mess 01101101110 -form NRZ -snrpb 30"
+        "-s -mess 01101101110 -form NRZT -snrpb 30"
+        "-s -mess 01101101110 -form RZ -snrpb 30"
     )
 fi
 
