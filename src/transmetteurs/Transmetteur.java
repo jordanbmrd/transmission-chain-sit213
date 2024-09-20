@@ -87,5 +87,5 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * émet l'information construite par le transmetteur
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public  abstract void emettre() throws InformationNonConformeException;   
+    public  abstract void emettre() throws InformationNonConformeException;
 }

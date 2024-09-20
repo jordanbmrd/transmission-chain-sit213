@@ -15,13 +15,13 @@ public class Recepteur extends Modulateur<Float, Boolean> {
      * Constructeur du récepteur qui initialise les paramètres du récepteur
      * comme la période d'échantillonnage, les valeurs d'amplitude et le type de codage.
      *
-     * @param taillePeriode la durée d'une période d'échantillonnage.
+     * @param nbEch la durée d'une période d'échantillonnage.
      * @param aMax la valeur analogique maximale.
      * @param aMin la valeur analogique minimale.
      * @param form le type de codage utilisé (ex : NRZ, RZ, NRZT).
      */
-    public Recepteur(int taillePeriode, float aMax, float aMin, Form form) {
-        super(taillePeriode, aMax, aMin, form);
+    public Recepteur(int nbEch, float aMax, float aMin, Form form) {
+        super(nbEch, aMax, aMin, form);
     }
 
     /**
@@ -73,22 +73,24 @@ public class Recepteur extends Modulateur<Float, Boolean> {
         Information<Boolean> informationConvertie = new Information<>();
 
         int compteur = 0;
-        boolean trouveMax = false;
+        float moyenne = 0;
 
         // Parcours de l'information analogique reçue
-        for (float valeur : informationAnalogique) {
-            // Si la valeur est égale à aMax, on détecte un bit 1
-            if (valeur == aMax) {
-                trouveMax = true;
+        for (float information : informationAnalogique) {
+            // Calcul de la moyenne de chaque période
+            if (compteur >= nbEch / 3 && compteur <= 2 * nbEch / 3) {
+                moyenne += information;
             }
 
             compteur++;
 
-            // Lorsque la période est atteinte, on ajoute un bit (true si aMax trouvé, sinon false)
-            if (compteur == taillePeriode) {
-                informationConvertie.add(trouveMax);  // Ajout du bit 1 ou 0
-                compteur = 0;  // Réinitialisation du compteur pour la prochaine période
-                trouveMax = false;  // Réinitialisation du flag pour détecter un nouveau 1
+            // À la fin de la période, ajout de la valeur dans l'information décodée
+            if (compteur == nbEch) {
+                moyenne /= (float) nbEch / 3;
+                boolean value = moyenne > (aMax + aMin) / 2;
+                informationConvertie.add(value);
+                compteur = 0;
+                moyenne = 0;
             }
         }
 

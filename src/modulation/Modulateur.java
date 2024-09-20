@@ -38,7 +38,7 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
     /**
      * Taille de la période utilisée pour la modulation.
      */
-    protected int taillePeriode;
+    protected int nbEch;
 
     /**
      * Valeur analogique maximale (ex : amplitude max pour une onde).
@@ -59,16 +59,16 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
      * Constructeur du modulateur.
      * Initialise les paramètres communs à tous les modulateurs.
      *
-     * @param taillePeriode La taille de la période de modulation
+     * @param nbEch La taille de la période de modulation
      * @param aMax L'amplitude maximale
      * @param aMin L'amplitude minimale
      * @param form Le type de codage utilisé pour la modulation
      */
-    public Modulateur(int taillePeriode, float aMax, float aMin, Form form) {
+    public Modulateur(int nbEch, float aMax, float aMin, Form form) {
         this.destinationsConnectees = new ArrayList<>(); // Initialisation des destinations connectées
         this.informationRecue = null;  // L'information reçue est initialement nulle
         this.informationEmise = null;  // L'information émise est initialement nulle
-        this.taillePeriode = taillePeriode;  // Définit la taille de la période
+        this.nbEch = nbEch;  // Définit la taille de la période
         this.aMax = aMax;  // Définit l'amplitude maximale
         this.aMin = aMin;  // Définit l'amplitude minimale
         this.form = form;  // Définit le type de codage

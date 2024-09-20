@@ -16,13 +16,13 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * Constructeur de l'émetteur qui initialise la période de modulation, les valeurs d'amplitude,
      * et le type de codage utilisé.
      *
-     * @param taillePeriode la durée d'une période de modulation.
+     * @param nbEch la durée d'une période de modulation.
      * @param aMax la valeur analogique maximale.
      * @param aMin la valeur analogique minimale.
      * @param form le type de codage utilisé (ex : NRZ, RZ, NRZT).
      */
-    public Emetteur(int taillePeriode, float aMax, float aMin, Form form) {
-        super(taillePeriode, aMax, aMin, form);
+    public Emetteur(int nbEch, float aMax, float aMin, Form form) {
+        super(nbEch, aMax, aMin, form);
     }
 
     /**
@@ -71,7 +71,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
         Information<Float> informationConvertie = new Information<>();
         for (Boolean element : informationLogique) {
             float valeurConvertie = element ? aMax : aMin;
-            for (int i = 0; i < taillePeriode; i++) {
+            for (int i = 0; i < nbEch; i++) {
                 informationConvertie.add(valeurConvertie);
             }
         }
@@ -89,14 +89,14 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * @return l'information analogique après mise en forme.
      */
     public Information<Float> miseEnForme(Information<Boolean> informationLogique) {
-        int delta = taillePeriode / 3;
+        int delta = nbEch / 3;
         int missing;
         Information<Float> informationMiseEnForme = new Information<>();
 
         switch (form) {
             case RZ:
                 // Codage RZ : ajouter des périodes de repos (0) entre les symboles
-                missing = taillePeriode - delta * 3;
+                missing = nbEch - delta * 3;
                 for (boolean information : informationLogique) {
                     for (int i = 0; i < delta; i++) {
                         informationMiseEnForme.add(0f); // 0 avant la partie active
@@ -122,7 +122,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
                     Boolean current = informationLogique.iemeElement(i);
                     Boolean next = (i < informationLogique.nbElements() - 1) ? informationLogique.iemeElement(i + 1) : null;
 
-                    missing = taillePeriode % 3;
+                    missing = nbEch % 3;
 
                     // Génération des symboles en fonction de la transition entre les bits
                     if (current != null && current) {

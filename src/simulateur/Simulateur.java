@@ -75,10 +75,12 @@ public class Simulateur {
      */
     private float aMin = 0f;
 
+    private float snrpb = Float.NaN;    // Pas de valeur par défaut
+
     /**
      * La taille de la période utilisée pour la modulation.
      */
-    private int taillePeriode = 30;
+    private int nbEch = 30;
 
     /**
      * Le composant Source de la chaîne de transmission.
@@ -134,9 +136,20 @@ public class Simulateur {
         }
 
         // Instanciation des composants
-        this.emetteur = new Emetteur(taillePeriode, aMax, aMin, form);
-        this.transmetteurAnalogique = new TransmetteurParfait<>();
-        this.recepteur = new Recepteur(taillePeriode, aMax, aMin, form);
+        this.emetteur = new Emetteur(nbEch, aMax, aMin, form);
+
+        // Si le SNR par bit est défini
+        if(!Float.isNaN(snrpb)) {
+            if (aleatoireAvecGerme) {
+                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb, seed);
+            } else {
+                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb);
+            }
+        } else {
+            this.transmetteurAnalogique = new TransmetteurParfait<>();
+        }
+
+        this.recepteur = new Recepteur(nbEch, aMax, aMin, form);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants
@@ -236,13 +249,20 @@ public class Simulateur {
             } else if (args[i].matches("-nbEch")) {
                 i++;
                 try {
-                    taillePeriode = Integer.parseInt(args[i]);
+                    nbEch = Integer.parseInt(args[i]);
 
-                    if (taillePeriode < 0) {
+                    if (nbEch < 0) {
                         throw new ArgumentsException("La valeur du paramètre -nbEch doit être entière et positive.");
                     }
                 } catch (Exception e) {
                     throw new ArgumentsException("Valeur du paramètre -nbEch invalide : " + args[i]);
+                }
+            } else if (args[i].matches("-snrpb")) {
+                i++;
+                try {
+                    snrpb = Float.parseFloat(args[i]);
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du paramètre -snrpb invalide : " + args[i]);
                 }
             } else {
                 throw new ArgumentsException("Option invalide : " + args[i]);
