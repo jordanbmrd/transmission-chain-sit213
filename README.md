@@ -9,7 +9,7 @@
   - `NRZT`
   - `RZ`
 - `-ampl [float] [float]`: Choix de l'amplitude, la première valeur est l'amplitude minimale et la seconde est l'amplitude maximale. Valeurs par défaut : 0 et 1.
-- `-ampl [int]`: Choix du nombre d'échantillons par bit. Valeur par défaut : 30.
+- `-nbEch [int]`: Choix du nombre d'échantillons par bit. Valeur par défaut : 30.
 
 ### Ajout du répertoire `librairies`
 
