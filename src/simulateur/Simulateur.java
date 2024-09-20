@@ -62,7 +62,7 @@ public class Simulateur {
     /**
      * Le type de codage utilisé pour la modulation (par défaut NRZ).
      */
-    private Code code = Code.NRZ;
+    private Code code = Code.RZ;
 
     /**
      * La valeur d'amplitude maximale pour la modulation.
@@ -199,7 +199,7 @@ public class Simulateur {
                 } else {
                     throw new ArgumentsException("Valeur du paramètre -mess invalide : " + args[i]);
                 }
-            } else if (args[i].matches("-code")) {
+            } else if (args[i].matches("-form")) {
                 i++;
                 switch (args[i]) {
                     case "NRZ":
@@ -214,19 +214,34 @@ public class Simulateur {
                     default:
                         throw new ArgumentsException("Valeur du paramètre -code invalide : " + args[i]);
                 }
-            } else if (args[i].matches("-aMax")) {
-                i++;
-                try {
-                    aMax = Float.parseFloat(args[i]);
-                } catch (Exception e) {
-                    throw new ArgumentsException("Valeur du paramètre -aMax invalide : " + args[i]);
-                }
-            } else if (args[i].matches("-aMin")) {
+            } else if (args[i].matches("-ampl")) {
                 i++;
                 try {
                     aMin = Float.parseFloat(args[i]);
                 } catch (Exception e) {
-                    throw new ArgumentsException("Valeur du paramètre -aMin invalide : " + args[i]);
+                    throw new ArgumentsException("Valeur minimum du paramètre -ampl invalide : " + args[i]);
+                }
+
+                i++;
+                try {
+                    aMax = Float.parseFloat(args[i]);
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur maximum du paramètre -ampl invalide : " + args[i]);
+                }
+
+                if (aMin >= aMax) {
+                    throw new ArgumentsException("La valeur aMin doit être strictement inférieure à aMax.");
+                }
+            } else if (args[i].matches("-nbEch")) {
+                i++;
+                try {
+                    taillePeriode = Integer.parseInt(args[i]);
+
+                    if (taillePeriode < 0) {
+                        throw new ArgumentsException("La valeur du paramètre -nbEch doit être entière et positive.");
+                    }
+                } catch (Exception e) {
+                    throw new ArgumentsException("Valeur du paramètre -nbEch invalide : " + args[i]);
                 }
             } else {
                 throw new ArgumentsException("Option invalide : " + args[i]);
