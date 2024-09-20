@@ -29,6 +29,18 @@ generate_javadoc:
     paths:
       - docs
 
+# Build stage: Generate deliverable
+generate_deliverable:
+  stage: build
+  image: openjdk:24-slim-bookworm
+  script:
+    - chmod +x ./genDeliverable
+    - ./genDeliverable
+  artifacts:
+    paths:
+      - $DELIVERABLE_PATH
+    expire_in: 1 week
+
 # Deploy stage: Deploy Javadoc to GitLab Pages
 pages:
   stage: deploy
