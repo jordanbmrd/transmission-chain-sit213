@@ -125,12 +125,5 @@ public class EmetteurTest {
             }
         }
         assertTrue(atteintMax);
-
-        // Utilisation de la sonde pour visualiser les valeurs du signal analogique
-        SondeAnalogique sondeAnalogique = new SondeAnalogique("Sonde NRZT");
-        emetteurNRZT.connecter(sondeAnalogique);
-        emetteurNRZT.recevoir(information);
-        emetteurNRZT.emettre();
-        sondeAnalogique.recevoir(emetteurNRZT.getInformationEmise());
     }
 }
