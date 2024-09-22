@@ -15,6 +15,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private float puissanceMoyenneSignal;
     private Random random;
 
+
     public TransmetteurGaussien(int nbEch, float SNRdB, int seed) {
         this.nbEch = nbEch;
         this.SNRdB = SNRdB;
@@ -66,6 +67,8 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         calculerVariance();
 
         Information<Float> informationBruitee = ajouterBruit(this.informationRecue);
+        this.informationEmise = informationBruitee; // Récup l'information émise (pour les tests)
+
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(informationBruitee);
         }
