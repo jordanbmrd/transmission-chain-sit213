@@ -75,13 +75,13 @@ public class Recepteur extends Modulateur<Float, Boolean> {
         int compteur = 0;
         float moyenne = 0;
 
-        boolean condition = switch(form) {
-            case NRZ, NRZT -> compteur < nbEch;
-            case RZ -> compteur >= nbEch / 3 && compteur <= 2 * nbEch / 3;  // Partie différente de 0
-        };
-
         // Parcours de l'information analogique reçue
         for (float information : informationAnalogique) {
+            boolean condition = switch(form) {
+                case NRZ, NRZT -> compteur < nbEch;
+                case RZ -> compteur >= nbEch / 3 && compteur <= 2 * nbEch / 3;  // Partie différente de 0
+            };
+
             // Calcul de la moyenne de chaque période
             if (condition) {
                 moyenne += information;
