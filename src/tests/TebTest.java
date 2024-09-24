@@ -1,12 +1,12 @@
 package tests;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import simulateur.Simulateur;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class TebTest {
 
@@ -25,6 +25,6 @@ public class TebTest {
         System.out.println("TEB list: " + tebList);
 
         // Validate that the list is not empty
-        assertFalse(tebList.isEmpty(), "The TEB list should not be empty");
+        assertFalse("The TEB list should not be empty", tebList.isEmpty());
     }
 }
