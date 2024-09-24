@@ -4,27 +4,27 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 import org.easymock.EasyMock;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import transmetteurs.TransmetteurGaussien;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 
-class TransmetteurGaussienTest {
+public class TransmetteurGaussienTest {
 
     private TransmetteurGaussien transmetteurGaussien;
     private DestinationInterface<Float> mockDestination;
     private final Float[] floats = new Float[]{1.0f, 2.0f, 3.0f};
 
-    @BeforeEach
-    void setUp() {
+    @Before
+    public void setUp() {
         transmetteurGaussien = new TransmetteurGaussien(10, 0.0f, 22);
         mockDestination = EasyMock.createMock(DestinationInterface.class);
         transmetteurGaussien.connecter(mockDestination);
     }
 
     @Test
-    void ajoutBruit() throws InformationNonConformeException {
+    public void ajoutBruit() throws InformationNonConformeException {
         Information<Float> information = new Information<>(floats);
 
         // Prépare le mock pour recevoir l'information bruitée
@@ -49,7 +49,7 @@ class TransmetteurGaussienTest {
     }
 
     @Test
-    void recevoirInformationVide() throws InformationNonConformeException {
+    public void recevoirInformationVide() throws InformationNonConformeException {
         Information<Float> information = new Information<>();
 
         transmetteurGaussien.recevoir(information);
@@ -60,7 +60,7 @@ class TransmetteurGaussienTest {
     }
 
     @Test
-    void emettreAvecValeursNegatives() throws InformationNonConformeException {
+    public void emettreAvecValeursNegatives() throws InformationNonConformeException {
         Information<Float> information = new Information<>(new Float[]{-1.0f, -2.0f, -3.0f});
 
         transmetteurGaussien.recevoir(information);
