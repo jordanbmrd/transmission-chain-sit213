@@ -46,17 +46,27 @@ echo -e "${BLUE}Exécution des scénarios de tests personnalisés...${NC}"
 test_cases=(
     "-mess 10"                       # Test avec un message aléatoire de 10 bits
     "-mess 1010101"                  # Test avec un message fixe
-    "-mess 110011 -form NRZ"          # Test avec codage NRZ
+    "-mess 0010011 -form NRZ"          # Test avec codage NRZ
     "-mess 0010011 -form RZ"          # Test avec codage RZ
-    "-ampl -5 5 -form NRZT"    # Test avec des amplitudes extrêmes
+    "-mess 0010011 -form NRZT"          # Test avec codage NRZT
+    "-ampl -5 5 -form NRZT"    # Test avec des amplitudes
     "-mess 50 -seed 1234"            # Test avec une seed spécifique
     "-mess 1001110011100110001111000011110001110000011100000111000011110000111110000000000"  # Message long
     "-mess 1000000"                  # Test avec un message d'un million de bits
 
     "-mess 1010101 -snrpb 0.1"       # SNR par bit très faible
     "-mess 110011 -snrpb 50"         # SNR par bit élevé
+
     "-mess 0010011 -form NRZ -snrpb 30"  # SNR par bit avec format NRZ
+    "-mess 0010011 -form NRZ -snrpb 0"  # SNR par bit avec format NRZ
+    "-mess 0010011 -form NRZ -snrpb -30"  # SNR par bit avec format NRZ
+    "-mess 0010011 -form RZ -snrpb -30"    # SNR par bit avec format RZ
+    "-mess 0010011 -form RZ -snrpb 0"    # SNR par bit avec format RZ
     "-mess 0010011 -form RZ -snrpb 30"    # SNR par bit avec format RZ
+    "-mess 0010011 -form NRZT -snrpb -30"    # SNR par bit avec format NRZT
+    "-mess 0010011 -form NRZT -snrpb 0"    # SNR par bit avec format NRZT
+    "-mess 0010011 -form NRZT -snrpb 30"    # SNR par bit avec format NRZT
+
     "-ampl -3 3 -form NRZT -snrpb 30"  # SNR par bit avec amplitudes personnalisées
 )
 
