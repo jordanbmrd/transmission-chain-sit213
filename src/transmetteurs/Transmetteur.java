@@ -88,4 +88,8 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
     public  abstract void emettre() throws InformationNonConformeException;
+
+    public float getSNRReel() {
+        return Float.NaN;
+    }
 }

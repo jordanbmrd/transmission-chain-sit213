@@ -4,6 +4,7 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class TransmetteurGaussien extends Transmetteur<Float, Float> {
@@ -12,8 +13,12 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private final int seed;
 
     private float variance;
+    private float snrReel;
     private float puissanceMoyenneSignal;
+    private float puissanceMoyenneBruit;
     private Random random;
+
+    private Information<Float> bruitList = new Information<>();
 
 
     public TransmetteurGaussien(int nbEch, float SNRdB, int seed) {
@@ -66,11 +71,13 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
 
         calculerVariance();
 
-        Information<Float> informationBruitee = ajouterBruit(this.informationRecue);
-        this.informationEmise = informationBruitee; // Récup l'information émise (pour les tests)
+        this.informationEmise = ajouterBruit(this.informationRecue);
+
+        calculerPuissanceMoyenneBruit();
+        calculerSNRReel();
 
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
-            destinationConnectee.recevoir(informationBruitee);
+            destinationConnectee.recevoir(this.informationEmise);
         }
     }
 
@@ -85,12 +92,24 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         this.puissanceMoyenneSignal = somme / this.informationRecue.nbElements();
     }
 
+    private void calculerPuissanceMoyenneBruit() {
+        float somme = 0;
+        for (float value : this.bruitList) {
+            somme += value * value;
+        }
+        this.puissanceMoyenneBruit = somme / this.bruitList.nbElements();
+    }
+
     /**
      * Calcule la variance du bruit en fonction du SNR.
      */
     private void calculerVariance() {
         calculerPuissanceMoyenneSignal();
         this.variance = (this.puissanceMoyenneSignal * nbEch) / (float) (2 * Math.pow(10, SNRdB / 10));
+    }
+
+    private void calculerSNRReel() {
+        this.snrReel = (float) (10 * Math.log10((this.puissanceMoyenneSignal * nbEch) / (2 * this.puissanceMoyenneBruit)));
     }
 
     /**
@@ -108,9 +127,15 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         Information<Float> informationBruitee = new Information<>();
         for (float value : informationRecue) {
             double bruit = random.nextGaussian() * Math.sqrt(variance);
+            bruitList.add((float) bruit);
             informationBruitee.add(value + (float) bruit);
         }
 
         return informationBruitee;
+    }
+
+    @Override
+    public float getSNRReel() {
+        return this.snrReel;
     }
 }

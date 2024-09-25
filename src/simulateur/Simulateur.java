@@ -362,11 +362,18 @@ public class Simulateur {
 
         try {
             simulateur.execute();
-            StringBuilder s = new StringBuilder("java Simulateur ");
+            StringBuilder string = new StringBuilder("java Simulateur ");
             for (String arg : args) {
-                s.append(arg).append(" ");
+                string.append(arg).append(" ");
             }
-            System.out.println(s + " => TEB : " + simulateur.calculTauxErreurBinaire());
+            string.append("\n => TEB : ").append(simulateur.calculTauxErreurBinaire());
+
+            if (!Float.isNaN(simulateur.snrpb)) {
+                string.append("\n => SNR par bit demandé : ").append(simulateur.snrpb);
+                string.append("\n => SNR par bit réel obtenu : ").append(simulateur.transmetteurAnalogique.getSNRReel());
+            }
+
+            System.out.println(string);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();
