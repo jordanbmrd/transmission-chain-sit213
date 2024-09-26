@@ -6,6 +6,12 @@
 
 - `-snrpb [float]`: Choix du RSB par bit en dB. Valeur par défaut : 0.
 
+### Ajout du répertoire `scripts`
+
+Le répertoire `scripts` contient des scripts utiles au projet et aux tests visuels :
+
+- `generate_histogram.py` : Trace l'histogramme des échantillons de bruit
+
 ### Objectifs
 
 - Générer un bruit gaussien et l'ajouter lors de la transmission.
