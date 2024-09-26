@@ -2,22 +2,21 @@
 
 ## TP3: Transmission analogique avec un bruit gaussien
 
-### Ajout de nouveaux flags au CLI
-
-- `-snrpb [float]`: Choix du RSB par bit en dB. Valeur par défaut : 0.
-
-### Ajout du répertoire `scripts`
-
-Le répertoire `scripts` contient des scripts utiles au projet et aux tests visuels :
-
-- `generate_histogram.py` : Trace l'histogramme des échantillons de bruit
-
 ### Objectifs
 
 - Générer un bruit gaussien et l'ajouter lors de la transmission.
 - Vérifier que le bruit suit bien une loi gaussienne en traçant un histogramme.
 
-### Modifications
+### Ajout de nouveaux flags au CLI
+
+- `-snrpb [float]`: Choix du RSB par bit en dB. Valeur par défaut : 0.
+
+### Ajout du répertoire `scripts`
+Ce répertoire contient des scripts utiles au projet et aux tests visuels :
+
+- `generate_histogram.py` : Trace l'histogramme des échantillons de bruit.
+
+### Modifications des classes
 
 - Ajout de la classe `TransmetteurGaussien` pour générer un signal analogique avec un bruit gaussien.
 - Ajout de la classe `TransmetteurGaussienTest` pour tester le comportement de la classe `TransmetteurGaussien`
