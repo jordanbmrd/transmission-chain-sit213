@@ -366,11 +366,16 @@ public class Simulateur {
             for (String arg : args) {
                 string.append(arg).append(" ");
             }
+
             string.append("\n => TEB : ").append(simulateur.calculTauxErreurBinaire());
 
+            string.append("\n - Nombre de bits de la séquence : ").append(simulateur.nbBitsMess);
+            string.append("\n - Nombre d'échantillons par bit : ").append(simulateur.nbEch);
+
             if (!Float.isNaN(simulateur.snrpb)) {
-                string.append("\n => SNR par bit demandé : ").append(simulateur.snrpb);
-                string.append("\n => SNR par bit réel obtenu : ").append(simulateur.transmetteurAnalogique.getSNRReel());
+                string.append("\n => Puissance moyenne du bruit : ").append(simulateur.transmetteurAnalogique.getPuissanceMoyenneBruit());
+                string.append("\n => Variance : ").append(simulateur.transmetteurAnalogique.getVariance());
+                string.append("\n => Rapport signal-sur-bruit (S/N, en dB) : ").append(simulateur.transmetteurAnalogique.getSNRReel());
             }
 
             System.out.println(string);

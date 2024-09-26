@@ -89,7 +89,15 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      */
     public  abstract void emettre() throws InformationNonConformeException;
 
+    public float getPuissanceMoyenneBruit() {
+        return Float.NaN;
+    }
+
     public float getSNRReel() {
+        return Float.NaN;
+    }
+
+    public float getVariance() {
         return Float.NaN;
     }
 }

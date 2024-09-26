@@ -4,12 +4,12 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private final int nbEch;
     private final float SNRdB;
+    private float ebN0Db;
     private final int seed;
 
     private float variance;
@@ -18,7 +18,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private float puissanceMoyenneBruit;
     private Random random;
 
-    private Information<Float> bruitList = new Information<>();
+    public final Information<Float> bruitList = new Information<>();
 
 
     public TransmetteurGaussien(int nbEch, float SNRdB, int seed) {
@@ -75,6 +75,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
 
         calculerPuissanceMoyenneBruit();
         calculerSNRReel();
+        calculerEbN0();
 
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
@@ -112,6 +113,10 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         this.snrReel = (float) (10 * Math.log10((this.puissanceMoyenneSignal * nbEch) / (2 * this.puissanceMoyenneBruit)));
     }
 
+    private void calculerEbN0() {
+        this.ebN0Db = 10 * (float) Math.log10((this.puissanceMoyenneSignal * nbEch) / (2 * this.variance));
+    }
+
     /**
      * Ajoute un bruit gaussien à l'information reçue.
      *
@@ -132,6 +137,16 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         }
 
         return informationBruitee;
+    }
+
+    @Override
+    public float getVariance() {
+        return this.variance;
+    }
+
+    @Override
+    public float getPuissanceMoyenneBruit() {
+        return this.puissanceMoyenneBruit;
     }
 
     @Override
