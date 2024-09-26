@@ -144,7 +144,6 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         for (float value : informationRecue) {
             double bruit = random.nextGaussian() * Math.sqrt(variance);
             bruitList.add((float) bruit);
-            System.out.println((float) bruit);
             informationBruitee.add(value + (float) bruit);
         }
 
