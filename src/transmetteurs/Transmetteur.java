@@ -30,6 +30,8 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * l'information émise en sortie du transmetteur
      */		
     protected Information <E>  informationEmise;
+
+    protected Information<Float> bruitList = new Information<>();
    
     /** 
      * un constructeur factorisant les initialisations communes aux
@@ -99,5 +101,9 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
 
     public float getVariance() {
         return Float.NaN;
+    }
+
+    public Information<Float> getBruitList() {
+        return this.bruitList;
     }
 }

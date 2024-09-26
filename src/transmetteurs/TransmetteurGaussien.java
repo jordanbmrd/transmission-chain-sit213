@@ -4,12 +4,14 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Random;
 
 public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private final int nbEch;
     private final float SNRdB;
-    private float ebN0Db;
     private final int seed;
 
     private float variance;
@@ -17,9 +19,6 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private float puissanceMoyenneSignal;
     private float puissanceMoyenneBruit;
     private Random random;
-
-    public final Information<Float> bruitList = new Information<>();
-
 
     public TransmetteurGaussien(int nbEch, float SNRdB, int seed) {
         this.nbEch = nbEch;
@@ -73,9 +72,25 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
 
         this.informationEmise = ajouterBruit(this.informationRecue);
 
+        // Enregistrement dans un fichier CSV
+        String csvFileName = "valeurs_bruit_gaussien.csv";
+
+        try (PrintWriter writer = new PrintWriter(new FileWriter(csvFileName))) {
+            // Écriture de l'en-tête du CSV (facultatif)
+            writer.println("Bruit gaussien");
+
+            // Écriture des valeurs dans le fichier CSV
+            for (Float value : getBruitList()) {
+                writer.println(value);
+            }
+
+            System.out.println("Données enregistrées dans " + csvFileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         calculerPuissanceMoyenneBruit();
         calculerSNRReel();
-        calculerEbN0();
 
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
@@ -113,10 +128,6 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         this.snrReel = (float) (10 * Math.log10((this.puissanceMoyenneSignal * nbEch) / (2 * this.puissanceMoyenneBruit)));
     }
 
-    private void calculerEbN0() {
-        this.ebN0Db = 10 * (float) Math.log10((this.puissanceMoyenneSignal * nbEch) / (2 * this.variance));
-    }
-
     /**
      * Ajoute un bruit gaussien à l'information reçue.
      *
@@ -133,6 +144,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
         for (float value : informationRecue) {
             double bruit = random.nextGaussian() * Math.sqrt(variance);
             bruitList.add((float) bruit);
+            System.out.println((float) bruit);
             informationBruitee.add(value + (float) bruit);
         }
 

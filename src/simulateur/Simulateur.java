@@ -163,6 +163,7 @@ public class Simulateur {
         this.source.connecter(this.emetteur);
         this.emetteur.connecter(this.transmetteurAnalogique);
         this.transmetteurAnalogique.connecter(this.recepteur);
+
         this.recepteur.connecter(this.destination);
 
         // Connexion des sondes (si l'option -s est utilisée)
