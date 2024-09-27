@@ -11,6 +11,7 @@ import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurGaussien;
+import transmetteurs.TransmetteurMultiTrajets;
 import transmetteurs.TransmetteurParfait;
 import utils.Form;
 import visualisations.SondeAnalogique;
@@ -107,14 +108,19 @@ public class Simulateur {
     private Modulateur<Float, Boolean> recepteur = null;
 
     /**
-     * Le composant Transmetteur parfait pour les signaux logiques de la chaîne de transmission.
+     * Le composant TransmetteurParfait pour les signaux logiques de la chaîne de transmission.
      */
     private Transmetteur<Boolean, Boolean> transmetteurLogique = null;
 
     /**
-     * Le composant Transmetteur parfait pour les signaux analogiques de la chaîne de transmission.
+     * Le composant TransmetteurAnalogique pour les signaux analogiques de la chaîne de transmission.
      */
     private Transmetteur<Float, Float> transmetteurAnalogique = null;
+
+    /**
+     * Le composant TransmetteurMultiTrajets pour les signaux multi-trajets de la chaîne de transmission.
+     * */
+    private Transmetteur<Float, Float> transmetteurMultiTrajets = null;
 
     /**
      * Le composant Destination de la chaîne de transmission.
@@ -146,8 +152,15 @@ public class Simulateur {
             this.source = new SourceFixe(messageString);
         }
 
-        // Instanciation des composants
         this.emetteur = new Emetteur(nbEch, aMax, aMin, form);
+        // Sonde de l'émetteur
+        if (affichage)
+            this.emetteur.connecter(new SondeAnalogique("Émetteur " + form));
+
+        this.source.connecter(this.emetteur);
+        // Sonde de la source
+        if (affichage)
+            this.source.connecter(new SondeLogique("Source " + form, 200));
 
         // Si le SNR par bit est défini
         if (!Float.isNaN(snrpb)) {
@@ -162,23 +175,36 @@ public class Simulateur {
             this.transmetteurAnalogique = new TransmetteurParfait<>();
         }
 
+        // Sonde du transmetteur analogique
+        if (affichage)
+            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur analogique " + form));
+
+        if (ti != null) {
+            this.transmetteurMultiTrajets = new TransmetteurMultiTrajets(ti);
+
+            // Connexion de l'émetteur au transmetteur multi-trajets
+            this.emetteur.connecter(this.transmetteurMultiTrajets);
+
+            // Puis du transmetteur multi-trajets au transmetteur analogique
+            this.transmetteurMultiTrajets.connecter(this.transmetteurAnalogique);
+
+            // Sonde du transmetteur multi-trajets
+            if (affichage)
+                this.transmetteurMultiTrajets.connecter(new SondeAnalogique("Transmetteur multi-trajets " + form));
+        } else {
+            // Connexion de l'émetteur au transmetteur analogique
+            this.emetteur.connecter(this.transmetteurAnalogique);
+        }
+
         this.recepteur = new Recepteur(nbEch, aMax, aMin, form);
         this.destination = new DestinationFinale();
 
-        // Connexion des différents composants
-        this.source.connecter(this.emetteur);
-        this.emetteur.connecter(this.transmetteurAnalogique);
         this.transmetteurAnalogique.connecter(this.recepteur);
-
         this.recepteur.connecter(this.destination);
 
-        // Connexion des sondes (si l'option -s est utilisée)
-        if (affichage) {
-            this.source.connecter(new SondeLogique("Source " + form, 200));
-            this.emetteur.connecter(new SondeAnalogique("Emetteur " + form));
-            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur " + form));
+        // Sonde du récepteur
+        if (affichage)
             this.recepteur.connecter(new SondeLogique("Recepteur " + form, 200));
-        }
     }
 
     /**
