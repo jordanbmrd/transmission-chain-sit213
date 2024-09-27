@@ -14,7 +14,8 @@
 ### Ajout du répertoire `scripts`
 Ce répertoire contient des scripts utiles au projet et aux tests visuels :
 
-- `generate_histogram.py` : Trace l'histogramme des échantillons de bruit.
+- `histogram_noise.py` : Trace l'histogramme des valeurs de bruit gaussien.
+- `plot_teb_vs_snr.py` : Trace la courbe du TEB en fonction du SNR pour les différentes modulations.
 
 ### Modifications des classes
 
