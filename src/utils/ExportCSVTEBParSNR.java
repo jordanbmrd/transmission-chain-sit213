@@ -63,13 +63,13 @@ public class ExportCSVTEBParSNR {
         System.out.println("Lancement des simulations pour " + this.fichierCSV + "...");
         try (FileWriter csvWriter = new FileWriter(fichierCSV)) {
             // En-tête du fichier CSV
-            csvWriter.append("SNR (dB)");
+            csvWriter.append("SnrPb");
             csvWriter.append(",");
-            csvWriter.append("BER RZ");
+            csvWriter.append("TEB RZ");
             csvWriter.append(",");
-            csvWriter.append("BER NRZ");
+            csvWriter.append("TEB NRZ");
             csvWriter.append(",");
-            csvWriter.append("BER NRZT");
+            csvWriter.append("TEB NRZT");
             csvWriter.append("\n");
 
             String[] formats = new String[] { "RZ", "NRZ", "NRZT" };
