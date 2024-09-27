@@ -3,6 +3,7 @@ bin/
 docs/
 *.tar.gz
 *.iml
+valeurs_bruit_gaussien.csv
 
 ### Docs ###
 deliverables/**/~$*.docx
