@@ -19,55 +19,38 @@ public class TransmetteurMultiTrajets extends Transmetteur<Float, Float> {
         }
     }
 
-    /**
-     * Reçoit une information. Cette méthode, en fin d'exécution,
-     * appelle la méthode émettre.
-     *
-     * @param information l'information reçue
-     * @throws InformationNonConformeException si l'Information comporte une anomalie
-     */
     @Override
     public void recevoir(Information<Float> information) throws InformationNonConformeException {
         this.informationRecue = information;
         emettre();
     }
 
-    /**
-     * Émet l'information construite par le transmetteur
-     *
-     * @throws InformationNonConformeException si l'Information comporte une anomalie
-     */
     @Override
     public void emettre() throws InformationNonConformeException {
         if (this.informationRecue == null) {
             throw new InformationNonConformeException("Aucune information reçue à émettre.");
         }
 
-        this.informationEmise = genererSignalFinal(this.informationRecue);
+        this.informationEmise = genererSignalCombine(this.informationRecue);
 
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }
     }
 
-    private Information<Float> genererSignalFinal(Information<Float> information) {
-        Information<Float> signalRetarde = genererSignalRetarde(information);
+    private Information<Float> genererSignalCombine(Information<Float> information) {
+        Information<Float> signalRetarde = genererSignalRetardeEtAttenue(information);
         Information<Float> informationFinale = new Information<>();
 
-        // Ajout des valeurs au signal retardé
-        for (int i = 0; i < information.nbElements(); i++) {
-            signalRetarde.setIemeElement(i, signalRetarde.iemeElement(i) + information.iemeElement(i));
-        }
-
-        // Construction de l'information finale
-        for (int j = 0; j < information.nbElements(); j++) {
-            informationFinale.add(signalRetarde.iemeElement(j + this.decalageMaximum));
+        // Ajout des valeurs au signal retardé avec vérification des indices
+        for (int j = 0; j < information.nbElements() && (j + this.decalageMaximum) < signalRetarde.nbElements(); j++) {
+            informationFinale.add(signalRetarde.iemeElement(j + this.decalageMaximum) + information.iemeElement(j));
         }
 
         return informationFinale;
     }
 
-    private Information<Float> genererSignalRetarde(Information<Float> information) {
+    private Information<Float> genererSignalRetardeEtAttenue(Information<Float> information) {
         int length = information.nbElements() + this.decalageMaximum;
         Information<Float> informationGeneree = new Information<>();
 
@@ -83,7 +66,9 @@ public class TransmetteurMultiTrajets extends Transmetteur<Float, Float> {
 
             int index = dt;
             for (float info : information) {
-                informationGeneree.setIemeElement(index, informationGeneree.iemeElement(index) + info * ar);
+                if (index < informationGeneree.nbElements()) {
+                    informationGeneree.setIemeElement(index, informationGeneree.iemeElement(index) + info * ar);
+                }
                 index++;
             }
         }

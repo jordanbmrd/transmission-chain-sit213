@@ -6,6 +6,7 @@ import information.Information;
 import modulation.Modulateur;
 import modulation.emetteurs.Emetteur;
 import modulation.recepteurs.Recepteur;
+import org.apache.commons.math3.special.Erf;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
@@ -165,10 +166,10 @@ public class Simulateur {
         // Si le SNR par bit est défini
         if (!Float.isNaN(snrpb)) {
             if (aleatoireAvecGerme) {
-                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb, seed);
+                this.transmetteurAnalogique = new TransmetteurGaussien(form, nbEch, snrpb, seed);
             }
             else {
-                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb);
+                this.transmetteurAnalogique = new TransmetteurGaussien(form, nbEch, snrpb);
             }
         }
         else {
@@ -438,6 +439,17 @@ public class Simulateur {
         return (float) nbErreurs / nbBits;
     }
 
+    public double calculProbaErreur() {
+        // Conversion du rapport Eb/N0 en linéaire
+        float ebN0Lin = (float) Math.pow(10, this.transmetteurAnalogique.getEbN0dB() / 10);
+
+        // Formule de calcul de la probabilité d'erreur
+        return switch (form) {
+            case Form.NRZ, Form.NRZT -> 0.5 * Erf.erfc(Math.sqrt(ebN0Lin));
+            case Form.RZ -> Erf.erfc(Math.sqrt(ebN0Lin / 2));
+        };
+    }
+
     /**
      * La méthode main crée une instance de Simulateur avec les arguments fournis,
      * exécute la simulation et affiche le résultat du Taux d'Erreur Binaire (TEB).
@@ -470,6 +482,8 @@ public class Simulateur {
                 string.append("\n => Puissance moyenne du bruit : ").append(simulateur.transmetteurAnalogique.getPuissanceMoyenneBruit());
                 string.append("\n => Variance : ").append(simulateur.transmetteurAnalogique.getVariance());
                 string.append("\n => Rapport signal-sur-bruit (S/N, en dB) : ").append(simulateur.transmetteurAnalogique.getSNRReel());
+                string.append("\n => Rapport Eb/N0 (en dB) : ").append(simulateur.transmetteurAnalogique.getEbN0dB());
+                string.append("\n => Probabilité d'erreur (forme ").append(simulateur.form.toString()).append(") : ").append(simulateur.calculProbaErreur());
             }
 
             System.out.println(string);

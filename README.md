@@ -1,5 +1,17 @@
 # SIT213
 
+## TP4: Transmissions bruitée avec trajets indirects
+
+### Objectifs
+
+### Ajout de nouveaux flags au CLI
+
+- `-ti <[int] [float]> <[int] [float]> ...` : Utilisation d'une transmission analogique multi-trajets. `dt` (int) précise le décalage temporel (en nombre d'échantillons). `ar` (float) précise l'amplitude relative du signal du trajet indirect par rapport à celle du trajet direct. 5 couples de valeurs au maximum.
+
+### Scripts ajoutés
+
+- `plot_proba_erreur_vs_ebn0.py` : Trace la courbe de la probabilité d'erreur en fonction du rapport Eb/N0 pour les différentes modulations.
+
 ## TP3: Transmission analogique avec un bruit gaussien
 
 ### Objectifs

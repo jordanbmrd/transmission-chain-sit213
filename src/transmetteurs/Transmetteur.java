@@ -99,6 +99,10 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
         return Float.NaN;
     }
 
+    public float getEbN0dB() {
+        return Float.NaN;
+    }
+
     public float getVariance() {
         return Float.NaN;
     }

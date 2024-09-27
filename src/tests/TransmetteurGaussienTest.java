@@ -7,6 +7,7 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import transmetteurs.TransmetteurGaussien;
+import utils.Form;
 
 import static org.junit.Assert.*;
 
@@ -18,7 +19,7 @@ public class TransmetteurGaussienTest {
 
     @Before
     public void setUp() {
-        transmetteurGaussien = new TransmetteurGaussien(10, 0.0f, 22);
+        transmetteurGaussien = new TransmetteurGaussien(Form.NRZ, 10, 0.0f, 22);
         mockDestination = EasyMock.createMock(DestinationInterface.class);
         transmetteurGaussien.connecter(mockDestination);
     }
