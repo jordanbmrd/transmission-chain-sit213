@@ -2,24 +2,28 @@ package simulateur;
 
 import destinations.Destination;
 import destinations.DestinationFinale;
+import information.Information;
 import modulation.Modulateur;
 import modulation.emetteurs.Emetteur;
-import information.Information;
 import modulation.recepteurs.Recepteur;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
+import transmetteurs.TransmetteurGaussien;
 import transmetteurs.TransmetteurParfait;
-import utils.Code;
+import utils.Form;
 import visualisations.SondeAnalogique;
 import visualisations.SondeLogique;
+
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * La classe Simulateur permet de construire et simuler une chaîne de
  * transmission composée d'une Source, d'un ou plusieurs Transmetteurs et d'une Destination.
  * Elle permet également d'ajouter des sondes pour observer l'évolution des signaux dans la chaîne de transmission.
- *
+ * <p>
  * Les composants de la chaîne de transmission (Source, Emetteur, Transmetteur, Recepteur, Destination)
  * sont créés et connectés selon les paramètres fournis en entrée.
  *
@@ -62,7 +66,7 @@ public class Simulateur {
     /**
      * Le type de codage utilisé pour la modulation (par défaut NRZ).
      */
-    private Code code = Code.RZ;
+    private Form form = Form.RZ;
 
     /**
      * La valeur d'amplitude maximale pour la modulation.
@@ -74,10 +78,12 @@ public class Simulateur {
      */
     private float aMin = 0f;
 
+    private float snrpb = Float.NaN;    // Pas de valeur par défaut
+
     /**
      * La taille de la période utilisée pour la modulation.
      */
-    private int taillePeriode = 30;
+    private int nbEch = 30;
 
     /**
      * Le composant Source de la chaîne de transmission.
@@ -125,31 +131,47 @@ public class Simulateur {
         if (messageAleatoire) {
             if (aleatoireAvecGerme) {
                 this.source = new SourceAleatoire(nbBitsMess, seed);
-            } else {
+            }
+            else {
                 this.source = new SourceAleatoire(nbBitsMess);
             }
-        } else {
+        }
+        else {
             this.source = new SourceFixe(messageString);
         }
 
         // Instanciation des composants
-        this.emetteur = new Emetteur(taillePeriode, aMax, aMin, code);
-        this.transmetteurAnalogique = new TransmetteurParfait<>();
-        this.recepteur = new Recepteur(taillePeriode, aMax, aMin, code);
+        this.emetteur = new Emetteur(nbEch, aMax, aMin, form);
+
+        // Si le SNR par bit est défini
+        if (!Float.isNaN(snrpb)) {
+            if (aleatoireAvecGerme) {
+                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb, seed);
+            }
+            else {
+                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb);
+            }
+        }
+        else {
+            this.transmetteurAnalogique = new TransmetteurParfait<>();
+        }
+
+        this.recepteur = new Recepteur(nbEch, aMax, aMin, form);
         this.destination = new DestinationFinale();
 
         // Connexion des différents composants
         this.source.connecter(this.emetteur);
         this.emetteur.connecter(this.transmetteurAnalogique);
         this.transmetteurAnalogique.connecter(this.recepteur);
+
         this.recepteur.connecter(this.destination);
 
         // Connexion des sondes (si l'option -s est utilisée)
         if (affichage) {
-            this.source.connecter(new SondeLogique("Source " + code, 200));
-            this.emetteur.connecter(new SondeAnalogique("Emetteur " + code));
-            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur " + code));
-            this.recepteur.connecter(new SondeLogique("Recepteur " + code, 200));
+            this.source.connecter(new SondeLogique("Source " + form, 200));
+            this.emetteur.connecter(new SondeAnalogique("Emetteur " + form));
+            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur " + form));
+            this.recepteur.connecter(new SondeLogique("Recepteur " + form, 200));
         }
     }
 
@@ -171,81 +193,110 @@ public class Simulateur {
      * @throws ArgumentsException si un des arguments est incorrect ou manquant.
      */
     private void analyseArguments(String[] args) throws ArgumentsException {
-        // Traiter chaque argument
-        for (int i = 0; i < args.length; i++) {
-            // Diverses options de simulation
-            if (args[i].matches("-s")) {
-                affichage = true;
-            } else if (args[i].matches("-seed")) {
-                aleatoireAvecGerme = true;
-                i++;
-                try {
-                    seed = Integer.parseInt(args[i]);
-                } catch (Exception e) {
-                    throw new ArgumentsException("Valeur du paramètre -seed invalide : " + args[i]);
-                }
-            } else if (args[i].matches("-mess")) {
-                i++;
-                messageString = args[i];
-                if (args[i].matches("[0,1]{7,}")) {
-                    messageAleatoire = false;
-                    nbBitsMess = args[i].length();
-                } else if (args[i].matches("[0-9]{1,6}")) {
-                    messageAleatoire = true;
-                    nbBitsMess = Integer.parseInt(args[i]);
-                    if (nbBitsMess < 1) {
-                        throw new ArgumentsException("Valeur du paramètre -mess invalide : " + nbBitsMess);
-                    }
-                } else {
-                    throw new ArgumentsException("Valeur du paramètre -mess invalide : " + args[i]);
-                }
-            } else if (args[i].matches("-form")) {
-                i++;
-                switch (args[i]) {
-                    case "NRZ":
-                        this.code = Code.NRZ;
-                        break;
-                    case "NRZT":
-                        this.code = Code.NRZT;
-                        break;
-                    case "RZ":
-                        this.code = Code.RZ;
-                        break;
-                    default:
-                        throw new ArgumentsException("Valeur du paramètre -code invalide : " + args[i]);
-                }
-            } else if (args[i].matches("-ampl")) {
-                i++;
-                try {
-                    aMin = Float.parseFloat(args[i]);
-                } catch (Exception e) {
-                    throw new ArgumentsException("Valeur minimum du paramètre -ampl invalide : " + args[i]);
-                }
-
-                i++;
-                try {
-                    aMax = Float.parseFloat(args[i]);
-                } catch (Exception e) {
-                    throw new ArgumentsException("Valeur maximum du paramètre -ampl invalide : " + args[i]);
-                }
-
-                if (aMin >= aMax) {
-                    throw new ArgumentsException("La valeur aMin doit être strictement inférieure à aMax.");
-                }
-            } else if (args[i].matches("-nbEch")) {
-                i++;
-                try {
-                    taillePeriode = Integer.parseInt(args[i]);
-
-                    if (taillePeriode < 0) {
-                        throw new ArgumentsException("La valeur du paramètre -nbEch doit être entière et positive.");
-                    }
-                } catch (Exception e) {
-                    throw new ArgumentsException("Valeur du paramètre -nbEch invalide : " + args[i]);
-                }
-            } else {
-                throw new ArgumentsException("Option invalide : " + args[i]);
+        Iterator<String> param = Arrays.asList(args).iterator();
+        while (param.hasNext()) {
+            String arg = param.next();
+            switch (arg) {
+                case "-s":
+                    affichage = true;
+                    break;
+                case "-seed":
+                    traiterSeed(param);
+                    break;
+                case "-mess":
+                    traiterMessage(param);
+                    break;
+                case "-form":
+                    traiterForm(param);
+                    break;
+                case "-ampl":
+                    traiterAmpl(param);
+                    break;
+                case "-nbEch":
+                    traiterNbEch(param);
+                    break;
+                case "-snrpb":
+                    traiterSnrpb(param);
+                    break;
+                default:
+                    throw new ArgumentsException("Option invalide : " + arg);
             }
+        }
+    }
+
+    private void traiterSeed(Iterator<String> param) throws ArgumentsException {
+        seed = parseIntegerArgument(param, "seed");
+        aleatoireAvecGerme = true;
+    }
+
+    private void traiterMessage(Iterator<String> param) throws ArgumentsException {
+        String message = getNextArgument(param, "mess");
+
+        if (message.matches("[0,1]{7,}")) {
+            messageAleatoire = false;
+            nbBitsMess = message.length();
+            messageString = message;
+        }
+        else if (message.matches("[0-9]{1,6}")) {
+            messageAleatoire = true;
+            nbBitsMess = Integer.parseInt(message);
+            if (nbBitsMess < 1) {
+                throw new ArgumentsException("Valeur du paramètre -mess invalide.");
+            }
+        }
+        else {
+            throw new ArgumentsException("Valeur du paramètre -mess invalide.");
+        }
+    }
+
+    private void traiterForm(Iterator<String> param) throws ArgumentsException {
+        String formArg = getNextArgument(param, "form");
+        try {
+            form = Form.valueOf(formArg);
+        } catch (IllegalArgumentException e) {
+            throw new ArgumentsException("Valeur du paramètre -form invalide.");
+        }
+    }
+
+    private void traiterAmpl(Iterator<String> param) throws ArgumentsException {
+        aMin = parseFloatArgument(param, "ampl aMin");
+        aMax = parseFloatArgument(param, "ampl aMax");
+        if (aMin >= aMax) {
+            throw new ArgumentsException("La valeur aMin doit être strictement inférieure à aMax.");
+        }
+    }
+
+    private void traiterNbEch(Iterator<String> param) throws ArgumentsException {
+        nbEch = parseIntegerArgument(param, "nbEch");
+        if (nbEch < 0) {
+            throw new ArgumentsException("La valeur du paramètre -nbEch doit être entière et positive.");
+        }
+    }
+
+    private void traiterSnrpb(Iterator<String> param) throws ArgumentsException {
+        snrpb = parseFloatArgument(param, "snrpb");
+    }
+
+    private String getNextArgument(Iterator<String> param, String paramName) throws ArgumentsException {
+        if (!param.hasNext()) {
+            throw new ArgumentsException("Paramètre -" + paramName + " manquant.");
+        }
+        return param.next();
+    }
+
+    private int parseIntegerArgument(Iterator<String> param, String paramName) throws ArgumentsException {
+        try {
+            return Integer.parseInt(getNextArgument(param, paramName));
+        } catch (NumberFormatException e) {
+            throw new ArgumentsException("Valeur du paramètre -" + paramName + " invalide.");
+        }
+    }
+
+    private float parseFloatArgument(Iterator<String> param, String paramName) throws ArgumentsException {
+        try {
+            return Float.parseFloat(getNextArgument(param, paramName));
+        } catch (NumberFormatException e) {
+            throw new ArgumentsException("Valeur du paramètre -" + paramName + " invalide.");
         }
     }
 
@@ -263,6 +314,9 @@ public class Simulateur {
      *
      * @return le Taux d'Erreur Binaire (TEB).
      */
+
+    private float teb;
+
     public float calculTauxErreurBinaire() {
         Information<Boolean> messageEmis = this.source.getInformationEmise();
         Information<Boolean> messageRecu = this.destination.getInformationRecue();
@@ -283,7 +337,12 @@ public class Simulateur {
             }
         }
 
-        return (float) nbErreurs / nbBits;
+        teb = (float) nbErreurs / nbBits;
+        return teb;
+    }
+
+    public float getTeb() {
+        return teb;
     }
 
     /**
@@ -304,11 +363,23 @@ public class Simulateur {
 
         try {
             simulateur.execute();
-            String s = "java Simulateur ";
+            StringBuilder string = new StringBuilder("java Simulateur ");
             for (String arg : args) {
-                s += arg + " ";
+                string.append(arg).append(" ");
             }
-            System.out.println(s + " => TEB : " + simulateur.calculTauxErreurBinaire());
+
+            string.append("\n => TEB : ").append(simulateur.calculTauxErreurBinaire());
+
+            string.append("\n - Nombre de bits de la séquence : ").append(simulateur.nbBitsMess);
+            string.append("\n - Nombre d'échantillons par bit : ").append(simulateur.nbEch);
+
+            if (!Float.isNaN(simulateur.snrpb)) {
+                string.append("\n => Puissance moyenne du bruit : ").append(simulateur.transmetteurAnalogique.getPuissanceMoyenneBruit());
+                string.append("\n => Variance : ").append(simulateur.transmetteurAnalogique.getVariance());
+                string.append("\n => Rapport signal-sur-bruit (S/N, en dB) : ").append(simulateur.transmetteurAnalogique.getSNRReel());
+            }
+
+            System.out.println(string);
         } catch (Exception e) {
             System.out.println(e);
             e.printStackTrace();

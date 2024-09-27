@@ -30,6 +30,8 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * l'information émise en sortie du transmetteur
      */		
     protected Information <E>  informationEmise;
+
+    protected Information<Float> bruitList = new Information<>();
    
     /** 
      * un constructeur factorisant les initialisations communes aux
@@ -87,5 +89,21 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      * émet l'information construite par le transmetteur
      * @throws InformationNonConformeException si l'Information comporte une anomalie
      */
-    public  abstract void emettre() throws InformationNonConformeException;   
+    public  abstract void emettre() throws InformationNonConformeException;
+
+    public float getPuissanceMoyenneBruit() {
+        return Float.NaN;
+    }
+
+    public float getSNRReel() {
+        return Float.NaN;
+    }
+
+    public float getVariance() {
+        return Float.NaN;
+    }
+
+    public Information<Float> getBruitList() {
+        return this.bruitList;
+    }
 }

@@ -4,7 +4,7 @@ import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
 import sources.SourceInterface;
-import utils.Code;
+import utils.Form;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
     /**
      * Taille de la période utilisée pour la modulation.
      */
-    protected int taillePeriode;
+    protected int nbEch;
 
     /**
      * Valeur analogique maximale (ex : amplitude max pour une onde).
@@ -53,25 +53,25 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
     /**
      * Type de codage utilisé pour la modulation (ex : NRZ, RZ, NRZT).
      */
-    protected Code code;
+    protected Form form;
 
     /**
      * Constructeur du modulateur.
      * Initialise les paramètres communs à tous les modulateurs.
      *
-     * @param taillePeriode La taille de la période de modulation
+     * @param nbEch La taille de la période de modulation
      * @param aMax L'amplitude maximale
      * @param aMin L'amplitude minimale
-     * @param code Le type de codage utilisé pour la modulation
+     * @param form Le type de codage utilisé pour la modulation
      */
-    public Modulateur(int taillePeriode, float aMax, float aMin, Code code) {
+    public Modulateur(int nbEch, float aMax, float aMin, Form form) {
         this.destinationsConnectees = new ArrayList<>(); // Initialisation des destinations connectées
         this.informationRecue = null;  // L'information reçue est initialement nulle
         this.informationEmise = null;  // L'information émise est initialement nulle
-        this.taillePeriode = taillePeriode;  // Définit la taille de la période
+        this.nbEch = nbEch;  // Définit la taille de la période
         this.aMax = aMax;  // Définit l'amplitude maximale
         this.aMin = aMin;  // Définit l'amplitude minimale
-        this.code = code;  // Définit le type de codage
+        this.form = form;  // Définit le type de codage
     }
 
     /**
@@ -116,11 +116,11 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
      * Valide les paramètres du modulateur (aMin, aMax et le type de codage).
      * Vérifie la cohérence des valeurs d'amplitudes et des règles spécifiques à chaque codage.
      *
-     * @param code Le type de codage utilisé
+     * @param form Le type de codage utilisé
      * @return true si les paramètres sont valides, false sinon
      * @throws InformationNonConformeException si les paramètres sont invalides
      */
-    public boolean validerParametres(Code code) throws InformationNonConformeException {
+    public boolean validerParametres(Form form) throws InformationNonConformeException {
         // Vérifie que aMin est strictement inférieur à aMax
         if (aMin >= aMax) {
             throw new InformationNonConformeException("Erreur: aMin doit être strictement inférieur à aMax");
@@ -132,12 +132,12 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
         }
 
         // Pour NRZ et NRZT, aMin doit être inférieur ou égal à 0
-        if ((code.equals(Code.NRZ) || code.equals(Code.NRZT)) && aMin > 0) {
+        if ((form.equals(Form.NRZ) || form.equals(Form.NRZT)) && aMin > 0) {
             throw new InformationNonConformeException("Erreur: aMin doit être inférieur ou égal à 0 pour le codage NRZ/NRZT");
         }
 
         // Pour RZ, aMin doit être exactement égal à 0
-        if (code.equals(Code.RZ) && aMin != 0) {
+        if (form.equals(Form.RZ) && aMin != 0) {
             throw new InformationNonConformeException("Erreur: aMin doit être égal à 0 pour le codage RZ");
         }
 

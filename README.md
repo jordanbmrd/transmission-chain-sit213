@@ -1,10 +1,32 @@
 # SIT213
 
+## TP3: Transmission analogique avec un bruit gaussien
+
+### Objectifs
+
+- Générer un bruit gaussien et l'ajouter lors de la transmission.
+- Vérifier que le bruit suit bien une loi gaussienne en traçant un histogramme.
+
+### Ajout de nouveaux flags au CLI
+
+- `-snrpb [float]`: Choix du RSB par bit en dB. Valeur par défaut : 0.
+
+### Ajout du répertoire `scripts`
+Ce répertoire contient des scripts utiles au projet et aux tests visuels :
+
+- `generate_histogram.py` : Trace l'histogramme des échantillons de bruit.
+
+### Modifications des classes
+
+- Ajout de la classe `TransmetteurGaussien` pour générer un signal analogique avec un bruit gaussien.
+- Ajout de la classe `TransmetteurGaussienTest` pour tester le comportement de la classe `TransmetteurGaussien`
+- Modifications des classes `Simulateur`, `Emetteur` et `Recepteur` pour intégrer le transmetteur gaussien.
+
 ## TP2: Transmission analogique non bruitée
 
 ### Ajout de nouveaux flags au CLI
 
-- `-form [string]`: Choix du code à utiliser. Valeur par défaut : RZ. Les options disponibles sont :
+- `-form [string]`: Choix du form à utiliser. Valeur par défaut : RZ. Les options disponibles sont :
   - `NRZ`
   - `NRZT`
   - `RZ`
@@ -23,11 +45,11 @@ Il contient les fichiers suivant :
 
 ### Contenu de l'archive à livrer
 
-- `bin/`: Répertoire contenant le code compilé.
+- `bin/`: Répertoire contenant le form compilé.
 - `docs/`: Documentation générée automatiquement sous forme de Javadoc.
-- `src/`: Répertoire contenant le code source du projet.
+- `src/`: Répertoire contenant le form source du projet.
 - `cleanAll`: Script Bash qui nettoie le projet en supprimant l'archive générée, les fichiers compilés et la documentation.
 - `compile`: Script Bash utilisé pour compiler le projet.
-- `genDoc`: Script Bash pour générer la documentation Javadoc à partir du code source.
+- `genDoc`: Script Bash pour générer la documentation Javadoc à partir du form source.
 - `runTests`: Script Bash qui exécute les tests pour vérifier le bon fonctionnement du projet.
 - `README.md`: Fichier de documentation (ce fichier) qui détaille les composants et scripts du projet.
