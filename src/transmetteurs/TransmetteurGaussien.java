@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.Random;
 
 public class TransmetteurGaussien extends Transmetteur<Float, Float> {
+    private final boolean saveNoiseToCSV = false;    // Mettre à true pour enregistrer le bruit dans un CSV
+
     private final int nbEch;
     private final float SNRdB;
     private final int seed;
@@ -72,21 +74,23 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
 
         this.informationEmise = ajouterBruit(this.informationRecue);
 
-        // Enregistrement dans un fichier CSV
-        String csvFileName = "valeurs_bruit_gaussien.csv";
+        if (saveNoiseToCSV) {
+            // Enregistrement dans un fichier CSV
+            String csvFileName = "valeurs_bruit_gaussien.csv";
 
-        try (PrintWriter writer = new PrintWriter(new FileWriter(csvFileName))) {
-            // Écriture de l'en-tête du CSV (facultatif)
-            writer.println("Bruit gaussien");
+            try (PrintWriter writer = new PrintWriter(new FileWriter(csvFileName))) {
+                // Écriture de l'en-tête du CSV (facultatif)
+                writer.println("Bruit gaussien");
 
-            // Écriture des valeurs dans le fichier CSV
-            for (Float value : getBruitList()) {
-                writer.println(value);
+                // Écriture des valeurs dans le fichier CSV
+                for (Float value : getBruitList()) {
+                    writer.println(value);
+                }
+
+                System.out.println("Données enregistrées dans " + csvFileName);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            System.out.println("Données enregistrées dans " + csvFileName);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         calculerPuissanceMoyenneBruit();
