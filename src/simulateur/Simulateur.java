@@ -18,6 +18,7 @@ import visualisations.SondeLogique;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * La classe Simulateur permet de construire et simuler une chaîne de
@@ -84,6 +85,11 @@ public class Simulateur {
      * La taille de la période utilisée pour la modulation.
      */
     private int nbEch = 30;
+
+    /**
+     * Décalage temporel (en nombre d'échantillons).
+     * */
+    private float[][] ti = null;
 
     /**
      * Le composant Source de la chaîne de transmission.
@@ -186,9 +192,9 @@ public class Simulateur {
      *             <dt> -mess m </dt><dd> un message à transmettre : soit une chaîne de bits (7 ou plus) ou un nombre entier (1 à 6 chiffres) pour un message aléatoire</dd>
      *             <dt> -s </dt><dd> active les sondes d'affichage pour la simulation</dd>
      *             <dt> -seed v </dt><dd> initialise le générateur aléatoire avec la valeur v</dd>
-     *             <dt> -code c </dt><dd> définit le type de codage : NRZ, RZ ou NRZT</dd>
-     *             <dt> -aMax v </dt><dd> fixe l'amplitude maximale à v</dd>
-     *             <dt> -aMin v </dt><dd> fixe l'amplitude minimale à v</dd>
+     *             <dt> -form c </dt><dd> définit le type de codage : NRZ, RZ ou NRZT</dd>
+     *             <dt> -ampl aMin aMax </dt><dd> fixe les amplitudes minimales et maximales</dd>
+     *             <dt> -ti dt ar </dt><dd> définit les couples de valeurs (décalage temporel, amplitude relative). 5 maximums.</dd>
      *             </dl>
      * @throws ArgumentsException si un des arguments est incorrect ou manquant.
      */
@@ -218,17 +224,32 @@ public class Simulateur {
                 case "-snrpb":
                     traiterSnrpb(param);
                     break;
+                case "-ti":
+                    traiterTi(param);
+                    break;
                 default:
                     throw new ArgumentsException("Option invalide : " + arg);
             }
         }
     }
 
+    /**
+     * Traite l'argument de la graine (seed) et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument seed est invalide.
+     */
     private void traiterSeed(Iterator<String> param) throws ArgumentsException {
         seed = parseIntegerArgument(param, "seed");
         aleatoireAvecGerme = true;
     }
 
+    /**
+     * Traite l'argument du message et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument message est invalide.
+     */
     private void traiterMessage(Iterator<String> param) throws ArgumentsException {
         String message = getNextArgument(param, "mess");
 
@@ -249,6 +270,12 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument de la forme de codage et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument form est invalide.
+     */
     private void traiterForm(Iterator<String> param) throws ArgumentsException {
         String formArg = getNextArgument(param, "form");
         try {
@@ -258,6 +285,12 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument de l'amplitude et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument amplitude est invalide.
+     */
     private void traiterAmpl(Iterator<String> param) throws ArgumentsException {
         aMin = parseFloatArgument(param, "ampl aMin");
         aMax = parseFloatArgument(param, "ampl aMax");
@@ -266,6 +299,12 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument du nombre d'échantillons et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument nbEch est invalide.
+     */
     private void traiterNbEch(Iterator<String> param) throws ArgumentsException {
         nbEch = parseIntegerArgument(param, "nbEch");
         if (nbEch < 0) {
@@ -273,8 +312,49 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument du rapport signal sur bruit par bit (snrpb) et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument snrpb est invalide.
+     */
     private void traiterSnrpb(Iterator<String> param) throws ArgumentsException {
         snrpb = parseFloatArgument(param, "snrpb");
+    }
+
+    /**
+     * Traite l'argument des décalages temporels (ti) et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument ti est invalide.
+     */
+    private void traiterTi(Iterator<String> param) throws ArgumentsException {
+        LinkedList<float[]> tiList = new LinkedList<>();
+
+        // Lecture des paires (dt, ar) pour les trajets indirects, jusqu'à un maximum de 5 paires
+        for (int i = 0; i < 5 && param.hasNext(); i++) {
+            int dt = parseIntegerArgument(param, "ti dt");
+            float ar = parseFloatArgument(param, "ti ar");
+
+            // Vérification des contraintes sur l'amplitude relative (ar doit être entre 0 et 1)
+            if (ar < 0 || ar > 1) {
+                throw new ArgumentsException("L'amplitude relative (ar) doit être comprise entre 0 et 1 pour le paramètre -ti.");
+            }
+
+            tiList.add(new float[]{dt, ar});
+        }
+
+        // Si aucun trajet indirect n'a été spécifié, ajouter les valeurs par défaut {0, 0.0f}
+        if (tiList.isEmpty()) {
+            tiList.add(new float[]{0, 0.0f});
+        }
+
+        // Convertir la liste en tableau 2D float[][]
+        ti = new float[tiList.size()][2];
+        for (int i = 0; i < tiList.size(); i++) {
+            ti[i][0] = tiList.get(i)[0]; // dt
+            ti[i][1] = tiList.get(i)[1]; // ar
+        }
     }
 
     private String getNextArgument(Iterator<String> param, String paramName) throws ArgumentsException {
