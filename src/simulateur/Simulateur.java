@@ -309,14 +309,6 @@ public class Simulateur {
         source.emettre();
     }
 
-    /**
-     * Calcule le Taux d'Erreur Binaire (TEB) en comparant le message émis avec le message reçu.
-     *
-     * @return le Taux d'Erreur Binaire (TEB).
-     */
-
-    private float teb;
-
     public float calculTauxErreurBinaire() {
         Information<Boolean> messageEmis = this.source.getInformationEmise();
         Information<Boolean> messageRecu = this.destination.getInformationRecue();
@@ -337,12 +329,7 @@ public class Simulateur {
             }
         }
 
-        teb = (float) nbErreurs / nbBits;
-        return teb;
-    }
-
-    public float getTeb() {
-        return teb;
+        return (float) nbErreurs / nbBits;
     }
 
     /**
