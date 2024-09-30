@@ -26,5 +26,7 @@ plt.yscale('log')  # Utiliser une échelle logarithmique pour une meilleure visu
 plt.grid(True)
 plt.legend()
 
+plt.xlim(0, 12.5)
+
 # Afficher le graphe
 plt.show()
