@@ -446,7 +446,7 @@ public class Simulateur {
         // Formule de calcul de la probabilité d'erreur
         return switch (form) {
             case Form.NRZ, Form.NRZT -> 0.5 * Erf.erfc(Math.sqrt(ebN0Lin));
-            case Form.RZ -> Erf.erfc(Math.sqrt(ebN0Lin / 2));
+            case Form.RZ -> (double) 1/2*Erf.erfc(Math.sqrt((1/Math.sqrt(2))*ebN0Lin));
         };
     }
 

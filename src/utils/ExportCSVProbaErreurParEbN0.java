@@ -64,7 +64,7 @@ public class ExportCSVProbaErreurParEbN0 {
             String[] formats = new String[] { "RZ", "NRZ", "NRZT" };
 
             // Simulation pour chaque valeur d'Eb/N0
-            for (int ebN0 = 0; ebN0 <= 20; ebN0++) {
+            for (int ebN0 = -10; ebN0 <= 9; ebN0++) {
                 csvWriter.append(String.valueOf(ebN0));
                 for (String format : formats) {
                     // Exécution de la simulation et récupération de P_e
