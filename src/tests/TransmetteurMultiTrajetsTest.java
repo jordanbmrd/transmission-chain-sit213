@@ -4,8 +4,9 @@ import information.Information;
 import org.junit.Before;
 import org.junit.Test;
 import simulateur.Simulateur;
-import transmetteurs.Transmetteur;
+import transmetteurs.TransmetteurGaussien;
 import transmetteurs.TransmetteurMultiTrajets;
+import utils.Form;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,39 +76,22 @@ public class TransmetteurMultiTrajetsTest {
     @Test
     public void snrAugmente() throws Exception {
         // SM = sans multiTrajet
-        String[] paramsSM = {"-mess", "10", "-seed", "100", "-form", "NRZT", "-nbEch", "100", "-snrpb", "9"};
+        Information<Float> information = new Information<>(new Float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f});
+        TransmetteurGaussien transmetteurGaussien = new TransmetteurGaussien(Form.RZ, 100, 0);
+        transmetteurGaussien.recevoir(information);
+        float snrReelSM = transmetteurGaussien.getSNRReel();
 
-        transmetteurMultiTrajets.recevoir(new Information<>(new Float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f}));
-
-
-        transmetteurMultiTrajets.getSNRReel();
-
-
-
-
-
-        String[] commande = {"-mess", "10", "-seed", "100", "-form", "NRZT", "-nbEch", "100", "-snrpb", "50", "-ti"};
+        System.out.println("SNR reel sans multiTrajet : " + snrReelSM + "\n");
 
         // AM = Avec multiTrajet
         for (int i = 1; i <= trajets.length; i++) {
-            List<String> paramsAMList = new ArrayList<>(Arrays.asList(commande));
+            TransmetteurMultiTrajets transmetteurMultiTrajets = new TransmetteurMultiTrajets(Arrays.copyOf(trajets, i));
+            transmetteurMultiTrajets.connecter(transmetteurGaussien);
+            transmetteurMultiTrajets.recevoir(information);
+            float snrReelAM = transmetteurGaussien.getSNRReel();
 
-            // Ajouter les trajets un par un sous forme de String
-            for (int j = 0; j < i; j++) {
-                paramsAMList.add(String.valueOf((int) trajets[j][0]));  // 1er parametre en int
-                paramsAMList.add(String.valueOf(trajets[j][1]));
-            }
-
-            // Convertir la liste en tableau String[]
-            String[] paramsAM = paramsAMList.toArray(new String[0]);
-
-            Simulateur simulateurAM = new Simulateur(paramsAM);
-            simulateurAM.execute();
-            double tebAM = simulateurAM.calculTauxErreurBinaire();
-
-            // Afficher les valeurs de tebAM et la commande paramsAM associée
-            System.out.println("TEB AM: " + tebAM);
-            System.out.println("Commande paramsAM: " + Arrays.toString(paramsAM) + "\n");
+            // Afficher les valeurs de snrReelAM et la configuration des trajets
+            System.out.println("SNR Reel " + snrReelAM + " Pour le trajet numero " + i);
         }
     }
 }
