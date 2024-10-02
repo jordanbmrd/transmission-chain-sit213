@@ -3,20 +3,23 @@ package tests;
 import information.Information;
 import org.junit.Before;
 import org.junit.Test;
+import simulateur.Simulateur;
 import transmetteurs.TransmetteurMultiTrajets;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-;
-
 public class TransmetteurMultiTrajetsTest {
 
     private TransmetteurMultiTrajets transmetteurMultiTrajets;
+    private final float[][] trajets = {{20, 0.4f}, {30, 0.3f}, {40, 0.2f}, {50, 0.1f}, {120, 0.05f}};
 
     @Before
     public void setUp() {
-        float[][] trajets = {{20, 0.4f}, {30, 0.3f}, {40, 0.2f}, {50, 0.1f}, {120, 0.05f}};
         transmetteurMultiTrajets = new TransmetteurMultiTrajets(trajets);
     }
 
@@ -34,9 +37,48 @@ public class TransmetteurMultiTrajetsTest {
         }
     }
 
+    /*@Test
+    public void augmentePasLeSNR() throws InformationNonConformeException {
+        // Assuming we have a method to get the SNR from the transmitter
+        float snrBefore = transmetteurMultiTrajets.getSNRReel();
+        Information<Float> information = new Information<>(new Float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f});
+        transmetteurMultiTrajets.recevoir(information);
+        float snrAfter = transmetteurMultiTrajets.getSNRReel();
+
+        assertEquals(snrBefore, snrAfter, 0.01);
+    }*/
+
     @Test
-    public void augmentePasLeSNR() {
+    public void tebAugmente() throws Exception {
+        // SM = sans multiTrajet
+        String[] paramsSM = {"-mess", "10", "-seed", "100", "-form", "NRZT", "-nbEch", "100", "-snrpb", "9"};
+        Simulateur simulateurSM = new Simulateur(paramsSM);
+        simulateurSM.execute();
+        double tebSM = simulateurSM.calculTauxErreurBinaire();
+        System.out.println("TEB SM: " + tebSM + "\n");
+
+        String[] commande = {"-mess", "10", "-seed", "100", "-form", "NRZT", "-nbEch", "100", "-snrpb", "50", "-ti"};
+
+        // AM = Avec multiTrajet
+        for (int i = 1; i <= trajets.length; i++) {
+            List<String> paramsAMList = new ArrayList<>(Arrays.asList(commande));
+
+            // Ajouter les trajets un par un sous forme de String
+            for (int j = 0; j < i; j++) {
+                paramsAMList.add(String.valueOf((int) trajets[j][0]));  // 1er parametre en int
+                paramsAMList.add(String.valueOf(trajets[j][1]));
+            }
+
+            // Convertir la liste en tableau String[]
+            String[] paramsAM = paramsAMList.toArray(new String[0]);
+
+            Simulateur simulateurAM = new Simulateur(paramsAM);
+            simulateurAM.execute();
+            double tebAM = simulateurAM.calculTauxErreurBinaire();
+
+            // Afficher les valeurs de tebAM et la commande paramsAM associée
+            System.out.println("TEB AM: " + tebAM);
+            System.out.println("Commande paramsAM: " + Arrays.toString(paramsAM) + "\n");
+        }
     }
-
-
 }
