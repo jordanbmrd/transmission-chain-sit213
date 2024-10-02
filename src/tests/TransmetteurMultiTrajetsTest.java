@@ -77,11 +77,11 @@ public class TransmetteurMultiTrajetsTest {
     public void snrAugmente() throws Exception {
         // SM = sans multiTrajet
         Information<Float> information = new Information<>(new Float[]{1.0f, 2.0f, 3.0f, 4.0f, 5.0f});
-        TransmetteurGaussien transmetteurGaussien = new TransmetteurGaussien(Form.RZ, 100, 0);
+        TransmetteurGaussien transmetteurGaussien = new TransmetteurGaussien(100, 0);
         transmetteurGaussien.recevoir(information);
         float snrReelSM = transmetteurGaussien.getSNRReel();
 
-        System.out.println("SNR reel sans multiTrajet : " + snrReelSM + "\n");
+        System.out.println("SNR réel sans multi-trajets : " + snrReelSM + "\n");
 
         // AM = Avec multiTrajet
         for (int i = 1; i <= trajets.length; i++) {
@@ -91,7 +91,7 @@ public class TransmetteurMultiTrajetsTest {
             float snrReelAM = transmetteurGaussien.getSNRReel();
 
             // Afficher les valeurs de snrReelAM et la configuration des trajets
-            System.out.println("SNR Reel " + snrReelAM + " Pour le trajet numero " + i);
+            System.out.println("SNR réel (trajet n°" + i + ") :" + snrReelAM);
         }
     }
 }

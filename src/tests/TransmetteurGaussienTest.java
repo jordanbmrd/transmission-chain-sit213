@@ -7,7 +7,6 @@ import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
 import transmetteurs.TransmetteurGaussien;
-import utils.Form;
 
 import static org.junit.Assert.*;
 
@@ -29,7 +28,7 @@ public class TransmetteurGaussienTest {
         Information<Float> information = new Information<>(floats);
 
         // Prépare le mock pour recevoir l'information bruitée
-        mockDestination.recevoir(EasyMock.anyObject(Information.class));
+        mockDestination.recevoir(EasyMock.anyObject());
         EasyMock.replay(mockDestination);
 
         // Reçoit l'information et émet l'information bruitée
