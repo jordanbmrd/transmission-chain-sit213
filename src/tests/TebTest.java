@@ -12,7 +12,7 @@ import static org.junit.Assert.assertFalse;
 public class TebTest {
 
     private Map<Integer, Double> runSimulation(Form modulation) throws Exception {
-        Map<Integer, Double> snrToTebMap = new LinkedHashMap<>(); // la HashMap classique fou le bordel dans l'affichage
+        Map<Integer, Double> snrToTebMap = new LinkedHashMap<>();
         int snr = 25;
         double teb = 0.00;
 
