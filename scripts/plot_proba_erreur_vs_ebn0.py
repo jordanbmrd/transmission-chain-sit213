@@ -19,7 +19,7 @@ plt.plot(eb_n0, pe_nrz, label="P_e NRZ", marker='s')
 plt.plot(eb_n0, pe_nrzt, label="P_e NRZT", marker='^')
 
 # Ajouter les étiquettes et le titre
-plt.xlabel("SNR (dB)")
+plt.xlabel("SNR par bit (dB)")
 plt.ylabel("TEB")
 plt.yscale('log')  # Utiliser une échelle logarithmique pour une meilleure visualisation
 plt.grid(True)

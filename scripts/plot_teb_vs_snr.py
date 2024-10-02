@@ -32,9 +32,8 @@ plt.semilogy(snr_nrz, teb_nrz, label="TEB NRZ", marker='s')
 plt.semilogy(snr_nrzt, teb_nrzt, label="TEB NRZT", marker='^')
 
 # Ajouter les étiquettes et le titre
-plt.xlabel("SNR (dB)")
+plt.xlabel("SNR par bit (dB)")
 plt.ylabel("TEB")
-plt.title("TEB en fonction du SNR pour les modulations RZ, NRZ et NRZT (seuil à 10^-4)")
 plt.grid(True, which="both", linestyle='--')
 plt.legend()
 
