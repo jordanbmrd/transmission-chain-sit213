@@ -19,7 +19,7 @@ public class TransmetteurGaussienTest {
 
     @Before
     public void setUp() {
-        transmetteurGaussien = new TransmetteurGaussien(Form.NRZ, 10, 0.0f, 22);
+        transmetteurGaussien = new TransmetteurGaussien(10, 0.0f, 22);
         mockDestination = EasyMock.createMock(DestinationInterface.class);
         transmetteurGaussien.connecter(mockDestination);
     }

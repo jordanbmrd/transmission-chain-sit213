@@ -5,6 +5,9 @@ import information.Information;
 import information.InformationNonConformeException;
 import modulation.Modulateur;
 import utils.Form;
+import utils.NRZTTransition;
+
+import java.util.Iterator;
 
 /**
  * Classe représentant un émetteur qui transforme des informations logiques en signaux analogiques
@@ -78,83 +81,128 @@ public class Emetteur extends Modulateur<Boolean, Float> {
 
         return switch (form) {
             case NRZ -> informationConvertie;
-            case RZ, NRZT -> miseEnForme(informationLogique);
+            case RZ -> miseEnFormeRZ(informationLogique);
+            case NRZT -> miseEnFormeNRZT(informationLogique);
         };
     }
 
     /**
-     * Applique une mise en forme du signal en fonction du type de codage (RZ ou NRZT).
+     * Applique une mise en forme du signal pour la modulation RZ (Return-to-Zero).
      *
-     * @param informationLogique l'information logique initiale.
-     * @return l'information analogique après mise en forme.
+     * @param informationLogique l'information logique à convertir.
+     * @return l'information analogique mise en forme selon le codage RZ.
      */
-    public Information<Float> miseEnForme(Information<Boolean> informationLogique) {
+    public Information<Float> miseEnFormeRZ(Information<Boolean> informationLogique) {
         int delta = nbEch / 3;
         int missing;
         Information<Float> informationMiseEnForme = new Information<>();
 
-        switch (form) {
-            case RZ:
-                // Codage RZ : ajouter des périodes de repos (0) entre les symboles
-                missing = nbEch - delta * 3;
-                for (boolean information : informationLogique) {
-                    for (int i = 0; i < delta; i++) {
-                        informationMiseEnForme.add(0f); // 0 avant la partie active
-                    }
-                    for (int i = 0; i < delta + missing; i++) {
-                        // Ajout de la partie active du signal
-                        if (information) {
-                            informationMiseEnForme.add(aMax);
-                        } else {
-                            informationMiseEnForme.add(aMin);
-                        }
-                    }
-                    for (int i = 0; i < delta; i++) {
-                        informationMiseEnForme.add(0f); // 0 après la partie active
-                    }
-                }
-                break;
-
-            case NRZT:
-                // Codage NRZT : transitions progressives entre les niveaux
-                for (int i = 0; i < informationLogique.nbElements(); i++) {
-                    Boolean precedent = (i > 0) ? informationLogique.iemeElement(i - 1) : null;
-                    Boolean current = informationLogique.iemeElement(i);
-                    Boolean next = (i < informationLogique.nbElements() - 1) ? informationLogique.iemeElement(i + 1) : null;
-
-                    missing = nbEch % 3;
-
-                    // Génération des symboles en fonction de la transition entre les bits
-                    if (current != null && current) {
-                        // Si le bit courant est 1
-                        for (int j = 0; j < delta; j++) {
-                            informationMiseEnForme.add((precedent != null && precedent) ? aMax : (float) j / delta * aMax);
-                        }
-                        for (int j = 0; j < delta + missing; j++) {
-                            informationMiseEnForme.add(aMax); // Partie plate
-                        }
-                        for (int j = 0; j < delta; j++) {
-                            informationMiseEnForme.add((next != null && next) ? aMax : (float) (delta - j) / delta * aMax);
-                        }
-                    } else {
-                        // Si le bit courant est 0
-                        for (int j = 0; j < delta; j++) {
-                            informationMiseEnForme.add((precedent != null && !precedent) ? aMin : (float) j / delta * aMin);
-                        }
-                        for (int j = 0; j < delta + missing; j++) {
-                            informationMiseEnForme.add(aMin); // Partie plate
-                        }
-                        for (int j = 0; j < delta; j++) {
-                            informationMiseEnForme.add((next != null && !next) ? aMin : (float) (delta - j) / delta * aMin);
-                        }
-                    }
-                }
-                break;
-
-            default:
-                throw new IllegalArgumentException("Type de codage inconnu : " + form);
+        // Codage RZ : ajouter des périodes de repos (0) entre les symboles
+        missing = nbEch - delta * 3;
+        for (boolean information : informationLogique) {
+            ajouterValeur(0f, delta, informationMiseEnForme);   // 0 avant la partie active
+            ajouterValeur(information ? aMax : aMin, delta + missing, informationMiseEnForme);
+            ajouterValeur(0f, delta, informationMiseEnForme);   // 0 après la partie active
         }
 
         return informationMiseEnForme;
+    }
+
+    /**
+     * Applique une mise en forme du signal pour la modulation NRZT (Non-Return-to-Zero with Transitions).
+     *
+     * @param informationLogique l'information logique à convertir.
+     * @return l'information analogique mise en forme selon le codage NRZT.
+     */
+    public Information<Float> miseEnFormeNRZT(Information<Boolean> informationLogique) {
+        Information<Float> informationMiseEnForme = new Information<>();
+
+        Iterator<Boolean> iterateur = informationLogique.iterator();
+        Iterator<Boolean> iterateurDecale = informationLogique.iterator();
+
+        Boolean current,
+                precedent = null,
+                next = null;
+
+        if (iterateurDecale.hasNext())
+            iterateurDecale.next();
+
+        while (iterateur.hasNext()) {
+            current = iterateur.next();
+
+            if (iterateurDecale.hasNext())
+                next = iterateurDecale.next();
+
+            convertirSymbole(precedent, current, next, informationMiseEnForme);
+            precedent = current;
+        }
+
+        return informationMiseEnForme;
+    }
+
+    /**
+     * Convertit un symbole logique en signal analogique avec gestion des transitions selon NRZT.
+     *
+     * @param precedent le symbole précédent (peut être null au début).
+     * @param current le symbole logique actuel.
+     * @param next le symbole suivant (peut être null à la fin).
+     * @param informationMiseEnForme l'information analogique à compléter.
+     */
+    protected void convertirSymbole(Boolean precedent, Boolean current, Boolean next, Information<Float> informationMiseEnForme) {
+        int delta = nbEch / 3;
+        if (nbEch % 3 != 0) {
+            int missing = nbEch - delta * 3;
+            if (current) {
+                ajouterTransition(NRZTTransition.DEBUT, precedent != null && precedent, aMax, delta, informationMiseEnForme);
+                ajouterValeur(aMax, delta + missing, informationMiseEnForme);
+                ajouterTransition(NRZTTransition.FIN, next, aMax, delta, informationMiseEnForme);
+            } else {
+                ajouterTransition(NRZTTransition.DEBUT, precedent != null && !precedent, aMin, delta, informationMiseEnForme);
+                ajouterValeur(aMin, delta + missing, informationMiseEnForme);
+                ajouterTransition(NRZTTransition.FIN, !next, aMin, delta, informationMiseEnForme);
+            }
+            return;
+        }
+
+        if (current) {
+            ajouterTransition(NRZTTransition.DEBUT, precedent != null && precedent, aMax, delta, informationMiseEnForme);
+            ajouterValeur(aMax, delta, informationMiseEnForme);
+            ajouterTransition(NRZTTransition.FIN, !next, aMax, delta, informationMiseEnForme);
+        } else {
+            ajouterTransition(NRZTTransition.DEBUT, precedent != null && !precedent, aMin, delta, informationMiseEnForme);
+            ajouterValeur(aMin, delta, informationMiseEnForme);
+            ajouterTransition(NRZTTransition.FIN, !next, aMin, delta, informationMiseEnForme);
+        }
+    }
+
+    /**
+     * Ajoute une transition progressive entre deux niveaux de signal dans le codage NRZT.
+     *
+     * @param position la position de la transition (début ou fin).
+     * @param condition indique si la transition doit être directe ou progressive.
+     * @param value la valeur de l'amplitude cible (aMax ou aMin).
+     * @param delta le nombre d'échantillons à utiliser pour la transition.
+     * @param informationMiseEnForme l'information analogique à compléter.
+     */
+    private void ajouterTransition(NRZTTransition position, boolean condition, float value, float delta, Information<Float> informationMiseEnForme) {
+        for (int j = 0; j < delta; j++) {
+            if (condition)
+                informationMiseEnForme.add(value);
+            else
+                informationMiseEnForme.add(position == NRZTTransition.DEBUT ? (float) j / delta * value : (delta - j) / delta * value);
+        }
+    }
+
+    /**
+     * Ajoute une séquence constante d'une valeur analogique sur un nombre d'échantillons donné.
+     *
+     * @param value la valeur analogique à ajouter.
+     * @param delta le nombre d'échantillons sur lequel ajouter cette valeur.
+     * @param informationMiseEnForme l'information analogique à compléter.
+     */
+    private void ajouterValeur(float value, float delta, Information<Float> informationMiseEnForme) {
+        for (int j = 0; j < delta; j++) {
+            informationMiseEnForme.add(value);
+        }
     }
 }

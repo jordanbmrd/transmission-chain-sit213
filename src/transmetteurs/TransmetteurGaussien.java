@@ -13,7 +13,6 @@ import java.util.Random;
 public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private final boolean saveNoiseToCSV = false;    // Mettre à true pour enregistrer le bruit dans un CSV
 
-    private final Form form;
     private final int nbEch;
     private final float SNRdB;
     private final int seed;
@@ -25,16 +24,15 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     private float puissanceMoyenneBruit;
     private Random random;
 
-    public TransmetteurGaussien(Form form, int nbEch, float SNRdB, int seed) {
-        this.form = form;
+    public TransmetteurGaussien(int nbEch, float SNRdB, int seed) {
         this.nbEch = nbEch;
         this.SNRdB = SNRdB;
         this.seed = seed;
         initialiserRandom();
     }
 
-    public TransmetteurGaussien(Form form, int nbEch, float SNRdB) {
-        this(form, nbEch, SNRdB, 0);
+    public TransmetteurGaussien(int nbEch, float SNRdB) {
+        this(nbEch, SNRdB, 0);
     }
 
     /**

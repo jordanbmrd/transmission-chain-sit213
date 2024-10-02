@@ -166,10 +166,10 @@ public class Simulateur {
         // Si le SNR par bit est défini
         if (!Float.isNaN(snrpb)) {
             if (aleatoireAvecGerme) {
-                this.transmetteurAnalogique = new TransmetteurGaussien(form, nbEch, snrpb, seed);
+                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb, seed);
             }
             else {
-                this.transmetteurAnalogique = new TransmetteurGaussien(form, nbEch, snrpb);
+                this.transmetteurAnalogique = new TransmetteurGaussien(nbEch, snrpb);
             }
         }
         else {
