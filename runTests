@@ -70,8 +70,13 @@ test_cases=(
     "-mess 0010011 -form NRZT -snrpb -30"    # SNR par bit avec format NRZT
     "-mess 0010011 -form NRZT -snrpb 0"    # SNR par bit avec format NRZT
     "-mess 0010011 -form NRZT -snrpb 30"    # SNR par bit avec format NRZT
-
     "-ampl -3 3 -form NRZT -snrpb 30"  # SNR par bit avec amplitudes personnalisées
+
+    "-mess 0010011 -ti 60 0.3"          # 1 trajet indirect
+    "-mess 0010011 -ti 0 1.0"          # Trajet indirect sans décalage
+    "-mess 0010011 -ti 100 0.75 20 0.4"   # 2 trajets indirects
+    "-mess 0010011 -ti 100 0.9 20 0.6 40 0.5"     # 3 trajets indirects
+    "-mess 0010011 -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"      # 5 trajets indirects
 )
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
@@ -84,6 +89,7 @@ if [ -z "$CI" ]; then
         "-s -mess 01101101110 -form NRZ -snrpb 30"
         "-s -mess 01101101110 -form NRZT -snrpb 30"
         "-s -mess 01101101110 -form RZ -snrpb 30"
+        "-s -mess 01101101110 -form RZ -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"
     )
 fi
 

@@ -363,6 +363,11 @@ public class Simulateur {
             int dt = parseIntegerArgument(param, "ti dt");
             float ar = parseFloatArgument(param, "ti ar");
 
+            // Vérification que le décalage temporel est bien nul ou positif
+            if (dt < 0) {
+                throw new ArgumentsException("Le décalage temporel (dt) doit être supérieur ou égal à 0 pour le paramètre -ti.");
+            }
+
             // Vérification des contraintes sur l'amplitude relative (ar doit être entre 0 et 1)
             if (ar < 0 || ar > 1) {
                 throw new ArgumentsException("L'amplitude relative (ar) doit être comprise entre 0 et 1 pour le paramètre -ti.");
