@@ -51,6 +51,11 @@ public class Emetteur extends Modulateur<Boolean, Float> {
             throw new InformationNonConformeException("L'information reçue est nulle");
         }
         this.informationEmise = conversionNA(this.informationRecue);
+
+        System.out.println("==== EMETTEUR ====");
+        System.out.println("INFORMATION RECUE (" + this.informationRecue.nbElements() + ") ::: " + this.informationRecue);
+        System.out.println("INFORMATION EMISE (" + this.informationEmise.nbElements() + ") ::: " + this.informationEmise);
+
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }
@@ -71,6 +76,20 @@ public class Emetteur extends Modulateur<Boolean, Float> {
             throw new InformationNonConformeException("Information logique non conforme");
         }
 
+        return switch (form) {
+            case NRZ -> miseEnFormeNRZ(informationLogique);
+            case RZ -> miseEnFormeRZ(informationLogique);
+            case NRZT -> miseEnFormeNRZT(informationLogique);
+        };
+    }
+
+    /**
+     * Applique une mise en forme du signal pour la modulation NRZ (Non-Return-to-Zero).
+     *
+     * @param informationLogique l'information logique à convertir.
+     * @return l'information analogique mise en forme selon le codage NRZ.
+     */
+    public Information<Float> miseEnFormeNRZ(Information<Boolean> informationLogique) {
         Information<Float> informationConvertie = new Information<>();
         for (Boolean element : informationLogique) {
             float valeurConvertie = element ? aMax : aMin;
@@ -78,12 +97,7 @@ public class Emetteur extends Modulateur<Boolean, Float> {
                 informationConvertie.add(valeurConvertie);
             }
         }
-
-        return switch (form) {
-            case NRZ -> informationConvertie;
-            case RZ -> miseEnFormeRZ(informationLogique);
-            case NRZT -> miseEnFormeNRZT(informationLogique);
-        };
+        return informationConvertie;
     }
 
     /**
@@ -93,12 +107,12 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * @return l'information analogique mise en forme selon le codage RZ.
      */
     public Information<Float> miseEnFormeRZ(Information<Boolean> informationLogique) {
-        int delta = nbEch / 3;
-        int missing;
         Information<Float> informationMiseEnForme = new Information<>();
 
+        int delta = nbEch / 3;
+        int missing = nbEch - delta * 3;
+
         // Codage RZ : ajouter des périodes de repos (0) entre les symboles
-        missing = nbEch - delta * 3;
         for (boolean information : informationLogique) {
             ajouterValeur(0f, delta, informationMiseEnForme);   // 0 avant la partie active
             ajouterValeur(information ? aMax : aMin, delta + missing, informationMiseEnForme);
@@ -115,26 +129,29 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * @return l'information analogique mise en forme selon le codage NRZT.
      */
     public Information<Float> miseEnFormeNRZT(Information<Boolean> informationLogique) {
+        System.out.println("==== NRZT ====");
+        System.out.println("INFORMATION BASE (" + informationLogique.nbElements() + ") ::: " + informationLogique);
+
         Information<Float> informationMiseEnForme = new Information<>();
 
         Iterator<Boolean> iterateur = informationLogique.iterator();
         Iterator<Boolean> iterateurDecale = informationLogique.iterator();
 
-        Boolean current,
+        Boolean actuel,
                 precedent = null,
-                next = null;
+                suivant = null;
 
         if (iterateurDecale.hasNext())
             iterateurDecale.next();
 
         while (iterateur.hasNext()) {
-            current = iterateur.next();
+            actuel = iterateur.next();
 
             if (iterateurDecale.hasNext())
-                next = iterateurDecale.next();
+                suivant = iterateurDecale.next();
 
-            convertirSymbole(precedent, current, next, informationMiseEnForme);
-            precedent = current;
+            convertirSymbole(precedent, actuel, suivant, informationMiseEnForme);
+            precedent = actuel;
         }
 
         return informationMiseEnForme;
@@ -144,34 +161,90 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * Convertit un symbole logique en signal analogique avec gestion des transitions selon NRZT.
      *
      * @param precedent le symbole précédent (peut être null au début).
-     * @param current le symbole logique actuel.
-     * @param next le symbole suivant (peut être null à la fin).
+     * @param actuel le symbole logique actuel.
+     * @param suivant le symbole suivant (peut être null à la fin).
      * @param informationMiseEnForme l'information analogique à compléter.
      */
-    protected void convertirSymbole(Boolean precedent, Boolean current, Boolean next, Information<Float> informationMiseEnForme) {
+    protected void convertirSymbole(Boolean precedent, Boolean actuel, Boolean suivant, Information<Float> informationMiseEnForme) {
         int delta = nbEch / 3;
         if (nbEch % 3 != 0) {
             int missing = nbEch - delta * 3;
-            if (current) {
-                ajouterTransition(NRZTTransition.DEBUT, precedent != null && precedent, aMax, delta, informationMiseEnForme);
+            if (actuel) {
+                ajouterTransition(
+                        NRZTTransition.DEBUT,
+                        actuel,
+                        precedent,
+                        suivant,
+                        aMax,
+                        delta,
+                        informationMiseEnForme);
                 ajouterValeur(aMax, delta + missing, informationMiseEnForme);
-                ajouterTransition(NRZTTransition.FIN, next, aMax, delta, informationMiseEnForme);
+                ajouterTransition(
+                        NRZTTransition.FIN,
+                        actuel,
+                        precedent,
+                        suivant,
+                        aMax,
+                        delta,
+                        informationMiseEnForme);
             } else {
-                ajouterTransition(NRZTTransition.DEBUT, precedent != null && !precedent, aMin, delta, informationMiseEnForme);
+                ajouterTransition(
+                        NRZTTransition.DEBUT,
+                        actuel,
+                        precedent,
+                        suivant,
+                        aMin,
+                        delta,
+                        informationMiseEnForme);
                 ajouterValeur(aMin, delta + missing, informationMiseEnForme);
-                ajouterTransition(NRZTTransition.FIN, !next, aMin, delta, informationMiseEnForme);
+                ajouterTransition(
+                        NRZTTransition.FIN,
+                        actuel,
+                        precedent,
+                        suivant,
+                        aMin,
+                        delta,
+                        informationMiseEnForme);
             }
             return;
         }
 
-        if (current) {
-            ajouterTransition(NRZTTransition.DEBUT, precedent != null && precedent, aMax, delta, informationMiseEnForme);
+        if (actuel) {
+            ajouterTransition(
+                    NRZTTransition.DEBUT,
+                    actuel,
+                    precedent,
+                    suivant,
+                    aMax,
+                    delta,
+                    informationMiseEnForme);
             ajouterValeur(aMax, delta, informationMiseEnForme);
-            ajouterTransition(NRZTTransition.FIN, !next, aMax, delta, informationMiseEnForme);
+            ajouterTransition(
+                    NRZTTransition.FIN,
+                    actuel,
+                    precedent,
+                    suivant,
+                    aMax,
+                    delta,
+                    informationMiseEnForme);
         } else {
-            ajouterTransition(NRZTTransition.DEBUT, precedent != null && !precedent, aMin, delta, informationMiseEnForme);
+            ajouterTransition(
+                    NRZTTransition.DEBUT,
+                    actuel,
+                    precedent,
+                    suivant,
+                    aMin,
+                    delta,
+                    informationMiseEnForme);
             ajouterValeur(aMin, delta, informationMiseEnForme);
-            ajouterTransition(NRZTTransition.FIN, !next, aMin, delta, informationMiseEnForme);
+            ajouterTransition(
+                    NRZTTransition.FIN,
+                    actuel,
+                    precedent,
+                    suivant,
+                    aMin,
+                    delta,
+                    informationMiseEnForme);
         }
     }
 
@@ -179,17 +252,39 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * Ajoute une transition progressive entre deux niveaux de signal dans le codage NRZT.
      *
      * @param position la position de la transition (début ou fin).
-     * @param condition indique si la transition doit être directe ou progressive.
+     * @param actuel élément actuel
+     * @param precedent élément actuel
+     * @param suivant élément actuel
      * @param value la valeur de l'amplitude cible (aMax ou aMin).
      * @param delta le nombre d'échantillons à utiliser pour la transition.
      * @param informationMiseEnForme l'information analogique à compléter.
      */
-    private void ajouterTransition(NRZTTransition position, boolean condition, float value, float delta, Information<Float> informationMiseEnForme) {
+    private void ajouterTransition(NRZTTransition position, Boolean actuel, Boolean precedent, Boolean suivant, float value, float delta, Information<Float> informationMiseEnForme) {
         for (int j = 0; j < delta; j++) {
+            boolean condition;
+
+            if (actuel) {
+                if (position == NRZTTransition.DEBUT) {
+                    condition = precedent != null && precedent;
+                } else {
+                    condition = suivant;
+                }
+            } else {
+                if (position == NRZTTransition.DEBUT) {
+                    condition = precedent != null && !precedent;
+                } else {
+                    condition = !suivant;
+                }
+            }
+
             if (condition)
                 informationMiseEnForme.add(value);
             else
-                informationMiseEnForme.add(position == NRZTTransition.DEBUT ? (float) j / delta * value : (delta - j) / delta * value);
+                if (position == NRZTTransition.DEBUT) {
+                    informationMiseEnForme.add((float) j / delta * value);
+                } else {
+                    informationMiseEnForme.add((delta - j) / delta * value);
+                }
         }
     }
 
