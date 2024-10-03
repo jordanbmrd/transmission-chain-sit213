@@ -11,6 +11,14 @@ import static org.junit.Assert.assertFalse;
 
 public class TebTest {
 
+
+    /**
+     * Exécute une simulation pour une forme de modulation et retourne une les valeurs du SNR et du TEB
+     *
+     * @param modulation La forme de modulation à utiliser pour la simulation (NRZ, RZ, NRZT)
+     * @return Une Map où les clés sont les valeurs de SNR et les valeurs sont les TEB correspondants
+     * @throws Exception Si une erreur se produit lors de l'exécution de la simulation
+     */
     private Map<Integer, Double> runSimulation(Form modulation) throws Exception {
         Map<Integer, Double> snrToTebMap = new LinkedHashMap<>();
         int snr = 25;
@@ -28,6 +36,11 @@ public class TebTest {
         return snrToTebMap;
     }
 
+    /**
+     * Exécute une simulation pour chaque forme de modulation et affiche les résultats
+     *
+     * @throws Exception Si une erreur se produit lors de l'exécution de la simulation
+     */
     @Test
     public void testSimulationMultipleTimes() throws Exception {
         Map<Integer, Double> snrToTebMapNRZT = runSimulation(Form.NRZT);
