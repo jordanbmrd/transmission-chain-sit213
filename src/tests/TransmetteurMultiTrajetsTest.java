@@ -41,9 +41,10 @@ public class TransmetteurMultiTrajetsTest {
         // Récupérer l'information émise par le transmetteur
         Information<Float> informationRecue = transmetteurMultiTrajets.getInformationEmise();
         assertNotNull(transmetteurMultiTrajets.getInformationEmise());
+        assertEquals(125, informationRecue.nbElements());
 
         // Vérifier que chaque élément de l'information reçue n'est pas nulle
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 125; i++) {
             assertNotNull(informationRecue.iemeElement(i));
         }
     }
