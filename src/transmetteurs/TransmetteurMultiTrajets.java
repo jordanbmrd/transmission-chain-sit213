@@ -11,9 +11,6 @@ import information.InformationNonConformeException;
  * <p>Ce transmetteur utilise un tableau de trajets où chaque trajet est défini par un
  * décalage et un coefficient d'atténuation. Lorsqu'il reçoit des informations, il les
  * combine selon ces trajets avant de les émettre vers des destinations connectées.</p>
- *
- * @param <T> Le type des données à transmettre.
- * @param <R> Le type des données émises.
  */
 public class TransmetteurMultiTrajets extends Transmetteur<Float, Float> {
     private final float[][] ti; // Matrice des trajets (décalage et atténuation)
