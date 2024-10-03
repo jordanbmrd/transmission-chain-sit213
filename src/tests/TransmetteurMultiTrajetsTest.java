@@ -18,7 +18,7 @@ import static org.junit.Assert.assertNotNull;
 public class TransmetteurMultiTrajetsTest {
 
     private TransmetteurMultiTrajets transmetteurMultiTrajets;
-    private final float[][] trajets = {{20, 0.4f}, {30, 0.3f}, {40, 0.2f}, {50, 0.1f}, {120, 0.05f}};
+    private final float[][] trajets = {{100, 1.0f}, {20, 0.75f}, {5, 0.5f}, {80, 0.1f}, {120, 0.8f}};
 
     @Before
     public void setUp() {
@@ -42,13 +42,13 @@ public class TransmetteurMultiTrajetsTest {
     @Test
     public void tebAugmente() throws Exception {
         // SM = sans multiTrajet
-        String[] paramsSM = {"-mess", "10", "-seed", "1308", "-form", "NRZT", "-nbEch", "100", "-snrpb", "-3"};
+        String[] paramsSM = {"-mess", "200", "-seed", "1234", "-form", "RZ", "-nbEch", "30", "-snrpb", "-2"};
         Simulateur simulateurSM = new Simulateur(paramsSM);
         simulateurSM.execute();
         double tebSM = simulateurSM.calculTauxErreurBinaire();
         System.out.println("TEB SM: " + tebSM + "\n");
 
-        String[] commande = {"-mess", "10", "-seed", "1308", "-form", "NRZT", "-nbEch", "100", "-snrpb", "-3", "-ti"};
+        String[] commande = {"-mess", "200", "-seed", "1234", "-form", "RZ", "-nbEch", "30", "-snrpb", "-2", "-ti"};
 
         // AM = Avec multiTrajet
         for (int i = 1; i <= trajets.length; i++) {
