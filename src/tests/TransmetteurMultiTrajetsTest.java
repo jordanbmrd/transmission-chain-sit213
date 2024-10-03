@@ -83,7 +83,7 @@ public class TransmetteurMultiTrajetsTest {
 
             // Afficher les valeurs de tebAM et la commande paramsAM associée
             System.out.println("TEB AM: " + tebAM);
-            System.out.println("Commande paramsAM: " + Arrays.toString(paramsAM) + ", Nombre de MultiTrajet : " + i + "\n");
+            System.out.println("Commande paramsAM: " + Arrays.toString(paramsAM) + ", Nombre de multi-trajets : " + i + "\n");
         }
     }
 
@@ -109,7 +109,7 @@ public class TransmetteurMultiTrajetsTest {
             float snrReelAM = transmetteurGaussien.getSNRReel();
 
             // Afficher les valeurs de snrReelAM et la configuration des trajets
-            System.out.println("SNR réel (nombre de MultiTrajet : " + i + ") :" + snrReelAM);
+            System.out.println("SNR réel (nombre de multi-trajets) : " + i + ") :" + snrReelAM);
         }
     }
 }

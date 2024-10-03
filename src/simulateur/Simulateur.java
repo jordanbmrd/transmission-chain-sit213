@@ -417,12 +417,10 @@ public class Simulateur {
     }
 
     public float calculTauxErreurBinaire() {
-        Information<Boolean> messageEmis = this.source.getInformationEmise();
         Information<Boolean> messageRecu = this.destination.getInformationRecue();
 
-        if (messageEmis.nbElements() != messageRecu.nbElements()) {
-            throw new IllegalArgumentException("La taille du message émis est différente de celle du message reçu.");
-        }
+        Iterator<Boolean> sourceIterateur = source.getInformationEmise().iterator();
+        Iterator<Boolean> destinationIterateur = destination.getInformationRecue().iterator();
 
         int nbBits = messageRecu.nbElements();
         if (nbBits == 0) {
@@ -430,8 +428,8 @@ public class Simulateur {
         }
 
         int nbErreurs = 0;
-        for (int i = 0; i < nbBits; ++i) {
-            if (!messageEmis.iemeElement(i).equals(messageRecu.iemeElement(i))) {
+        while (sourceIterateur.hasNext() && destinationIterateur.hasNext()) {
+            if (sourceIterateur.next() != destinationIterateur.next()) {
                 nbErreurs++;
             }
         }

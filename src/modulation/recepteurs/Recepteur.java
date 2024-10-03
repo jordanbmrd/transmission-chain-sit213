@@ -47,6 +47,7 @@ public class Recepteur extends Modulateur<Float, Boolean> {
     @Override
     public void emettre() throws InformationNonConformeException {
         this.informationEmise = conversionAN(this.informationRecue);
+
         for (DestinationInterface<Boolean> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }
