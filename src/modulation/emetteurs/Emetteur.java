@@ -52,10 +52,6 @@ public class Emetteur extends Modulateur<Boolean, Float> {
         }
         this.informationEmise = conversionNA(this.informationRecue);
 
-        System.out.println("==== EMETTEUR ====");
-        System.out.println("INFORMATION RECUE (" + this.informationRecue.nbElements() + ") ::: " + this.informationRecue);
-        System.out.println("INFORMATION EMISE (" + this.informationEmise.nbElements() + ") ::: " + this.informationEmise);
-
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
         }
@@ -129,9 +125,6 @@ public class Emetteur extends Modulateur<Boolean, Float> {
      * @return l'information analogique mise en forme selon le codage NRZT.
      */
     public Information<Float> miseEnFormeNRZT(Information<Boolean> informationLogique) {
-        System.out.println("==== NRZT ====");
-        System.out.println("INFORMATION BASE (" + informationLogique.nbElements() + ") ::: " + informationLogique);
-
         Information<Float> informationMiseEnForme = new Information<>();
 
         Iterator<Boolean> iterateur = informationLogique.iterator();
