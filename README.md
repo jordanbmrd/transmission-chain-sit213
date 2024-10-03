@@ -14,7 +14,10 @@
 
 ### Ajout de scripts
 
-- `plot_proba_erreur_vs_ebn0.py`: Trace la courbe de la probabilité d'erreur en fonction du rapport Eb/N0 pour les différentes modulations.
+- `plot_teb_multi_trajets.py`: Trace les courbes de la probabilité d'erreur binaire en fonction :
+  - du nombre de trajets indirects ajoutés ;
+  - de l'amplitude des trajets indirects ;
+  - du décalage temporel des trajets indirects.
 
 ### Modifications des classes
 
@@ -31,6 +34,10 @@
 ### Ajout de nouveaux flags au CLI
 
 - `-snrpb [float]`: Choix du RSB par bit en dB. Valeur par défaut : 0.
+
+### Ajout de scripts
+
+- `plot_proba_erreur_vs_ebn0.py`: Trace la courbe de la probabilité d'erreur binaire en fonction du rapport Eb/N0 pour les différentes modulations.
 
 ### Ajout du répertoire `scripts`
 Ce répertoire contient des scripts utiles au projet et aux tests visuels :
