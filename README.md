@@ -1,16 +1,25 @@
 # SIT213
 
-## TP4: Transmissions bruitée avec trajets indirects
+## TP4: Transmission analogique avec un canal bruité à trajets multiples
 
 ### Objectifs
 
+- Rajouter la possibilité d'utiliser une transmission multi-trajets.
+
 ### Ajout de nouveaux flags au CLI
 
-- `-ti <[int] [float]> <[int] [float]> ...` : Utilisation d'une transmission analogique multi-trajets. `dt` (int) précise le décalage temporel (en nombre d'échantillons). `ar` (float) précise l'amplitude relative du signal du trajet indirect par rapport à celle du trajet direct. 5 couples de valeurs au maximum.
+- `-ti <[int] [float]> <[int] [float]> ...`: Utilisation d'une transmission analogique multi-trajets. 5 couples de valeurs au maximum.
+  - `dt` (int) précise le décalage temporel (en nombre d'échantillons)
+  - `ar` (float) précise l'amplitude relative du signal du trajet indirect par rapport à celle du trajet direct.
 
-### Scripts ajoutés
+### Ajout de scripts
 
-- `plot_proba_erreur_vs_ebn0.py` : Trace la courbe de la probabilité d'erreur en fonction du rapport Eb/N0 pour les différentes modulations.
+- `plot_proba_erreur_vs_ebn0.py`: Trace la courbe de la probabilité d'erreur en fonction du rapport Eb/N0 pour les différentes modulations.
+
+### Modifications des classes
+
+- Ajout de la classe `TransmetteurMultiTrajets` pour utiliser un canal de transmission à trajets mumtiples.
+- Ajout de la classe `TransmetteurMultiTrajetsTest` pour tester le comportement de la classe `TransmetteurMultiTrajets`
 
 ## TP3: Transmission analogique avec un bruit gaussien
 
