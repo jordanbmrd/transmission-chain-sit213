@@ -1,7 +1,7 @@
 package simulateur;
 
-import codeurs.Codeur;
-import codeurs.Decodeur;
+import codeurs.AbstractCodeur;
+import codeurs.AbstractDecodeur;
 import destinations.Destination;
 import destinations.DestinationFinale;
 import information.Information;
@@ -138,12 +138,12 @@ public class Simulateur {
     /**
      * Le composant Codeur de la chaîne de transmission.
      */
-    private Codeur<Boolean, Boolean> codeur = null;
+    private AbstractCodeur<Boolean, Boolean> codeur = null;
 
     /**
      * Le composant Decodeur de la chaîne de transmission.
      */
-    private Decodeur<Boolean, Boolean> decodeur = null;
+    private AbstractDecodeur<Boolean, Boolean> decodeur = null;
 
     /**
      * Le constructeur de Simulateur permet de construire une chaîne de
@@ -226,8 +226,8 @@ public class Simulateur {
 
         // Utilisation ou non du codage ;
         if (useCodeur) {
-            this.codeur = new Codeur();
-            this.decodeur = new Decodeur();
+            this.codeur = new AbstractCodeur();
+            this.decodeur = new AbstractDecodeur();
             this.source.connecter(this.codeur);
             this.codeur.connecter(this.emetteur);
             this.recepteur.connecter(this.decodeur);
