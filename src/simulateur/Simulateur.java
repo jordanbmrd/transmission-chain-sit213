@@ -143,7 +143,7 @@ public class Simulateur {
     /**
      * Le composant Decodeur de la chaîne de transmission.
      */
-    private Destination<Boolean, Boolean> decodeur = null;
+    private Decodeur<Boolean, Boolean> decodeur = null;
 
     /**
      * Le constructeur de Simulateur permet de construire une chaîne de
