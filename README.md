@@ -1,5 +1,29 @@
 # SIT213
 
+## TP4: Transmission analogique avec un canal bruité à trajets multiples
+
+### Objectifs
+
+- Rajouter la possibilité d'utiliser une transmission multi-trajets.
+
+### Ajout de nouveaux flags au CLI
+
+- `-ti <[int] [float]> <[int] [float]> ...`: Utilisation d'une transmission analogique multi-trajets. 5 couples de valeurs au maximum.
+  - `dt` (int) précise le décalage temporel (en nombre d'échantillons)
+  - `ar` (float) précise l'amplitude relative du signal du trajet indirect par rapport à celle du trajet direct.
+
+### Ajout de scripts
+
+- `plot_teb_multi_trajets.py`: Trace les courbes de la probabilité d'erreur binaire en fonction :
+  - du nombre de trajets indirects ajoutés ;
+  - de l'amplitude des trajets indirects ;
+  - du décalage temporel des trajets indirects.
+
+### Modifications des classes
+
+- Ajout de la classe `TransmetteurMultiTrajets` pour utiliser un canal de transmission à trajets mumtiples.
+- Ajout de la classe `TransmetteurMultiTrajetsTest` pour tester le comportement de la classe `TransmetteurMultiTrajets`
+
 ## TP3: Transmission analogique avec un bruit gaussien
 
 ### Objectifs
@@ -11,10 +35,15 @@
 
 - `-snrpb [float]`: Choix du RSB par bit en dB. Valeur par défaut : 0.
 
+### Ajout de scripts
+
+- `plot_proba_erreur_vs_ebn0.py`: Trace la courbe de la probabilité d'erreur binaire en fonction du rapport Eb/N0 pour les différentes modulations.
+
 ### Ajout du répertoire `scripts`
 Ce répertoire contient des scripts utiles au projet et aux tests visuels :
 
-- `generate_histogram.py` : Trace l'histogramme des échantillons de bruit.
+- `histogram_noise.py` : Trace l'histogramme des valeurs de bruit gaussien.
+- `plot_teb_vs_snr.py` : Trace la courbe du TEB en fonction du SNR pour les différentes modulations.
 
 ### Modifications des classes
 

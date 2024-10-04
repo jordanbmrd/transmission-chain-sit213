@@ -21,8 +21,8 @@ public class TransmetteurParfaitTest {
     private DestinationInterface<Boolean> mockDestination;
 
     /**
-     * Initialisation des objets avant chaque test.
-     * Crée une instance de {@link TransmetteurParfait} et une destination simulée.
+     * Initialisation des objets avant chaque test
+     * Crée une instance de {@link TransmetteurParfait} et une destination simulée
      */
     @Before
     public void setUp() {
@@ -35,7 +35,7 @@ public class TransmetteurParfaitTest {
      * Teste la méthode {@code recevoir} et vérifie que l'information est correctement transmise
      * à la destination connectée.
      *
-     * @throws InformationNonConformeException si l'information est non conforme.
+     * @throws InformationNonConformeException si l'information est non conforme
      */
     @Test
     public void testRecevoirAndEmettreWithValidInformation() throws InformationNonConformeException {
@@ -57,9 +57,9 @@ public class TransmetteurParfaitTest {
     }
 
     /**
-     * Teste la méthode {@code emettre} avec plusieurs destinations connectées.
+     * Teste la méthode {@code emettre} avec plusieurs destinations connectées
      *
-     * @throws InformationNonConformeException si l'information est non conforme.
+     * @throws InformationNonConformeException si l'information est non conforme
      */
     @Test
     public void testEmettreWithMultipleDestinations() throws InformationNonConformeException {
@@ -88,9 +88,9 @@ public class TransmetteurParfaitTest {
     }
 
     /**
-     * Vérifie que la méthode {@code recevoir} lève une exception si l'information est nulle.
+     * Vérifie que la méthode {@code recevoir} lève une exception si l'information est nulle
      *
-     * @throws InformationNonConformeException attendue si l'information est nulle.
+     * @throws InformationNonConformeException attendue si l'information est nulle
      */
     @Test(expected = InformationNonConformeException.class)
     public void testRecevoirWithNullInformationThrowsException() throws InformationNonConformeException {
@@ -98,9 +98,9 @@ public class TransmetteurParfaitTest {
     }
 
     /**
-     * Teste la réception d'une information vide et vérifie que l'information est correctement émise.
+     * Teste la réception d'une information vide et vérifie que l'information est correctement émise
      *
-     * @throws InformationNonConformeException si l'information est non conforme.
+     * @throws InformationNonConformeException si l'information est non conforme
      */
     @Test
     public void testRecevoirEmptyInformation() throws InformationNonConformeException {

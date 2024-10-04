@@ -3,6 +3,7 @@ package transmetteurs;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
+import utils.Form;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
 
     private float variance;
     private float snrReel;
+    private float ebN0dB;
     private float puissanceMoyenneSignal;
     private float puissanceMoyenneBruit;
     private Random random;
@@ -70,6 +72,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
             throw new InformationNonConformeException("Aucune information reçue à émettre.");
         }
 
+        calculerPuissanceMoyenneSignal();
         calculerVariance();
 
         this.informationEmise = ajouterBruit(this.informationRecue);
@@ -95,6 +98,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
 
         calculerPuissanceMoyenneBruit();
         calculerSNRReel();
+        calculerEbN0dB();
 
         for (DestinationInterface<Float> destinationConnectee : destinationsConnectees) {
             destinationConnectee.recevoir(this.informationEmise);
@@ -124,12 +128,21 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
      * Calcule la variance du bruit en fonction du SNR.
      */
     private void calculerVariance() {
-        calculerPuissanceMoyenneSignal();
         this.variance = (this.puissanceMoyenneSignal * nbEch) / (float) (2 * Math.pow(10, SNRdB / 10));
     }
 
+    /**
+     * Calcule le SNR réel obtenu
+     */
     private void calculerSNRReel() {
         this.snrReel = (float) (10 * Math.log10((this.puissanceMoyenneSignal * nbEch) / (2 * this.puissanceMoyenneBruit)));
+    }
+
+    /**
+     * Calcule le rapport Eb/N0 en dB
+     */
+    private void calculerEbN0dB() {
+        this.ebN0dB = (float) (10 * Math.log10(Math.pow(10, (this.puissanceMoyenneSignal * nbEch) / this.puissanceMoyenneBruit)));
     }
 
     /**
@@ -167,5 +180,10 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
     @Override
     public float getSNRReel() {
         return this.snrReel;
+    }
+
+    @Override
+    public float getEbN0dB() {
+        return this.ebN0dB;
     }
 }

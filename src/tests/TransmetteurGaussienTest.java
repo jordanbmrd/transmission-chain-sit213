@@ -16,6 +16,9 @@ public class TransmetteurGaussienTest {
     private DestinationInterface<Float> mockDestination;
     private final Float[] floats = new Float[]{1.0f, 2.0f, 3.0f};
 
+    /**
+     * Initialise le transmetteur gaussien et le mock de destination
+     */
     @Before
     public void setUp() {
         transmetteurGaussien = new TransmetteurGaussien(10, 0.0f, 22);
@@ -23,12 +26,17 @@ public class TransmetteurGaussienTest {
         transmetteurGaussien.connecter(mockDestination);
     }
 
+    /**
+     * Teste l'ajout de bruit à une information
+     *
+     * @throws InformationNonConformeException si l'Information comporte une anomalie
+     */
     @Test
     public void ajoutBruit() throws InformationNonConformeException {
         Information<Float> information = new Information<>(floats);
 
         // Prépare le mock pour recevoir l'information bruitée
-        mockDestination.recevoir(EasyMock.anyObject(Information.class));
+        mockDestination.recevoir(EasyMock.anyObject());
         EasyMock.replay(mockDestination);
 
         // Reçoit l'information et émet l'information bruitée
@@ -48,6 +56,11 @@ public class TransmetteurGaussienTest {
         }
     }
 
+    /**
+     * Teste la réception d'une information vide
+     *
+     * @throws InformationNonConformeException si l'Information comporte une anomalie
+     */
     @Test
     public void recevoirInformationVide() throws InformationNonConformeException {
         Information<Float> information = new Information<>();
@@ -59,6 +72,11 @@ public class TransmetteurGaussienTest {
         assertEquals(0, informationBruitee.nbElements());
     }
 
+    /**
+     * Teste l'émission d'une information vide
+     *
+     * @throws InformationNonConformeException si l'Information comporte une anomalie
+     */
     @Test
     public void emettreAvecValeursNegatives() throws InformationNonConformeException {
         Information<Float> information = new Information<>(new Float[]{-1.0f, -2.0f, -3.0f});

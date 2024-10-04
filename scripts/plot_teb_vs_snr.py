@@ -11,18 +11,30 @@ teb_rz = data['TEB RZ']
 teb_nrz = data['TEB NRZ']
 teb_nrzt = data['TEB NRZT']
 
-# Tracer le TEB en fonction du SNR pour chaque type de modulation
+# Définir le seuil minimum de TEB
+seuil_teb = 1e-4
+
+# Filtrer les valeurs de TEB supérieures ou égales au seuil
+teb_rz = teb_rz[teb_rz >= seuil_teb]
+teb_nrz = teb_nrz[teb_nrz >= seuil_teb]
+teb_nrzt = teb_nrzt[teb_nrzt >= seuil_teb]
+
+# Correspondre les valeurs SNR aux valeurs filtrées de TEB
+snr_rz = snr[:len(teb_rz)]
+snr_nrz = snr[:len(teb_nrz)]
+snr_nrzt = snr[:len(teb_nrzt)]
+
+# Tracer le TEB en fonction du SNR pour chaque type de modulation (en semilog sur l'axe Y)
 plt.figure(figsize=(10, 6))
 
-plt.plot(snr, teb_rz, label="TEB RZ", marker='o')
-plt.plot(snr, teb_nrz, label="TEB NRZ", marker='s')
-plt.plot(snr, teb_nrzt, label="TEB NRZT", marker='^')
+plt.semilogy(snr_rz, teb_rz, label="TEB RZ", marker='o')
+plt.semilogy(snr_nrz, teb_nrz, label="TEB NRZ", marker='s')
+plt.semilogy(snr_nrzt, teb_nrzt, label="TEB NRZT", marker='^')
 
 # Ajouter les étiquettes et le titre
-plt.xlabel("SNR (dB)")
+plt.xlabel("SNR par bit (dB)")
 plt.ylabel("TEB")
-plt.title("TEB en fonction du SNR pour les modulations RZ, NRZ et NRZT")
-plt.grid(True)
+plt.grid(True, which="both", linestyle='--')
 plt.legend()
 
 # Afficher le graphe

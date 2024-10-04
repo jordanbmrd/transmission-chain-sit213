@@ -13,13 +13,17 @@ NC='\033[0m'
 # Répertoire des JAR
 LIB_DIR="libraries"
 
-# Fichiers JAR nécessaires
-JUNIT_JAR="$LIB_DIR/junit-4.13.1.jar"
-EASYMOCK_JAR="$LIB_DIR/easymock-5.4.0.jar"
-HAMCREST_JAR="$LIB_DIR/hamcrest-core-1.3.jar"
-
 # Emplacement des classes compilées
 BIN_DIR="bin"
+
+# Recherche tous les fichiers JAR dans le répertoire libraries
+JAR_FILES=$(find "$LIB_DIR" -name "*.jar" | tr '\n' ':')
+
+# Couleurs pour l'affichage
+BLUE='\033[0;34m'
+YELLOW='\033[0;33m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
 # Exécution des tests JUnit
 echo -e "${BLUE}Exécution des tests JUnit...${NC}"
@@ -30,7 +34,7 @@ test_classes=$(find "$BIN_DIR" -name "*Test.class" | sed 's/bin\///;s/\.class//;
 # Exécution des tests JUnit avec org.junit.runner.JUnitCore
 for test_class in $test_classes; do
     echo -e "${YELLOW}Running test: $test_class${NC}"
-    java -cp "$BIN_DIR:$JUNIT_JAR:$EASYMOCK_JAR:$HAMCREST_JAR" org.junit.runner.JUnitCore "$test_class"
+    java -cp "$BIN_DIR:$JAR_FILES" org.junit.runner.JUnitCore "$test_class"
     if [ $? -ne 0 ]; then
         echo -e "${RED}Échec du test : $test_class${NC}"
         exit 1
@@ -66,8 +70,13 @@ test_cases=(
     "-mess 0010011 -form NRZT -snrpb -30"    # SNR par bit avec format NRZT
     "-mess 0010011 -form NRZT -snrpb 0"    # SNR par bit avec format NRZT
     "-mess 0010011 -form NRZT -snrpb 30"    # SNR par bit avec format NRZT
-
     "-ampl -3 3 -form NRZT -snrpb 30"  # SNR par bit avec amplitudes personnalisées
+
+    "-mess 0010011 -ti 60 0.3"          # 1 trajet indirect
+    "-mess 0010011 -ti 0 1.0"          # Trajet indirect sans décalage
+    "-mess 0010011 -ti 100 0.75 20 0.4"   # 2 trajets indirects
+    "-mess 0010011 -ti 100 0.9 20 0.6 40 0.5"     # 3 trajets indirects
+    "-mess 0010011 -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"      # 5 trajets indirects
 )
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
@@ -80,6 +89,7 @@ if [ -z "$CI" ]; then
         "-s -mess 01101101110 -form NRZ -snrpb 30"
         "-s -mess 01101101110 -form NRZT -snrpb 30"
         "-s -mess 01101101110 -form RZ -snrpb 30"
+        "-s -mess 01101101110 -form RZ -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"
     )
 fi
 
@@ -89,7 +99,9 @@ failed_tests=0
 # Boucle sur les scénarios de tests
 for test_case in "${test_cases[@]}"; do
     echo -e "${YELLOW}Exécution du test : ./simulateur $test_case${NC}"
-    ./simulateur $test_case
+
+    java -cp "$BIN_DIR:$JAR_FILES" simulateur.Simulateur $test_case
+
     if [ $? -ne 0 ]; then
         echo -e "${RED}Échec du test : $test_case${NC}"
         ((failed_tests++))

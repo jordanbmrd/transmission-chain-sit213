@@ -6,11 +6,13 @@ import information.Information;
 import modulation.Modulateur;
 import modulation.emetteurs.Emetteur;
 import modulation.recepteurs.Recepteur;
+import org.apache.commons.math3.special.Erf;
 import sources.Source;
 import sources.SourceAleatoire;
 import sources.SourceFixe;
 import transmetteurs.Transmetteur;
 import transmetteurs.TransmetteurGaussien;
+import transmetteurs.TransmetteurMultiTrajets;
 import transmetteurs.TransmetteurParfait;
 import utils.Form;
 import visualisations.SondeAnalogique;
@@ -18,6 +20,7 @@ import visualisations.SondeLogique;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  * La classe Simulateur permet de construire et simuler une chaîne de
@@ -86,6 +89,11 @@ public class Simulateur {
     private int nbEch = 30;
 
     /**
+     * Décalage temporel (en nombre d'échantillons).
+     * */
+    private float[][] ti = null;
+
+    /**
      * Le composant Source de la chaîne de transmission.
      */
     private Source<Boolean> source = null;
@@ -101,14 +109,19 @@ public class Simulateur {
     private Modulateur<Float, Boolean> recepteur = null;
 
     /**
-     * Le composant Transmetteur parfait pour les signaux logiques de la chaîne de transmission.
+     * Le composant TransmetteurParfait pour les signaux logiques de la chaîne de transmission.
      */
     private Transmetteur<Boolean, Boolean> transmetteurLogique = null;
 
     /**
-     * Le composant Transmetteur parfait pour les signaux analogiques de la chaîne de transmission.
+     * Le composant TransmetteurAnalogique pour les signaux analogiques de la chaîne de transmission.
      */
     private Transmetteur<Float, Float> transmetteurAnalogique = null;
+
+    /**
+     * Le composant TransmetteurMultiTrajets pour les signaux multi-trajets de la chaîne de transmission.
+     * */
+    private Transmetteur<Float, Float> transmetteurMultiTrajets = null;
 
     /**
      * Le composant Destination de la chaîne de transmission.
@@ -140,8 +153,15 @@ public class Simulateur {
             this.source = new SourceFixe(messageString);
         }
 
-        // Instanciation des composants
         this.emetteur = new Emetteur(nbEch, aMax, aMin, form);
+        // Sonde de l'émetteur
+        if (affichage)
+            this.emetteur.connecter(new SondeAnalogique("Émetteur " + form));
+
+        this.source.connecter(this.emetteur);
+        // Sonde de la source
+        if (affichage)
+            this.source.connecter(new SondeLogique("Source " + form, 200));
 
         // Si le SNR par bit est défini
         if (!Float.isNaN(snrpb)) {
@@ -156,23 +176,36 @@ public class Simulateur {
             this.transmetteurAnalogique = new TransmetteurParfait<>();
         }
 
+        // Sonde du transmetteur analogique
+        if (affichage)
+            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur analogique " + form));
+
+        if (ti != null) {
+            this.transmetteurMultiTrajets = new TransmetteurMultiTrajets(ti);
+
+            // Connexion de l'émetteur au transmetteur multi-trajets
+            this.emetteur.connecter(this.transmetteurMultiTrajets);
+
+            // Puis du transmetteur multi-trajets au transmetteur analogique
+            this.transmetteurMultiTrajets.connecter(this.transmetteurAnalogique);
+
+            // Sonde du transmetteur multi-trajets
+            if (affichage)
+                this.transmetteurMultiTrajets.connecter(new SondeAnalogique("Transmetteur multi-trajets " + form));
+        } else {
+            // Connexion de l'émetteur au transmetteur analogique
+            this.emetteur.connecter(this.transmetteurAnalogique);
+        }
+
         this.recepteur = new Recepteur(nbEch, aMax, aMin, form);
         this.destination = new DestinationFinale();
 
-        // Connexion des différents composants
-        this.source.connecter(this.emetteur);
-        this.emetteur.connecter(this.transmetteurAnalogique);
         this.transmetteurAnalogique.connecter(this.recepteur);
-
         this.recepteur.connecter(this.destination);
 
-        // Connexion des sondes (si l'option -s est utilisée)
-        if (affichage) {
-            this.source.connecter(new SondeLogique("Source " + form, 200));
-            this.emetteur.connecter(new SondeAnalogique("Emetteur " + form));
-            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur " + form));
+        // Sonde du récepteur
+        if (affichage)
             this.recepteur.connecter(new SondeLogique("Recepteur " + form, 200));
-        }
     }
 
     /**
@@ -186,9 +219,9 @@ public class Simulateur {
      *             <dt> -mess m </dt><dd> un message à transmettre : soit une chaîne de bits (7 ou plus) ou un nombre entier (1 à 6 chiffres) pour un message aléatoire</dd>
      *             <dt> -s </dt><dd> active les sondes d'affichage pour la simulation</dd>
      *             <dt> -seed v </dt><dd> initialise le générateur aléatoire avec la valeur v</dd>
-     *             <dt> -code c </dt><dd> définit le type de codage : NRZ, RZ ou NRZT</dd>
-     *             <dt> -aMax v </dt><dd> fixe l'amplitude maximale à v</dd>
-     *             <dt> -aMin v </dt><dd> fixe l'amplitude minimale à v</dd>
+     *             <dt> -form c </dt><dd> définit le type de codage : NRZ, RZ ou NRZT</dd>
+     *             <dt> -ampl aMin aMax </dt><dd> fixe les amplitudes minimales et maximales</dd>
+     *             <dt> -ti dt ar </dt><dd> définit les couples de valeurs (décalage temporel, amplitude relative). 5 maximums.</dd>
      *             </dl>
      * @throws ArgumentsException si un des arguments est incorrect ou manquant.
      */
@@ -218,17 +251,32 @@ public class Simulateur {
                 case "-snrpb":
                     traiterSnrpb(param);
                     break;
+                case "-ti":
+                    traiterTi(param);
+                    break;
                 default:
                     throw new ArgumentsException("Option invalide : " + arg);
             }
         }
     }
 
+    /**
+     * Traite l'argument de la graine (seed) et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument seed est invalide.
+     */
     private void traiterSeed(Iterator<String> param) throws ArgumentsException {
         seed = parseIntegerArgument(param, "seed");
         aleatoireAvecGerme = true;
     }
 
+    /**
+     * Traite l'argument du message et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument message est invalide.
+     */
     private void traiterMessage(Iterator<String> param) throws ArgumentsException {
         String message = getNextArgument(param, "mess");
 
@@ -249,6 +297,12 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument de la forme de codage et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument form est invalide.
+     */
     private void traiterForm(Iterator<String> param) throws ArgumentsException {
         String formArg = getNextArgument(param, "form");
         try {
@@ -258,6 +312,12 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument de l'amplitude et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument amplitude est invalide.
+     */
     private void traiterAmpl(Iterator<String> param) throws ArgumentsException {
         aMin = parseFloatArgument(param, "ampl aMin");
         aMax = parseFloatArgument(param, "ampl aMax");
@@ -266,6 +326,12 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument du nombre d'échantillons et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument nbEch est invalide.
+     */
     private void traiterNbEch(Iterator<String> param) throws ArgumentsException {
         nbEch = parseIntegerArgument(param, "nbEch");
         if (nbEch < 0) {
@@ -273,8 +339,54 @@ public class Simulateur {
         }
     }
 
+    /**
+     * Traite l'argument du rapport signal sur bruit par bit (snrpb) et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument snrpb est invalide.
+     */
     private void traiterSnrpb(Iterator<String> param) throws ArgumentsException {
         snrpb = parseFloatArgument(param, "snrpb");
+    }
+
+    /**
+     * Traite l'argument des décalages temporels (ti) et met à jour les attributs correspondants.
+     *
+     * @param param l'itérateur sur les paramètres d'entrée.
+     * @throws ArgumentsException si l'argument ti est invalide.
+     */
+    private void traiterTi(Iterator<String> param) throws ArgumentsException {
+        LinkedList<float[]> tiList = new LinkedList<>();
+
+        // Lecture des paires (dt, ar) pour les trajets indirects, jusqu'à un maximum de 5 paires
+        for (int i = 0; i < 5 && param.hasNext(); i++) {
+            int dt = parseIntegerArgument(param, "ti dt");
+            float ar = parseFloatArgument(param, "ti ar");
+
+            // Vérification que le décalage temporel est bien nul ou positif
+            if (dt < 0) {
+                throw new ArgumentsException("Le décalage temporel (dt) doit être supérieur ou égal à 0 pour le paramètre -ti.");
+            }
+
+            // Vérification des contraintes sur l'amplitude relative (ar doit être entre 0 et 1)
+            if (ar < 0 || ar > 1) {
+                throw new ArgumentsException("L'amplitude relative (ar) doit être comprise entre 0 et 1 pour le paramètre -ti.");
+            }
+
+            tiList.add(new float[]{dt, ar});
+        }
+
+        // Si aucun trajet indirect n'a été spécifié, ajouter les valeurs par défaut {0, 0.0f}
+        if (tiList.isEmpty()) {
+            tiList.add(new float[]{0, 0.0f});
+        }
+
+        // Convertir la liste en tableau 2D float[][]
+        ti = new float[tiList.size()][2];
+        for (int i = 0; i < tiList.size(); i++) {
+            ti[i][0] = tiList.get(i)[0]; // dt
+            ti[i][1] = tiList.get(i)[1]; // ar
+        }
     }
 
     private String getNextArgument(Iterator<String> param, String paramName) throws ArgumentsException {
@@ -309,21 +421,11 @@ public class Simulateur {
         source.emettre();
     }
 
-    /**
-     * Calcule le Taux d'Erreur Binaire (TEB) en comparant le message émis avec le message reçu.
-     *
-     * @return le Taux d'Erreur Binaire (TEB).
-     */
-
-    private float teb;
-
     public float calculTauxErreurBinaire() {
-        Information<Boolean> messageEmis = this.source.getInformationEmise();
         Information<Boolean> messageRecu = this.destination.getInformationRecue();
 
-        if (messageEmis.nbElements() != messageRecu.nbElements()) {
-            throw new IllegalArgumentException("La taille du message émis est différente de celle du message reçu.");
-        }
+        Iterator<Boolean> sourceIterateur = source.getInformationEmise().iterator();
+        Iterator<Boolean> destinationIterateur = destination.getInformationRecue().iterator();
 
         int nbBits = messageRecu.nbElements();
         if (nbBits == 0) {
@@ -331,18 +433,24 @@ public class Simulateur {
         }
 
         int nbErreurs = 0;
-        for (int i = 0; i < nbBits; ++i) {
-            if (!messageEmis.iemeElement(i).equals(messageRecu.iemeElement(i))) {
+        while (sourceIterateur.hasNext() && destinationIterateur.hasNext()) {
+            if (sourceIterateur.next() != destinationIterateur.next()) {
                 nbErreurs++;
             }
         }
 
-        teb = (float) nbErreurs / nbBits;
-        return teb;
+        return (float) nbErreurs / nbBits;
     }
 
-    public float getTeb() {
-        return teb;
+    public double calculProbaErreur() {
+        // Conversion du rapport Eb/N0 en linéaire
+        float ebN0Lin = (float) Math.pow(10, this.transmetteurAnalogique.getEbN0dB() / 10);
+
+        // Formule de calcul de la probabilité d'erreur
+        return switch (form) {
+            case Form.NRZ, Form.NRZT -> 0.5 * Erf.erfc(Math.sqrt(ebN0Lin));
+            case Form.RZ -> 0.5*Erf.erfc((1/Math.sqrt(2))*Math.sqrt(ebN0Lin));
+        };
     }
 
     /**
@@ -377,6 +485,8 @@ public class Simulateur {
                 string.append("\n => Puissance moyenne du bruit : ").append(simulateur.transmetteurAnalogique.getPuissanceMoyenneBruit());
                 string.append("\n => Variance : ").append(simulateur.transmetteurAnalogique.getVariance());
                 string.append("\n => Rapport signal-sur-bruit (S/N, en dB) : ").append(simulateur.transmetteurAnalogique.getSNRReel());
+                string.append("\n => Rapport Eb/N0 (en dB) : ").append(simulateur.transmetteurAnalogique.getEbN0dB());
+                //string.append("\n => Probabilité d'erreur (forme ").append(simulateur.form.toString()).append(") : ").append(simulateur.calculProbaErreur());
             }
 
             System.out.println(string);
