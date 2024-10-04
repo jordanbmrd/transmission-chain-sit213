@@ -104,15 +104,6 @@ public abstract class Modulateur<R, E> implements DestinationInterface<R>, Sourc
     }
 
     /**
-     * Déconnecte une destination de la sortie du modulateur.
-     *
-     * @param destination La destination à déconnecter
-     */
-    public void deconnecter(DestinationInterface<E> destination) {
-        destinationsConnectees.remove(destination);  // Supprime la destination de la liste
-    }
-
-    /**
      * Valide les paramètres du modulateur (aMin, aMax et le type de codage).
      * Vérifie la cohérence des valeurs d'amplitudes et des règles spécifiques à chaque codage.
      *
