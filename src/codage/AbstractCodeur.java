@@ -5,6 +5,7 @@ import information.Information;
 import information.InformationNonConformeException;
 import sources.SourceInterface;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractCodeur<R, E> implements DestinationInterface<R>, SourceInterface<E> {
@@ -23,6 +24,16 @@ public abstract class AbstractCodeur<R, E> implements DestinationInterface<R>, S
      * L'information émise en sortie du codeur après traitement.
      */
     protected Information<E> informationEmise;
+
+    /**
+     * Constructeur du codeur.
+     * Initialise les paramètres communs à tous les codeurs.
+     */
+    public AbstractCodeur() {
+        this.destinationsConnectees = new ArrayList<>(); // Initialisation des destinations connectées
+        this.informationRecue = null;  // L'information reçue est initialement nulle
+        this.informationEmise = null;  // L'information émise est initialement nulle
+    }
 
     /**
      * pour obtenir la dernière information reçue par une destination.
