@@ -1,5 +1,7 @@
 package simulateur;
 
+import codeurs.Codeur;
+import codeurs.Decodeur;
 import destinations.Destination;
 import destinations.DestinationFinale;
 import information.Information;
@@ -129,6 +131,21 @@ public class Simulateur {
     private Destination<Boolean> destination = null;
 
     /**
+     * Indique si le codage est utilisé.
+     */
+    private Boolean useCodeur = false;
+
+    /**
+     * Le composant Codeur de la chaîne de transmission.
+     */
+    private Codeur<Boolean, Boolean> codeur = null;
+
+    /**
+     * Le composant Decodeur de la chaîne de transmission.
+     */
+    private Destination<Boolean, Boolean> decodeur = null;
+
+    /**
      * Le constructeur de Simulateur permet de construire une chaîne de
      * transmission composée d'une Source <Boolean>, d'un Emetteur, d'un Recepteur et d'une Destination.
      * Les composants de la chaîne sont créés et connectés en fonction des arguments fournis.
@@ -206,6 +223,19 @@ public class Simulateur {
         // Sonde du récepteur
         if (affichage)
             this.recepteur.connecter(new SondeLogique("Recepteur " + form, 200));
+
+        // Utilisation ou non du codage ;
+        if (useCodeur) {
+            this.codeur = new Codeur();
+            this.decodeur = new Decodeur();
+            this.source.connecter(this.codeur);
+            this.codeur.connecter(this.emetteur);
+            this.recepteur.connecter(this.decodeur);
+            this.decodeur.connecter(this.destination);
+            if (affichage)
+                this.codeur.connecter(new SondeLogique("Codeur" + form, 200));
+                this.decodeur.connecter(new SondeLogique("Decodeur" + form, 200));
+        }
     }
 
     /**
@@ -254,6 +284,8 @@ public class Simulateur {
                 case "-ti":
                     traiterTi(param);
                     break;
+                case "-codeur":
+                    useCodeur = true;
                 default:
                     throw new ArgumentsException("Option invalide : " + arg);
             }
