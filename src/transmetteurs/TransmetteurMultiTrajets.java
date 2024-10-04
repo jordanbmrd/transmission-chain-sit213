@@ -29,6 +29,8 @@ public class TransmetteurMultiTrajets extends Transmetteur<Float, Float> {
 
         // Calcul du décalage maximum
         for (float[] trajet : ti) {
+            // Si l'amplitude est égale à 0, on l'ignore
+            if (trajet[1] == 0) break;
             decalageMaximum = Math.max(decalageMaximum, (int) trajet[0]);
         }
     }

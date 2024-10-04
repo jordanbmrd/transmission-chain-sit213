@@ -1,4 +1,4 @@
-package codeurs;
+package codage;
 
 import destinations.DestinationInterface;
 import information.Information;
@@ -9,11 +9,11 @@ public class Codeur extends AbstractCodeur<Boolean, Boolean> {
         Information<Boolean> informationCodee = new Information<>();
 
         for (boolean bit : information) {
-            if (bit) {  // bit = 1
+            if (bit) {  // bit = 1 => 101
                 informationCodee.add(true);
                 informationCodee.add(false);
                 informationCodee.add(true);
-            } else {    // bit = 0
+            } else {    // bit = 0 => 010
                 informationCodee.add(false);
                 informationCodee.add(true);
                 informationCodee.add(false);

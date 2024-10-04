@@ -1,4 +1,4 @@
-package codeurs;
+package codage;
 
 import destinations.DestinationInterface;
 import information.Information;
