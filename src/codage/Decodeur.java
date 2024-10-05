@@ -22,7 +22,7 @@ public class Decodeur extends AbstractCodeur<Boolean, Boolean> {
      * @param informationCodee L'information codée à décoder, de type Information<Boolean>.
      * @return L'information décodée, de type Information<Boolean>.
      */
-    private Information<Boolean> decoder(Information<Boolean> informationCodee) {
+    public Information<Boolean> decoder(Information<Boolean> informationCodee) {
         Information<Boolean> informationDecodee = new Information<>();
         int tailleTrame = informationCodee.nbElements() / 3;
 

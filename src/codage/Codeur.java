@@ -21,7 +21,7 @@ public class Codeur extends AbstractCodeur<Boolean, Boolean> {
      * @param information L'information à encoder, de type Information<Boolean>.
      * @return L'information encodée, de type Information<Boolean>.
      */
-    private Information<Boolean> encoder(Information<Boolean> information) {
+    public Information<Boolean> encoder(Information<Boolean> information) {
         Information<Boolean> informationCodee = new Information<>();
 
         for (boolean bit : information) {
