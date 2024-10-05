@@ -444,6 +444,8 @@ public class Simulateur {
                 throw new ArgumentsException("dt doit être >= 0 et ar doit être entre 0 et 1 pour le paramètre -ti.");
             }
 
+            System.out.println("dt : " + dt + " ar : " + ar);
+
             // Ajouter le couple (dt, ar) au tableau 2D
             this.ti[index][0] = dt;
             this.ti[index][1] = ar;
@@ -454,18 +456,6 @@ public class Simulateur {
                 break;
             }
         }
-
-        // Si aucun couple n'a été spécifié, ajouter une valeur par défaut {0, 0.0f}
-        if (index == 0) {
-            this.ti[0][0] = 0;
-            this.ti[0][1] = 0.0f;
-            index = 1;  // Au moins un couple par défaut ajouté
-        }
-
-        // Redimensionner le tableau pour correspondre au nombre réel de couples
-        this.ti = new float[index][2];
-        System.arraycopy(this.ti, 0, ti, 0, index);
-
         return null;
     }
 
