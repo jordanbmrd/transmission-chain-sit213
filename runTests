@@ -12,18 +12,10 @@ NC='\033[0m'
 
 # Répertoire des JAR
 LIB_DIR="libraries"
-
-# Emplacement des classes compilées
 BIN_DIR="bin"
 
 # Recherche tous les fichiers JAR dans le répertoire libraries
 JAR_FILES=$(find "$LIB_DIR" -name "*.jar" | tr '\n' ':')
-
-# Couleurs pour l'affichage
-BLUE='\033[0;34m'
-YELLOW='\033[0;33m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
 
 # Exécution des tests JUnit
 echo -e "${BLUE}Exécution des tests JUnit...${NC}"
@@ -43,40 +35,86 @@ done
 
 echo -e "${GREEN}Tous les tests JUnit sont passés avec succès${NC}"
 
-# Exécution des scénarios de tests personnalisés si nécessaire
+# Fonction pour shuffle les args (utilise regex pour éviter de considérer les valeurs négatives comme argument)
+shuffle_args() {
+    local args=("$@")
+    local grouped_args=()
+    local current_group=()
+
+    # Parcours des arguments et regroupement clé-valeur ou clé seule
+    for arg in "${args[@]}"; do
+        if [[ "$arg" == -* ]] && ! [[ "$arg" =~ ^-[0-9]+ ]]; then
+            # Si on est sur une nouvelle clé, on stocke le groupe actuel
+            if [ ${#current_group[@]} -gt 0 ]; then
+                grouped_args+=("${current_group[*]}")
+            fi
+            # Démarrer un nouveau groupe avec la clé actuelle
+            current_group=("$arg")
+        else
+            # Ajouter la valeur à la clé en cours (y compris les valeurs négatives)
+            current_group+=("$arg")
+        fi
+    done
+
+    # Ajouter le dernier groupe au tableau
+    if [ ${#current_group[@]} -gt 0 ]; then
+        grouped_args+=("${current_group[*]}")
+    fi
+
+    # Mélange des groupes d'arguments
+    for (( i=${#grouped_args[@]}-1; i>0; i-- )); do
+        j=$((RANDOM % (i+1)))
+        tmp=${grouped_args[i]}
+        grouped_args[i]=${grouped_args[j]}
+        grouped_args[j]=$tmp
+    done
+
+    echo "${grouped_args[@]}"
+}
+
+# Exécution des scénarios de tests personnalisés
 echo -e "${BLUE}Exécution des scénarios de tests personnalisés...${NC}"
 
-# Liste des scénarios de tests à exécuter
+# Liste des scénarios de tests à exécuter (tests normaux)
 test_cases=(
-    "-mess 10"                       # Test avec un message aléatoire de 10 bits
-    "-mess 1010101"                  # Test avec un message fixe
-    "-mess 0010011 -form NRZ"          # Test avec codage NRZ
-    "-mess 0010011 -form RZ"          # Test avec codage RZ
-    "-mess 0010011 -form NRZT"          # Test avec codage NRZT
-    "-ampl -5 5 -form NRZT"    # Test avec des amplitudes
-    "-mess 50 -seed 1234"            # Test avec une seed spécifique
-    "-mess 1001110011100110001111000011110001110000011100000111000011110000111110000000000"  # Message long
-    "-mess 1000000"                  # Test avec un message d'un million de bits
+    "-mess 10"
+    "-mess 1010101"
+    "-mess 0010011 -form NRZ"
+    "-mess 0010011 -form RZ"
+    "-mess 0010011 -form NRZT"
+    "-ampl -5 5 -form NRZT"
+    "-mess 50 -seed 1234"
+    "-mess 1001110011100110001111000011110001110000011100000111000011110000111110000000000"
+    "-mess 1000000"
+    "-mess 1010101 -snrpb 0.1"
+    "-mess 110011 -snrpb 50"
+    "-mess 0010011 -form NRZ -snrpb 30"
+    "-mess 0010011 -form NRZ -snrpb 0"
+    "-mess 0010011 -form NRZ -snrpb -30"
+    "-mess 0010011 -form RZ -snrpb -30"
+    "-mess 0010011 -form RZ -snrpb 0"
+    "-mess 0010011 -form RZ -snrpb 30"
+    "-mess 0010011 -form NRZT -snrpb -30"
+    "-mess 0010011 -form NRZT -snrpb 0"
+    "-mess 0010011 -form NRZT -snrpb 30"
+    "-ampl -3 3 -form NRZT -snrpb 30"
+    "-mess 0010011 -ti 60 0.3"
+    "-mess 0010011 -ti 0 1.0"
+    "-mess 0010011 -ti 100 0.75 20 0.4"
+    "-mess 0010011 -ti 100 0.9 20 0.6 40 0.5"
+    "-mess 0010011 -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"
 
-    "-mess 1010101 -snrpb 0.1"       # SNR par bit très faible
-    "-mess 110011 -snrpb 50"         # SNR par bit élevé
-
-    "-mess 0010011 -form NRZ -snrpb 30"  # SNR par bit avec format NRZ
-    "-mess 0010011 -form NRZ -snrpb 0"  # SNR par bit avec format NRZ
-    "-mess 0010011 -form NRZ -snrpb -30"  # SNR par bit avec format NRZ
-    "-mess 0010011 -form RZ -snrpb -30"    # SNR par bit avec format RZ
-    "-mess 0010011 -form RZ -snrpb 0"    # SNR par bit avec format RZ
-    "-mess 0010011 -form RZ -snrpb 30"    # SNR par bit avec format RZ
-    "-mess 0010011 -form NRZT -snrpb -30"    # SNR par bit avec format NRZT
-    "-mess 0010011 -form NRZT -snrpb 0"    # SNR par bit avec format NRZT
-    "-mess 0010011 -form NRZT -snrpb 30"    # SNR par bit avec format NRZT
-    "-ampl -3 3 -form NRZT -snrpb 30"  # SNR par bit avec amplitudes personnalisées
-
-    "-mess 0010011 -ti 60 0.3"          # 1 trajet indirect
-    "-mess 0010011 -ti 0 1.0"          # Trajet indirect sans décalage
-    "-mess 0010011 -ti 100 0.75 20 0.4"   # 2 trajets indirects
-    "-mess 0010011 -ti 100 0.9 20 0.6 40 0.5"     # 3 trajets indirects
-    "-mess 0010011 -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"      # 5 trajets indirects
+    # TP5
+    "-mess 0010011 -form NRZT -codeur"
+    "-mess 01101101110 -form NRZ -codeur"
+    "-mess 100111001 -form RZ -codeur"
+    "-mess 110011 -form NRZT -codeur"
+    "-mess 1010 -form RZ -codeur"
+    "-mess 0010011 -form NRZ -codeur"
+    "-mess 110011 -form RZ -codeur"
+    "-mess 01101101110 -form NRZT -codeur"
+    "-mess 101010 -form NRZT -codeur"
+    "-mess 1010 -form NRZT -codeur"
 )
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
@@ -90,23 +128,40 @@ if [ -z "$CI" ]; then
         "-s -mess 01101101110 -form NRZT -snrpb 30"
         "-s -mess 01101101110 -form RZ -snrpb 30"
         "-s -mess 01101101110 -form RZ -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"
+
+        # TP5
+        "-s -mess 0010011 -form NRZT -codeur"
+        "-s -mess 110011 -form NRZ -codeur"
+        "-s -mess 01101101110 -form RZ -codeur"
     )
 fi
 
 # Initialisation du compteur d'échecs
 failed_tests=0
 
-# Boucle sur les scénarios de tests
+# Boucle sur les scénarios de tests, avec mélange des paramètres
 for test_case in "${test_cases[@]}"; do
-    echo -e "${YELLOW}Exécution du test : ./simulateur $test_case${NC}"
+    # On sépare les paramètres
+    test_case_array=($test_case)
 
-    java -cp "$BIN_DIR:$JAR_FILES" simulateur.Simulateur $test_case
+    # Log des arguments avant shuffle
+    echo -e "${BLUE}Arguments avant le shuffle : ${test_case_array[*]}${NC}"
+
+    # On mélange les paramètres avec la fonction shuffle_args
+    shuffled_test_case=$(shuffle_args "${test_case_array[@]}")
+
+    # Log des arguments après shuffle
+    # echo -e "${BLUE}Arguments après le shuffle : $shuffled_test_case${NC}" # commenté car déjà affiché en dessous
+
+    echo -e "${YELLOW}Exécution du test : ./simulateur $shuffled_test_case${NC}"
+
+    java -cp "$BIN_DIR:$JAR_FILES" simulateur.Simulateur $shuffled_test_case
 
     if [ $? -ne 0 ]; then
-        echo -e "${RED}Échec du test : $test_case${NC}"
+        echo -e "${RED}Échec du test : $shuffled_test_case${NC}"
         ((failed_tests++))
     else
-        echo -e "${GREEN}Test réussi : $test_case${NC}"
+        echo -e "${GREEN}Test réussi : $shuffled_test_case${NC}"
     fi
 done
 
