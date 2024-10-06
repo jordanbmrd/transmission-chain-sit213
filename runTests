@@ -103,18 +103,16 @@ test_cases=(
     "-mess 0010011 -ti 100 0.75 20 0.4"
     "-mess 0010011 -ti 100 0.9 20 0.6 40 0.5"
     "-mess 0010011 -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"
-
-    # TP5
-    "-mess 0010011 -form NRZT -codeur"
-    "-mess 01101101110 -form NRZ -codeur"
-    "-mess 100111001 -form RZ -codeur"
-    "-mess 110011 -form NRZT -codeur"
-    "-mess 1010 -form RZ -codeur"
-    "-mess 0010011 -form NRZ -codeur"
-    "-mess 110011 -form RZ -codeur"
-    "-mess 01101101110 -form NRZT -codeur"
-    "-mess 101010 -form NRZT -codeur"
-    "-mess 1010 -form NRZT -codeur"
+    "-mess 0010011 -form NRZT -codeur -nbEch 20 -ampl -4 4 -ti 3 0.4"
+    "-mess 01101101110 -form NRZ -codeur -nbEch 25 -ampl -2 2 -snrpb 9 -ti 4 0.3 6 0.2"
+    "-mess 100111001 -form RZ -codeur -nbEch 30 -snrpb -10 -ti 5 0.5"
+    "-mess 110011 -form NRZT -codeur -nbEch 15 -snrpb -6 -ti 2 0.6"
+    "-mess 1010 -form RZ -codeur -nbEch 35 -ampl 0 1 -snrpb 3 -ti 4 0.3 8 0.1"
+    "-mess 0010011 -form NRZ -codeur -nbEch 40 -ampl -10 10 -ti 5 0.2 70 0.4"
+    "-mess 110011 -form RZ -codeur -nbEch 22 -snrpb 0"
+    "-mess 01101101110 -form NRZT -codeur -nbEch 50 -snrpb 6 -ti 20 0.4 70 0.3 90 0.2"
+    "-mess 30 -form NRZT -codeur -nbEch 28 -ampl -5 5 -snrpb -2 -ti 15 0.5 6 0.2 30 0.8"
+    "-mess 1010 -form NRZT -codeur -nbEch 18 -ampl -3 7 -snrpb 4 -ti 2 0.3"
 )
 
 # Si on n'est pas dans un pipeline GitLab (la variable d'environnement CI n'est pas définie)
@@ -128,11 +126,9 @@ if [ -z "$CI" ]; then
         "-s -mess 01101101110 -form NRZT -snrpb 30"
         "-s -mess 01101101110 -form RZ -snrpb 30"
         "-s -mess 01101101110 -form RZ -ti 100 1.0 20 0.75 5 0.5 80 0.1 120 0.8"
-
-        # TP5
-        "-s -mess 0010011 -form NRZT -codeur"
-        "-s -mess 110011 -form NRZ -codeur"
-        "-s -mess 01101101110 -form RZ -codeur"
+        "-s -mess 250 -form NRZT -codeur -nbEch 15 -snrpb -6 -ti 2 0.6"
+        "-s -mess 35 -form RZ -codeur -nbEch 35 -snrpb 3 -ti 4 0.3 8 0.1"
+        "-s -mess 001011000011 -form NRZ -codeur -nbEch 40 -ampl -5 5 -ti 5 0.2 70 0.4"
     )
 fi
 
