@@ -172,8 +172,8 @@ public class Simulateur {
 
         this.emetteur = new Emetteur(nbEch, aMax, aMin, form);
         // Sonde de l'émetteur
-        /* if (affichage)
-            this.emetteur.connecter(new SondeAnalogique("Émetteur " + form)); */
+         if (affichage)
+            this.emetteur.connecter(new SondeAnalogique("Émetteur " + form));
 
         // Connexion du codeur si l'option est définie
         if (avecCodage) {
@@ -207,8 +207,8 @@ public class Simulateur {
         }
 
         // Sonde du transmetteur analogique
-        /* if (affichage)
-            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur analogique " + form)); */
+         if (affichage)
+            this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur analogique " + form));
 
         if (ti != null) {
             this.transmetteurMultiTrajets = new TransmetteurMultiTrajets(ti);
