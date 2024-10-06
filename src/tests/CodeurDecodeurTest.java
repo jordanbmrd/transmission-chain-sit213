@@ -6,8 +6,10 @@ import codage.Decodeur;
 import information.Information;
 import org.junit.Before;
 import org.junit.Test;
+import simulateur.Simulateur;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CodeurDecodeurTest {
 
@@ -52,6 +54,24 @@ public class CodeurDecodeurTest {
     }
 
     /*
+   Vérfier que l'ensemble de la chaine fonctionne
+   */
+    @Test
+    public void testChaine() throws Exception {
+        // Créer un codeur
+        Codeur codeur = new Codeur();
+        Decodeur decodeur = new Decodeur();
+
+        // Vérifier que l'encodeur transforme correctement les bits
+        Information<Boolean> bitsApresCodage = codeur.encoder(bitsAvantCodage);
+        assertEquals(bitsApresCodageAttendu, bitsApresCodage);
+
+        // Vérifier que le décodeur transforme correctement les séquences de 3 bits
+        Information<Boolean> bitsDecodes = decodeur.decoder(bitsApresCodage);
+        assertEquals(bitsAvantCodage, bitsDecodes);
+    }
+
+    /*
     Vérifiez que le décodeur détecte et corrige une erreur dans un paquet de 3 bits
     */
     @Test
@@ -69,16 +89,56 @@ public class CodeurDecodeurTest {
     }
 
     /*
-    Vérfier que l'ensemble de la chaine fonctionne
-    */
-
-
-    /*
     test de perfomances en faisant un avant-après (TEB,SNR, profiler)
     */
+    @Test
+    public void testPerfomance() throws Exception {
+        // Créer un simulateur avec codeur
+        String[] paramsAvecCodeur = {"-mess", "1000", "-seed", "10", "-form", "NRZT", "-nbEch", "9", "-codeur", "-snrpb", "-5"};
+        Simulateur simulateurAvecCodeur = new Simulateur(paramsAvecCodeur);
+
+        simulateurAvecCodeur.execute();
+
+        // Calculer le TEB
+        double tebAvecCodeur = simulateurAvecCodeur.calculTauxErreurBinaire();
+
+        // Afficher les résultats avec codeur
+        System.out.println("TEB avec codeur: " + tebAvecCodeur);
+
+        // Créer un simulateur mais sans le codeur
+        String[] paramsSansCodeur = {"-mess", "1000", "-seed", "10", "-form", "NRZT", "-nbEch", "9", "-snrpb", "-5"};
+        Simulateur simulateurSansCodeur = new Simulateur(paramsSansCodeur);
+
+        simulateurSansCodeur.execute();
+
+        double tebSansCodeur = simulateurSansCodeur.calculTauxErreurBinaire();
+
+        // Afficher les résultats sans codeur
+        System.out.println("TEB sans codeur: " + tebSansCodeur);
+
+        assertTrue(tebAvecCodeur < tebSansCodeur);
+    }
 
     /*
     Vérifiez le comportement du simulateur avec des entrées invalides ou des conditions extrêmes (très faible ou très fort SNR)
     */
+    @Test
+    public void testSNR() throws Exception {
+        String[] paramsFaible = {"-mess", "1000000", "-seed", "1234", "-form", "NRZT", "-nbEch", "9", "-codeur", "-snrpb", "-100"};
+        Simulateur snrTresFaible = new Simulateur(paramsFaible);
+
+        snrTresFaible.execute();
+
+        double tebSnrFaible = snrTresFaible.calculTauxErreurBinaire();
+        System.out.println("TEB avec un snr très faible (-100) : " + tebSnrFaible);
+
+        String[] paramsFort = {"-mess", "1000000", "-seed", "1234", "-form", "NRZT", "-nbEch", "9", "-codeur", "-snrpb", "100"};
+        Simulateur snrTresFort = new Simulateur(paramsFort);
+
+        snrTresFort.execute();
+
+        double tebSnrFort = snrTresFort.calculTauxErreurBinaire();
+        System.out.println("TEB avec un snr très fort (100) : " + tebSnrFort);
+    }
 
 }
