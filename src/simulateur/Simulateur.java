@@ -1,5 +1,7 @@
 package simulateur;
 
+import codage.Codeur;
+import codage.Decodeur;
 import destinations.Destination;
 import destinations.DestinationFinale;
 import information.Information;
@@ -129,6 +131,21 @@ public class Simulateur {
     private Destination<Boolean> destination = null;
 
     /**
+     * Indique si le codage est utilisé.
+     */
+    private Boolean avecCodage = false;
+
+    /**
+     * Le composant Codeur de la chaîne de transmission.
+     */
+    private Codeur codeur = null;
+
+    /**
+     * Le composant Decodeur de la chaîne de transmission.
+     */
+    private Decodeur decodeur = null;
+
+    /**
      * Le constructeur de Simulateur permet de construire une chaîne de
      * transmission composée d'une Source <Boolean>, d'un Emetteur, d'un Recepteur et d'une Destination.
      * Les composants de la chaîne sont créés et connectés en fonction des arguments fournis.
@@ -155,10 +172,23 @@ public class Simulateur {
 
         this.emetteur = new Emetteur(nbEch, aMax, aMin, form);
         // Sonde de l'émetteur
-        if (affichage)
+         if (affichage)
             this.emetteur.connecter(new SondeAnalogique("Émetteur " + form));
 
-        this.source.connecter(this.emetteur);
+        // Connexion du codeur si l'option est définie
+        if (avecCodage) {
+            this.codeur = new Codeur();
+            this.source.connecter(this.codeur);
+            this.codeur.connecter(this.emetteur);
+
+            // Sonde du codeur
+            if (affichage) {
+                this.codeur.connecter(new SondeLogique("Codeur", 200));
+            }
+        } else {
+            this.source.connecter(this.emetteur);
+        }
+
         // Sonde de la source
         if (affichage)
             this.source.connecter(new SondeLogique("Source " + form, 200));
@@ -177,7 +207,7 @@ public class Simulateur {
         }
 
         // Sonde du transmetteur analogique
-        if (affichage)
+         if (affichage)
             this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur analogique " + form));
 
         if (ti != null) {
@@ -190,8 +220,8 @@ public class Simulateur {
             this.transmetteurMultiTrajets.connecter(this.transmetteurAnalogique);
 
             // Sonde du transmetteur multi-trajets
-            if (affichage)
-                this.transmetteurMultiTrajets.connecter(new SondeAnalogique("Transmetteur multi-trajets " + form));
+            /* if (affichage)
+                this.transmetteurMultiTrajets.connecter(new SondeAnalogique("Transmetteur multi-trajets " + form)); */
         } else {
             // Connexion de l'émetteur au transmetteur analogique
             this.emetteur.connecter(this.transmetteurAnalogique);
@@ -201,7 +231,20 @@ public class Simulateur {
         this.destination = new DestinationFinale();
 
         this.transmetteurAnalogique.connecter(this.recepteur);
-        this.recepteur.connecter(this.destination);
+
+        // Connexion du décodeur si l'option est définie
+        if (avecCodage) {
+            this.decodeur = new Decodeur();
+            this.recepteur.connecter(this.decodeur);
+            this.decodeur.connecter(this.destination);
+
+            // Sonde du codeur
+            if (affichage) {
+                this.decodeur.connecter(new SondeLogique("Décodeur", 200));
+            }
+        } else {
+            this.recepteur.connecter(this.destination);
+        }
 
         // Sonde du récepteur
         if (affichage)
@@ -227,8 +270,12 @@ public class Simulateur {
      */
     private void analyseArguments(String[] args) throws ArgumentsException {
         Iterator<String> param = Arrays.asList(args).iterator();
-        while (param.hasNext()) {
-            String arg = param.next();
+        String current = null;  // Paramètre courant
+
+        while (param.hasNext() || current != null) {
+            String arg = (current != null) ? current : param.next();
+            current = null;
+
             switch (arg) {
                 case "-s":
                     affichage = true;
@@ -252,7 +299,10 @@ public class Simulateur {
                     traiterSnrpb(param);
                     break;
                 case "-ti":
-                    traiterTi(param);
+                    current = traiterTi(param);
+                    break;
+                case "-codeur":
+                    avecCodage = true;
                     break;
                 default:
                     throw new ArgumentsException("Option invalide : " + arg);
@@ -355,38 +405,58 @@ public class Simulateur {
      * @param param l'itérateur sur les paramètres d'entrée.
      * @throws ArgumentsException si l'argument ti est invalide.
      */
-    private void traiterTi(Iterator<String> param) throws ArgumentsException {
-        LinkedList<float[]> tiList = new LinkedList<>();
+    private String traiterTi(Iterator<String> param) throws ArgumentsException {
+        this.ti = new float[5][2];
+        int index = 0;
 
-        // Lecture des paires (dt, ar) pour les trajets indirects, jusqu'à un maximum de 5 paires
-        for (int i = 0; i < 5 && param.hasNext(); i++) {
-            int dt = parseIntegerArgument(param, "ti dt");
-            float ar = parseFloatArgument(param, "ti ar");
+        while (param.hasNext()) {
+            String nextArg = param.next();
 
-            // Vérification que le décalage temporel est bien nul ou positif
-            if (dt < 0) {
-                throw new ArgumentsException("Le décalage temporel (dt) doit être supérieur ou égal à 0 pour le paramètre -ti.");
+            // Si l'argument suivant est une option (commence par '-'), retourner cet argument pour qu'il soit traité plus tard
+            if (nextArg.startsWith("-")) {
+                return nextArg;
             }
 
-            // Vérification des contraintes sur l'amplitude relative (ar doit être entre 0 et 1)
-            if (ar < 0 || ar > 1) {
-                throw new ArgumentsException("L'amplitude relative (ar) doit être comprise entre 0 et 1 pour le paramètre -ti.");
+            // Traiter dt (doit être un entier)
+            int dt;
+            try {
+                dt = Integer.parseInt(nextArg);
+            } catch (NumberFormatException e) {
+                throw new ArgumentsException("Valeur de dt invalide pour le paramètre -ti.");
             }
 
-            tiList.add(new float[]{dt, ar});
-        }
+            // Vérifier qu'il y a encore un autre argument pour ar (amplitude relative)
+            if (!param.hasNext()) {
+                throw new ArgumentsException("Le couple dt, ar est incomplet pour le paramètre -ti.");
+            }
 
-        // Si aucun trajet indirect n'a été spécifié, ajouter les valeurs par défaut {0, 0.0f}
-        if (tiList.isEmpty()) {
-            tiList.add(new float[]{0, 0.0f});
-        }
+            // Traiter ar (doit être un flottant)
+            String arStr = param.next();
+            float ar;
+            try {
+                ar = Float.parseFloat(arStr);
+            } catch (NumberFormatException e) {
+                throw new ArgumentsException("Valeur de ar invalide pour le paramètre -ti.");
+            }
 
-        // Convertir la liste en tableau 2D float[][]
-        ti = new float[tiList.size()][2];
-        for (int i = 0; i < tiList.size(); i++) {
-            ti[i][0] = tiList.get(i)[0]; // dt
-            ti[i][1] = tiList.get(i)[1]; // ar
+            // Vérification des contraintes : dt doit être >= 0, ar doit être entre 0 et 1
+            if (dt < 0 || ar < 0 || ar > 1) {
+                throw new ArgumentsException("dt doit être >= 0 et ar doit être entre 0 et 1 pour le paramètre -ti.");
+            }
+
+            System.out.println("dt : " + dt + " ar : " + ar);
+
+            // Ajouter le couple (dt, ar) au tableau 2D
+            this.ti[index][0] = dt;
+            this.ti[index][1] = ar;
+            index++;
+
+            // Limiter à 5 couples maximum
+            if (index >= 5) {
+                break;
+            }
         }
+        return null;
     }
 
     private String getNextArgument(Iterator<String> param, String paramName) throws ArgumentsException {

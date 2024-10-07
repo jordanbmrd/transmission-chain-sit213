@@ -1,5 +1,28 @@
 # SIT213
 
+## TP5: Transmission analogique avec un codage de canal
+
+### Objectifs
+
+- Rajouter la possibilité d'utiliser un codage de canal pour permettre de :
+  - Repérer et réparer des erreurs eventuelles lors de la transmission.
+  - Réduire le taux d'erreur binaire de la chaîne de transmission.
+- Mesurer les améliorations.
+
+### Ajout de nouveaux flags au CLI
+
+- `-codeur`: Utilisation d'un codage de canal. Valeur par défaut : non utilisé.
+
+### Modifications des scripts
+
+- Modification du script `runTests` pour y ajouter une fonction permettant de shuffle les flags du CLI.
+
+### Modifications des classes
+
+- Ajout des classes `Codeur` et `Decodeur` pour utiliser un canal de codage.
+- Ajout de la classe `CodeurDecodeurTest` pour tester le comportement des classes `Codeur` et `Décodeur`.
+- Modification de la classe `Simulateur` pour prendre en compte le flag `-codeur`.
+
 ## TP4: Transmission analogique avec un canal bruité à trajets multiples
 
 ### Objectifs
@@ -15,14 +38,14 @@
 ### Ajout de scripts
 
 - `plot_teb_multi_trajets.py`: Trace les courbes de la probabilité d'erreur binaire en fonction :
-  - du nombre de trajets indirects ajoutés ;
-  - de l'amplitude des trajets indirects ;
-  - du décalage temporel des trajets indirects.
+  - Du nombre de trajets indirects ajoutés.
+  - De l'amplitude des trajets indirects.
+  - Du décalage temporel des trajets indirects.
 
 ### Modifications des classes
 
-- Ajout de la classe `TransmetteurMultiTrajets` pour utiliser un canal de transmission à trajets mumtiples.
-- Ajout de la classe `TransmetteurMultiTrajetsTest` pour tester le comportement de la classe `TransmetteurMultiTrajets`
+- Ajout de la classe `TransmetteurMultiTrajets` pour utiliser un canal de transmission à trajets multiples.
+- Ajout de la classe `TransmetteurMultiTrajetsTest` pour tester le comportement de la classe `TransmetteurMultiTrajets`.
 
 ## TP3: Transmission analogique avec un bruit gaussien
 
@@ -35,15 +58,12 @@
 
 - `-snrpb [float]`: Choix du RSB par bit en dB. Valeur par défaut : 0.
 
-### Ajout de scripts
-
-- `plot_proba_erreur_vs_ebn0.py`: Trace la courbe de la probabilité d'erreur binaire en fonction du rapport Eb/N0 pour les différentes modulations.
-
 ### Ajout du répertoire `scripts`
 Ce répertoire contient des scripts utiles au projet et aux tests visuels :
 
 - `histogram_noise.py` : Trace l'histogramme des valeurs de bruit gaussien.
 - `plot_teb_vs_snr.py` : Trace la courbe du TEB en fonction du SNR pour les différentes modulations.
+- `plot_proba_erreur_vs_ebn0.py`: Trace la courbe de la probabilité d'erreur binaire en fonction du rapport Eb/N0 pour les différentes modulations.
 
 ### Modifications des classes
 
