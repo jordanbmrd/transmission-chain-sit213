@@ -5,27 +5,25 @@ import matplotlib.pyplot as plt
 file_path = '../valeurs_proba_erreur_par_ebn0.csv'  # Mettez le chemin correct ici
 data = pd.read_csv(file_path)
 
-# Extraire les colonnes Eb/N0 et P_e pour chaque modulation
+# Extraire les colonnes Eb/N0 et P_e
 eb_n0 = data['Eb/N0 (dB)']
-pe_rz = data['P_e RZ']
+eb_n0_lin = 10**(eb_n0/10)
 pe_nrz = data['P_e NRZ']
-pe_nrzt = data['P_e NRZT']
 
-# Tracer la probabilité d'erreur en fonction de Eb/N0 pour chaque type de modulation
+# Tracer la probabilité d'erreur en fonction de Eb/N0
 plt.figure(figsize=(10, 6))
 
-plt.plot(eb_n0, pe_rz, label="P_e RZ", marker='o')
-plt.plot(eb_n0, pe_nrz, label="P_e NRZ", marker='s')
-plt.plot(eb_n0, pe_nrzt, label="P_e NRZT", marker='^')
+plt.plot(eb_n0_lin, pe_nrz, label="P_e NRZ", marker='s')
 
 # Ajouter les étiquettes et le titre
-plt.xlabel("SNR par bit (dB)")
+plt.xlabel("SNR par bit (linéaire)")
 plt.ylabel("TEB")
 plt.yscale('log')  # Utiliser une échelle logarithmique pour une meilleure visualisation
 plt.grid(True)
 plt.legend()
 
-plt.xlim(-10, 15)
+plt.xlim(0, 5)
+plt.ylim(10**-5, 10**-1)
 
 # Afficher le graphe
 plt.show()
