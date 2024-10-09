@@ -6,8 +6,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * La classe Utils fournit des méthodes utilitaires pour les conversions et calculs
@@ -44,83 +43,67 @@ public class Utils {
 
 
     public void testTebIdeal() throws Exception {
-        // Déclaration des paramètres de la simulation
-        double targetTEB = 1e-3;  // Seuil cible de TEB
-        List<String> validCommands = new ArrayList<>();  // Liste des commandes valides
+        double targetTEB = 1e-3;  // TEB voulu
+        Map<String, List<String>> validCommandsMap = new HashMap<>();  // Commandes donnant un bon TEB
 
-        // Initialisation des valeurs SNR (exemple : -50, -49, -48, ..., 50)
+        // Initialisation des valeurs SNR (de 50 à -50)
         double[] snrValues = new double[101];
         for (int i = 0; i <= 100; i++) {
             snrValues[i] = 50 - i;
         }
 
-        // Initialisation des valeurs nbEch (exemple : 3, 4, ..., 50)
+        // Initialisation des valeurs nbEch (de 3 à 50)
         int[] nbEchValues = new int[48];
         for (int i = 0; i < 48; i++) {
-            nbEchValues[i] = 3 + i;  // Va de 3 à 50 (3 inclus, 50 exclus)
+            nbEchValues[i] = 3 + i;
         }
 
-        // Autres valeurs possibles pour les tests
-        double[] amplValues = {0.5, 1.0, 1.5};  // Valeurs d'amplitude
-        String[] formValues = {"NRZT", "RZ", "NRZ"};  // Formes d'onde
+        String[] formValues = {"NRZ", "NRZT", "RZ"};  // Formes d'onde
 
-        int testCount = 0;  // Compteur de tests effectués
+        for (String form : formValues) {
+            for (double snr : snrValues) {
+                for (int nbEch : nbEchValues) {
 
-        // Boucles imbriquées pour tester toutes les combinaisons de paramètres
-        for (double snr : snrValues) {
-            for (int nbEch : nbEchValues) {
-                for (double ampl : amplValues) {
-                    for (String form : formValues) {
-                        // Construction des paramètres de la simulation
-                        String[] params = {"-mess", "2000", "-snrpb", String.valueOf(snr), "-nbEch", String.valueOf(nbEch), "-form", form};
+                    // Construction des paramètres de la simulation
+                    String[] params = {"-mess", "2000", "-snrpb", String.valueOf(snr), "-nbEch", String.valueOf(nbEch), "-form", form};
 
-                        // Simulation et calcul du TEB
-                        Simulateur simulateur = new Simulateur(params);
-                        simulateur.execute();
-                        double teb = simulateur.calculTauxErreurBinaire();
+                    // Simulation et calcul du TEB
+                    Simulateur simulateur = new Simulateur(params);
+                    simulateur.execute();
+                    double teb = simulateur.calculTauxErreurBinaire();
 
-                        // Vérification si le TEB est inférieur au seuil cible
-                        if (teb < targetTEB) {
-                            validCommands.add(String.join(" ", params) + " => TEB: " + new BigDecimal(teb));
-                            if (validCommands.size() >= 10) {  // Arrêter si 10 commandes valides trouvées
-                                break;
-                            }
-                        }
+                    // Vérification si le TEB est inférieur au seuil cible
+                    if (teb < targetTEB) {
+                        String commandStr = String.join(" ", params) + " => TEB: " + new BigDecimal(teb);
 
-                        testCount++;
-                        if (testCount >= 2000) {  // Arrêter si le nombre de tests dépasse 2000
-                            // break;
-                        }
-                    }
-                    if (validCommands.size() >= 10 || testCount >= 2000) {
-                        //break;
+                        // Ajouter la commande à la liste correspondante dans la map
+                        validCommandsMap.computeIfAbsent(form, k -> new ArrayList<>()).add(commandStr);
                     }
                 }
-                if (validCommands.size() >= 10 || testCount >= 2000) {
-                    //break;
-                }
-            }
-            if (validCommands.size() >= 10 || testCount >= 2000) {
-                //break;
             }
         }
-
-        // Affichage du nombre total de tests effectués
-        System.out.println("Nombre total de tests effectués: " + testCount);
 
         // Enregistrement des commandes valides dans un fichier texte
+        // Le fichier sera écrasé s'il existe déjà
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("valid_commands.txt"))) {
-            for (String command : validCommands) {
-                writer.write("Valid command: " + command);
+            // Trier les clés (forms)
+            List<String> sortedForms = new ArrayList<>(validCommandsMap.keySet());
+            Collections.sort(sortedForms);
+
+            for (String form : sortedForms) {
+                writer.write("Form: " + form);
+                writer.newLine();
+                for (String command : validCommandsMap.get(form)) {
+                    writer.write("Valid command: " + command);
+                    writer.newLine();
+                }
                 writer.newLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        // Afficher les commandes valides sur la console
-        validCommands.forEach(System.out::println);
     }
+
 
     static public void main(String[] args) {
         Utils utils = new Utils();
