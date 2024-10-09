@@ -42,6 +42,9 @@ public class Utils {
     }
 
 
+    /**
+     * Calcule le TEB théorique pour une série de tests
+     */
     public void testTebIdeal() throws Exception {
         double targetTEB = 1e-3;  // TEB voulu
         Map<String, List<String>> validCommandsMap = new HashMap<>();  // Commandes donnant un bon TEB
@@ -74,7 +77,7 @@ public class Utils {
 
                     // Vérification si le TEB est inférieur au seuil cible
                     if (teb < targetTEB) {
-                        String commandStr = String.join(" ", params) + " => TEB: " + new BigDecimal(teb);
+                        String commandStr = String.join(" ", params) + " => TEB: " + BigDecimal.valueOf(teb);
 
                         // Ajouter la commande à la liste correspondante dans la map
                         validCommandsMap.computeIfAbsent(form, k -> new ArrayList<>()).add(commandStr);
@@ -105,7 +108,7 @@ public class Utils {
     }
 
 
-    static public void main(String[] args) {
+    public static void main(String[] args) {
         Utils utils = new Utils();
         try {
             utils.testTebIdeal();
