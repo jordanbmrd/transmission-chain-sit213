@@ -515,9 +515,8 @@ public class Simulateur {
     public double calculProbaErreur() {
         // Conversion du rapport Eb/N0 en linéaire
         float ebN0Lin = (float) Math.pow(10, this.transmetteurAnalogique.getEbN0dB() / 10);
-        //float ebN0Lin = (float) Math.pow(10, this.transmetteurAnalogique.getSNRReel() / 10);
-        // Formule de calcul de la probabilité d'erreur
 
+        // Formule de calcul de la probabilité d'erreur
         return switch (form) {
             case Form.NRZ, Form.NRZT -> 0.5 * Erf.erfc(Math.sqrt(ebN0Lin));
             case Form.RZ -> 0.5*Erf.erfc((1/Math.sqrt(2))*Math.sqrt(ebN0Lin));
@@ -553,11 +552,8 @@ public class Simulateur {
             string.append("\n - Nombre d'échantillons par bit : ").append(simulateur.nbEch);
 
             if (!Float.isNaN(simulateur.snrpb)) {
-                string.append("\n => Puissance moyenne du bruit : ").append(simulateur.transmetteurAnalogique.getPuissanceMoyenneBruit());
-                string.append("\n => Variance : ").append(simulateur.transmetteurAnalogique.getVariance());
                 string.append("\n => Rapport signal-sur-bruit (S/N, en dB) : ").append(simulateur.transmetteurAnalogique.getSNRReel());
                 string.append("\n => Rapport Eb/N0 (en dB) : ").append(simulateur.transmetteurAnalogique.getEbN0dB());
-                //string.append("\n => Probabilité d'erreur (forme ").append(simulateur.form.toString()).append(") : ").append(simulateur.calculProbaErreur());
             }
 
             System.out.println(string);

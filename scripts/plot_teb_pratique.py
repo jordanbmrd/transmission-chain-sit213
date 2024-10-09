@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # Charger le fichier CSV
-file_path = '../valeurs_teb_par_snr.csv'
+file_path = '../valeurs_teb_pratique.csv'
 data = pd.read_csv(file_path)
 
 # Extraire les colonnes SNR et TEB pour chaque modulation
