@@ -515,8 +515,9 @@ public class Simulateur {
     public double calculProbaErreur() {
         // Conversion du rapport Eb/N0 en linéaire
         float ebN0Lin = (float) Math.pow(10, this.transmetteurAnalogique.getEbN0dB() / 10);
-
+        //float ebN0Lin = (float) Math.pow(10, this.transmetteurAnalogique.getSNRReel() / 10);
         // Formule de calcul de la probabilité d'erreur
+
         return switch (form) {
             case Form.NRZ, Form.NRZT -> 0.5 * Erf.erfc(Math.sqrt(ebN0Lin));
             case Form.RZ -> 0.5*Erf.erfc((1/Math.sqrt(2))*Math.sqrt(ebN0Lin));

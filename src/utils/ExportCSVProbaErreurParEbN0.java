@@ -54,14 +54,14 @@ public class ExportCSVProbaErreurParEbN0 {
             // En-tête du fichier CSV
             csvWriter.append("Eb/N0 (dB)");
             csvWriter.append(",");
-            csvWriter.append("P_e RZ");
-            csvWriter.append(",");
             csvWriter.append("P_e NRZ");
+            csvWriter.append(",");
+            csvWriter.append("P_e RZ");
             csvWriter.append(",");
             csvWriter.append("P_e NRZT");
             csvWriter.append("\n");
 
-            String[] formats = new String[] { "RZ", "NRZ", "NRZT" };
+            String[] formats = new String[] { "NRZ", "RZ", "NRZT" };
 
             // Simulation pour chaque valeur d'Eb/N0
             for (int ebN0 = -10; ebN0 <= 9; ebN0++) {
