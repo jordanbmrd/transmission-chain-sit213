@@ -8,14 +8,14 @@ import java.util.LinkedList;
 import simulateur.Simulateur;
 
 /**
- * La classe {@code ExportCSVProbaErreurParEbN0} effectue des simulations de transmission de données
+ * La classe {@code ExportCSVTEBTheorique} effectue des simulations de transmission de données
  * en faisant varier le rapport énergie par bit sur bruit (Eb/N0). Elle génère un fichier CSV contenant
- * la probabilité d'erreur (P_e) pour différents formats de modulation (RZ, NRZ, NRZT).
+ * la probabilité d'erreur (P_e) pour le format de modulation NRZ uniquement.
  *
- * L'Eb/N0 varie de 0 dB à 20 dB, et pour chaque valeur,
+ * L'Eb/N0 varie de -10 dB à 9 dB, et pour chaque valeur,
  * la P_e est calculée et stockée dans un fichier CSV.
  */
-public class ExportCSVProbaErreurParEbN0 {
+public class ExportCSVTEBTheorique {
 
     /**
      * Nom du fichier CSV dans lequel seront enregistrés les résultats des simulations.
@@ -28,17 +28,17 @@ public class ExportCSVProbaErreurParEbN0 {
     protected LinkedList<String> parametres = new LinkedList<>();
 
     /**
-     * Constructeur par défaut de la classe {@code ExportCSVProbaErreurParEbN0}.
+     * Constructeur par défaut de la classe {@code ExportCSVTEBTheorique}.
      * Initialise les paramètres de simulation de base (seed et nombre de messages)
      * et définit le nom du fichier CSV de sortie.
      */
-    public ExportCSVProbaErreurParEbN0() {
+    public ExportCSVTEBTheorique() {
         // Initialisation des paramètres de base
         String[] arguments = new String[] { "-seed", "100", "-mess", "100000" };
         parametres.addAll(Arrays.asList(arguments));
 
         // Nom du fichier CSV où seront stockés les résultats
-        this.fichierCSV = "valeurs_proba_erreur_par_ebn0.csv";
+        this.fichierCSV = "valeurs_teb_theorique_nrz.csv";
     }
 
     /**
@@ -46,7 +46,7 @@ public class ExportCSVProbaErreurParEbN0 {
      * pour chaque valeur dans un fichier CSV.
      *
      * <p>Pour chaque valeur de Eb/N0, la probabilité d'erreur (P_e) est calculée
-     * pour trois formats de modulation (RZ, NRZ, NRZT).</p>
+     * uniquement pour le format de modulation NRZ.</p>
      */
     private void lancerSimulations() {
         System.out.println("Lancement des simulations pour " + this.fichierCSV + "...");
@@ -54,24 +54,18 @@ public class ExportCSVProbaErreurParEbN0 {
             // En-tête du fichier CSV
             csvWriter.append("Eb/N0 (dB)");
             csvWriter.append(",");
-            csvWriter.append("P_e RZ");
-            csvWriter.append(",");
             csvWriter.append("P_e NRZ");
-            csvWriter.append(",");
-            csvWriter.append("P_e NRZT");
             csvWriter.append("\n");
-
-            String[] formats = new String[] { "RZ", "NRZ", "NRZT" };
 
             // Simulation pour chaque valeur d'Eb/N0
             for (int ebN0 = -10; ebN0 <= 9; ebN0++) {
                 csvWriter.append(String.valueOf(ebN0));
-                for (String format : formats) {
-                    // Exécution de la simulation et récupération de P_e
-                    double probaErreur = executerSimulation(format, ebN0);
-                    csvWriter.append(",");
-                    csvWriter.append(String.valueOf(probaErreur));
-                }
+
+                // Exécution de la simulation et récupération de P_e pour NRZ
+                double probaErreur = executerSimulation(ebN0);
+                csvWriter.append(",");
+                csvWriter.append(String.valueOf(probaErreur));
+
                 csvWriter.append("\n");
             }
 
@@ -87,16 +81,16 @@ public class ExportCSVProbaErreurParEbN0 {
      * <p>La méthode initialise le simulateur avec les paramètres spécifiques (format),
      * lance la simulation, et retourne la probabilité d'erreur (P_e) obtenue.</p>
      *
-     * @param format Le format de modulation utilisé pour la simulation (RZ, NRZ, NRZT).
+     * @param ebN0 La valeur d'Eb/N0 en dB pour laquelle la simulation est effectuée.
      * @return La probabilité d'erreur (P_e) calculée pour la simulation.
      */
-    private double executerSimulation(String format, float ebN0) {
+    private double executerSimulation(float ebN0) {
         double probaErreur = 0;
         LinkedList<String> argumentsLocaux = new LinkedList<>(this.parametres);
         try {
             // Ajout des paramètres spécifiques de la simulation (format)
             argumentsLocaux.add("-form");
-            argumentsLocaux.add(format);
+            argumentsLocaux.add(String.valueOf(Form.NRZ));
             argumentsLocaux.add("-snrpb");
             argumentsLocaux.add(String.valueOf(ebN0 - 10)); // On ajuste SNR pour le simulateur
 
@@ -113,13 +107,13 @@ public class ExportCSVProbaErreurParEbN0 {
     /**
      * Point d'entrée du programme.
      *
-     * <p>Crée une instance de la classe {@code ExportCSVProbaErreurParEbN0} et
+     * <p>Crée une instance de la classe {@code ExportCSVTEBTheorique} et
      * lance les simulations.</p>
      *
      * @param args Arguments passés en ligne de commande (non utilisés dans cette version).
      */
     public static void main(String[] args) {
-        ExportCSVProbaErreurParEbN0 simu = new ExportCSVProbaErreurParEbN0();
+        ExportCSVTEBTheorique simu = new ExportCSVTEBTheorique();
         simu.lancerSimulations();
     }
 }

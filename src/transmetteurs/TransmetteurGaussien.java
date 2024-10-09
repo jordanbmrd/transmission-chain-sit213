@@ -142,7 +142,7 @@ public class TransmetteurGaussien extends Transmetteur<Float, Float> {
      * Calcule le rapport Eb/N0 en dB
      */
     private void calculerEbN0dB() {
-        this.ebN0dB = (float) (10 * Math.log10(Math.pow(10, (this.puissanceMoyenneSignal * nbEch) / this.puissanceMoyenneBruit)));
+        this.ebN0dB = (float) (10 * Math.log10(Math.pow(10, (this.puissanceMoyenneSignal * nbEch) / (2 * this.puissanceMoyenneBruit))));
     }
 
     /**

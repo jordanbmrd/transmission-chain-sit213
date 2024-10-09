@@ -15,7 +15,7 @@ import simulateur.Simulateur;
  * Le SNR varie de -10 dB à 15 dB, et pour chaque valeur,
  * le TEB est calculé et stocké dans un fichier CSV.
  */
-public class ExportCSVTEBParSNR {
+public class ExportCSVTEBPratique {
 
     /**
      * Instance de la classe {@link Simulateur} permettant de réaliser les simulations.
@@ -42,13 +42,13 @@ public class ExportCSVTEBParSNR {
      * Initialise les paramètres de simulation de base (seed et nombre de messages)
      * et définit le nom du fichier CSV de sortie.
      */
-    public ExportCSVTEBParSNR() {
+    public ExportCSVTEBPratique() {
         // Initialisation des paramètres de base
         String[] arguments = new String[] { "-seed", "100", "-mess", "100000" };
         parametres.addAll(Arrays.asList(arguments));
 
         // Nom du fichier CSV où seront stockés les résultats
-        this.fichierCSV = "valeurs_teb_par_snr.csv";
+        this.fichierCSV = "valeurs_teb_pratique.csv";
     }
 
     /**
@@ -131,7 +131,7 @@ public class ExportCSVTEBParSNR {
      * @param args Arguments passés en ligne de commande (non utilisés dans cette version).
      */
     public static void main(String[] args) {
-        ExportCSVTEBParSNR simu = new ExportCSVTEBParSNR();
+        ExportCSVTEBPratique simu = new ExportCSVTEBPratique();
         simu.lancerSimulations();
     }
 }
