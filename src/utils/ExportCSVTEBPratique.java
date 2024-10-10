@@ -6,9 +6,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import simulateur.Simulateur;
+import utils.tp6.Utils;
 
 /**
- * La classe {@code VueTEBEnFonctionDuSNR} effectue des simulations de transmission de données
+ * La classe {@code ExportCSVTEBPratique} effectue des simulations de transmission de données
  * en faisant varier le rapport signal/bruit (SNR). Elle génère un fichier CSV contenant
  * le taux d'erreur binaire (TEB) pour différents formats de modulation (RZ, NRZ, NRZT).
  *
@@ -38,7 +39,7 @@ public class ExportCSVTEBPratique {
     protected LinkedList<String> parametres = new LinkedList<>();
 
     /**
-     * Constructeur par défaut de la classe {@code VueTEBEnFonctionDuSNR}.
+     * Constructeur par défaut de la classe {@code ExportCSVTEBPratique}.
      * Initialise les paramètres de simulation de base (seed et nombre de messages)
      * et définit le nom du fichier CSV de sortie.
      */
@@ -61,6 +62,14 @@ public class ExportCSVTEBPratique {
      */
     private void lancerSimulations() {
         System.out.println("Lancement des simulations pour " + this.fichierCSV + "...");
+
+        // Tableau des formats de modulation
+        Form[] formats = new Form[] { Form.RZ, Form.NRZ, Form.NRZT };
+
+        // Calcul du nombre total d'itérations (valeurs SNR * formats)
+        int totalIterations = (15 - (-10) + 1) * formats.length; // 26 valeurs SNR et 3 formats
+        int currentIteration = 0;
+
         try (FileWriter csvWriter = new FileWriter(fichierCSV)) {
             // En-tête du fichier CSV
             csvWriter.append("SnrPb");
@@ -72,21 +81,24 @@ public class ExportCSVTEBPratique {
             csvWriter.append("TEB NRZT");
             csvWriter.append("\n");
 
-            String[] formats = new String[] { "RZ", "NRZ", "NRZT" };
-
             // Simulation pour chaque valeur de SNR
             for (int snr = -10; snr <= 15; snr++) {
                 csvWriter.append(String.valueOf(snr));
-                for (String format : formats) {
+                for (Form format : formats) {
                     // Exécution de la simulation et récupération du TEB
                     float ber = executerSimulation(format, snr);
                     csvWriter.append(",");
                     csvWriter.append(String.valueOf(ber));
+
+                    // Mise à jour et affichage de la barre de progression
+                    currentIteration++;
+                    int progressPercentage = (currentIteration * 100) / totalIterations;
+                    Utils.printProgressBar(progressPercentage);
                 }
                 csvWriter.append("\n");
             }
 
-            System.out.println("Simulations terminées. Résultats enregistrés dans " + this.fichierCSV);
+            System.out.println("\nSimulations terminées. Résultats enregistrés dans " + this.fichierCSV);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,7 +114,7 @@ public class ExportCSVTEBPratique {
      * @param snr    Le rapport signal/bruit spécifié en dB.
      * @return Le taux d'erreur binaire (TEB) calculé pour la simulation.
      */
-    private float executerSimulation(String format, float snr) {
+    private float executerSimulation(Form format, float snr) {
         float ber = 0;
         LinkedList<String> argumentsLocaux = new LinkedList<>(this.parametres);
         try {
@@ -110,7 +122,7 @@ public class ExportCSVTEBPratique {
             argumentsLocaux.add("-snrpb");
             argumentsLocaux.add(String.valueOf(snr));
             argumentsLocaux.add("-form");
-            argumentsLocaux.add(format);
+            argumentsLocaux.add(String.valueOf(format));
 
             // Création et exécution du simulateur
             Simulateur simulateur = new Simulateur(argumentsLocaux.toArray(new String[0]));
@@ -122,14 +134,6 @@ public class ExportCSVTEBPratique {
         return ber;
     }
 
-    /**
-     * Point d'entrée du programme.
-     *
-     * <p>Crée une instance de la classe {@code VueTEBEnFonctionDuSNR} et
-     * lance les simulations.</p>
-     *
-     * @param args Arguments passés en ligne de commande (non utilisés dans cette version).
-     */
     public static void main(String[] args) {
         ExportCSVTEBPratique simu = new ExportCSVTEBPratique();
         simu.lancerSimulations();

@@ -7,22 +7,42 @@ import java.util.LinkedList;
 
 import simulateur.Simulateur;
 
+/**
+ * Classe utilitaire permettant de lancer plusieurs simulations avec différentes
+ * configurations de trajets multiples, variations d'amplitudes et de décalages,
+ * puis d'exporter les résultats sous forme de fichiers CSV.
+ *
+ * Les fichiers générés incluent les résultats du Taux d'Erreur Binaire (TEB)
+ * pour différents formats de modulation (RZ, NRZ, NRZT).
+ */
 public class ExportCSVMultiTrajets {
 
+    // Fichiers de sortie
     private static final String FICHIER_TRAJETS_MULTIPLES = "valeurs_teb_multi_trajets.csv";
     private static final String FICHIER_AMPLITUDES_MULTIPLES = "valeurs_teb_amplitudes_multiples.csv";
     private static final String FICHIER_DECALAGES_AUGMENTES = "valeurs_teb_decalages_augments.csv";
 
+    // Paramètres de base pour le simulateur
     private static final String[] PARAMETRES_BASE = new String[]{"-mess", "200", "-seed", "5678", "-nbEch", "30", "-snrpb", "-2"};
+
+    // Formats de modulation disponibles
     private static final String[] FORMATS_MODULATION = new String[]{"RZ", "NRZ", "NRZT"};
 
     protected Simulateur simulateur;
     protected LinkedList<String> parametres;
 
+    /**
+     * Constructeur de la classe ExportCSVMultiTrajets.
+     * Initialise les paramètres de base pour le simulateur.
+     */
     public ExportCSVMultiTrajets() {
         this.parametres = new LinkedList<>(Arrays.asList(PARAMETRES_BASE));
     }
 
+    /**
+     * Lance une série de simulations avec différentes configurations de trajets multiples
+     * et enregistre les résultats dans un fichier CSV.
+     */
     public void lancerSimulations() {
         String[] trajets = {
                 "",
@@ -35,16 +55,30 @@ public class ExportCSVMultiTrajets {
         lancerEtEnregistrerSimulations(trajets);
     }
 
+    /**
+     * Lance une série de simulations avec différentes amplitudes initiales,
+     * ajustées à chaque itération, et enregistre les résultats dans un fichier CSV.
+     */
     public void lancerSimulationsAmplitudesMultiples() {
         float[] amplitudes = {0.3f, 0.75f, 0.5f};
         lancerSimulationsVariationAmplitudes(amplitudes);
     }
 
+    /**
+     * Lance une série de simulations en augmentant les décalages à chaque itération,
+     * et enregistre les résultats dans un fichier CSV.
+     */
     public void lancerSimulationsDecalagesAugmentes() {
         int[] decalages = {100, 20, 5};
         lancerSimulationsVariationDecalages(decalages);
     }
 
+    /**
+     * Méthode privée pour exécuter les simulations avec des configurations de trajets
+     * spécifiques et enregistrer les résultats dans un fichier CSV.
+     *
+     * @param trajets Un tableau de configurations de trajets multiples.
+     */
     private void lancerEtEnregistrerSimulations(String[] trajets) {
         try (FileWriter csvWriter = new FileWriter(ExportCSVMultiTrajets.FICHIER_TRAJETS_MULTIPLES)) {
             csvWriter.append("Configuration,TEB RZ,TEB NRZ,TEB NRZT\n");
@@ -64,6 +98,12 @@ public class ExportCSVMultiTrajets {
         }
     }
 
+    /**
+     * Lance des simulations avec une variation des amplitudes à chaque itération
+     * et enregistre les résultats dans un fichier CSV.
+     *
+     * @param amplitudesInitiales Un tableau d'amplitudes initiales.
+     */
     private void lancerSimulationsVariationAmplitudes(float[] amplitudesInitiales) {
         try (FileWriter csvWriter = new FileWriter(ExportCSVMultiTrajets.FICHIER_AMPLITUDES_MULTIPLES)) {
             csvWriter.append("Simulation,TEB RZ,TEB NRZ,TEB NRZT\n");
@@ -84,7 +124,7 @@ public class ExportCSVMultiTrajets {
                 }
                 csvWriter.append("\n");
 
-                // Mettre à jour les amplitudes pour la prochaine itération
+                // Mise à jour des amplitudes pour la prochaine itération
                 for (int j = 0; j < amplitudesInitiales.length; j++) {
                     amplitudesInitiales[j] = Math.min(amplitudesInitiales[j] * (float) 1.05, 1.0f);
                 }
@@ -95,10 +135,22 @@ public class ExportCSVMultiTrajets {
         }
     }
 
+    /**
+     * Limite l'amplitude à une valeur maximale de 1.0.
+     *
+     * @param amplitude L'amplitude à limiter.
+     * @return La valeur limitée de l'amplitude.
+     */
     private float limiterAmplitude(float amplitude) {
         return Math.min(amplitude, 1.0f);
     }
 
+    /**
+     * Lance des simulations avec une variation des décalages à chaque itération
+     * et enregistre les résultats dans un fichier CSV.
+     *
+     * @param decalagesInitiales Un tableau de décalages initiales.
+     */
     private void lancerSimulationsVariationDecalages(int[] decalagesInitiales) {
         try (FileWriter csvWriter = new FileWriter(ExportCSVMultiTrajets.FICHIER_DECALAGES_AUGMENTES)) {
             csvWriter.append("Simulation,TEB RZ,TEB NRZ,TEB NRZT\n");
@@ -120,6 +172,7 @@ public class ExportCSVMultiTrajets {
                 }
                 csvWriter.append("\n");
 
+                // Mise à jour des décalages pour la prochaine itération
                 for (int j = 0; j < decalagesInitiales.length; j++) {
                     decalagesInitiales[j] += 20;
                 }
@@ -130,6 +183,13 @@ public class ExportCSVMultiTrajets {
         }
     }
 
+    /**
+     * Exécute une simulation avec un format de modulation et une configuration de trajets donnés.
+     *
+     * @param format Le format de modulation (RZ, NRZ, NRZT).
+     * @param trajetsConfig La configuration de trajets utilisée pour la simulation.
+     * @return Le taux d'erreur binaire (TEB) calculé par le simulateur.
+     */
     private float executerSimulation(String format, String trajetsConfig) {
         float ber = 0;
         LinkedList<String> argumentsLocaux = new LinkedList<>(this.parametres);

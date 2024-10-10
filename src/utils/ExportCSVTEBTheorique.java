@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 import simulateur.Simulateur;
+import utils.tp6.Utils;
 
 /**
  * La classe {@code ExportCSVTEBTheorique} effectue des simulations de transmission de données
@@ -50,6 +51,11 @@ public class ExportCSVTEBTheorique {
      */
     private void lancerSimulations() {
         System.out.println("Lancement des simulations pour " + this.fichierCSV + "...");
+
+        // Calcul du nombre total d'itérations (Eb/N0 de -10 à 9, soit 20 valeurs)
+        int totalIterations = 20;
+        int currentIteration = 0;
+
         try (FileWriter csvWriter = new FileWriter(fichierCSV)) {
             // En-tête du fichier CSV
             csvWriter.append("Eb/N0 (dB)");
@@ -67,9 +73,14 @@ public class ExportCSVTEBTheorique {
                 csvWriter.append(String.valueOf(probaErreur));
 
                 csvWriter.append("\n");
+
+                // Mise à jour et affichage de la barre de progression
+                currentIteration++;
+                int progressPercentage = (currentIteration * 100) / totalIterations;
+                Utils.printProgressBar(progressPercentage);
             }
 
-            System.out.println("Simulations terminées. Résultats enregistrés dans " + this.fichierCSV);
+            System.out.println("\nSimulations terminées. Résultats enregistrés dans " + this.fichierCSV);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,14 +115,6 @@ public class ExportCSVTEBTheorique {
         return probaErreur;
     }
 
-    /**
-     * Point d'entrée du programme.
-     *
-     * <p>Crée une instance de la classe {@code ExportCSVTEBTheorique} et
-     * lance les simulations.</p>
-     *
-     * @param args Arguments passés en ligne de commande (non utilisés dans cette version).
-     */
     public static void main(String[] args) {
         ExportCSVTEBTheorique simu = new ExportCSVTEBTheorique();
         simu.lancerSimulations();

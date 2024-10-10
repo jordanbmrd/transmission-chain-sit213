@@ -22,7 +22,6 @@ import visualisations.SondeLogique;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * La classe Simulateur permet de construire et simuler une chaîne de
@@ -443,8 +442,6 @@ public class Simulateur {
             if (dt < 0 || ar < 0 || ar > 1) {
                 throw new ArgumentsException("dt doit être >= 0 et ar doit être entre 0 et 1 pour le paramètre -ti.");
             }
-
-            System.out.println("dt : " + dt + " ar : " + ar);
 
             // Ajouter le couple (dt, ar) au tableau 2D
             this.ti[index][0] = dt;
