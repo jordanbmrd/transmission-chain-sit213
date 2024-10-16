@@ -219,8 +219,8 @@ public class Simulateur {
             this.transmetteurMultiTrajets.connecter(this.transmetteurAnalogique);
 
             // Sonde du transmetteur multi-trajets
-            /* if (affichage)
-                this.transmetteurMultiTrajets.connecter(new SondeAnalogique("Transmetteur multi-trajets " + form)); */
+             if (affichage)
+                this.transmetteurMultiTrajets.connecter(new SondeAnalogique("Transmetteur multi-trajets " + form));
         } else {
             // Connexion de l'émetteur au transmetteur analogique
             this.emetteur.connecter(this.transmetteurAnalogique);
