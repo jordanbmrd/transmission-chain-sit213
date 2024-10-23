@@ -3,7 +3,6 @@ package transmetteurs;
 import destinations.DestinationInterface;
 import information.Information;
 import information.InformationNonConformeException;
-import utils.Form;
 
 import java.io.FileWriter;
 import java.io.IOException;
