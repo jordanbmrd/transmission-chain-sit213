@@ -1,7 +1,7 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a>
 
-[![Tests Status](https://gitlab-df.imt-atlantique.fr/m23maque/sit213/badges/main/pipeline.svg)](https://gitlab-df.imt-atlantique.fr/m23maque/sit213/-/jobs)
+[![Tests Status](https://gitlab-df.imt-atlantique.fr/m23maque/sit213/badges/main/pipeline.svg?key_text=Tests+Status&key_width=80)](https://gitlab-df.imt-atlantique.fr/m23maque/sit213/-/jobs)
 
 <!-- PROJECT LOGO -->
 <div align="center">
