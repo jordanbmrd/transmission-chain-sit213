@@ -14,6 +14,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+/**
+ * Classe de test pour la classe {@link transmetteurs.TransmetteurMultiTrajets}.
+ */
 public class TransmetteurMultiTrajetsTest {
 
     private TransmetteurMultiTrajets transmetteurMultiTrajets;

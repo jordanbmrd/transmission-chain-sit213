@@ -11,6 +11,9 @@ import simulateur.Simulateur;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Classe de test pour les classes {@link codage.Codeur} et {@link codage.Decodeur}.
+ */
 public class CodeurDecodeurTest {
 
     private Information<Boolean> bitsAvantCodage;

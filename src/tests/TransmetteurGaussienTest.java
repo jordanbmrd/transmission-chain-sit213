@@ -10,6 +10,9 @@ import transmetteurs.TransmetteurGaussien;
 
 import static org.junit.Assert.*;
 
+/**
+ * Classe de test pour la classe {@link transmetteurs.TransmetteurGaussien}.
+ */
 public class TransmetteurGaussienTest {
 
     private TransmetteurGaussien transmetteurGaussien;

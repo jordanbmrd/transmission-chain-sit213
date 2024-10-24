@@ -9,9 +9,10 @@ import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 
-public class TebTest {
-
-
+/**
+ * Classe de test pour différences fonctions liées au TEB.
+ */
+public class TEBTest {
     /**
      * Exécute une simulation pour une forme de modulation et retourne une les valeurs du SNR et du TEB
      *
