@@ -17,7 +17,7 @@
     <br />
     <a href="https://sit213-m23maque-03224fc893efd631ee75b3492a771a16117a0b8b074f6be.gitlab-df-pages.imt-atlantique.fr">Accéder à la Javadoc</a>
     ·
-    <a href="https://gitlab-df.imt-atlantique.fr/m23maque/sit213/-/raw/main/deliverables/step-5/BAUMARD.GUILLOU.MAQUENNE.SIT213.Etape5.pdf?ref_type=heads&inline=false">Télécharger le rapport final</a>
+    <a href="https://gitlab-df.imt-atlantique.fr/m23maque/sit213/-/raw/main/deliverables/step-5/BAUMARD.GUILLOU.MAQUENNE.SIT213.Etape5.pdf?ref_type=heads&inline=false">Télécharger le rapport "Étape 5"</a>
   </p>
 </div>
 
