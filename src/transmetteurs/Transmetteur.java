@@ -31,6 +31,9 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      */		
     protected Information <E>  informationEmise;
 
+    /**
+     * les informations de bruit générés
+     * */
     protected Information<Float> bruitList = new Information<>();
    
     /** 
@@ -91,22 +94,42 @@ public abstract  class Transmetteur <R,E> implements  DestinationInterface <R>, 
      */
     public  abstract void emettre() throws InformationNonConformeException;
 
+    /**
+     * Renvoie la puissance de bruit moyenne
+     * @return puissance de bruit moyenne calculée
+     * */
     public float getPuissanceMoyenneBruit() {
         return Float.NaN;
     }
 
+    /**
+     * Renvoie la valeur de SNR réel
+     * @return valeur de SNR réel calculée
+     * */
     public float getSNRReel() {
         return Float.NaN;
     }
 
+    /**
+     * Renvoie la valeur de Eb/N0 en dB
+     * @return valeur de Eb/N0 calculée
+     * */
     public float getEbN0dB() {
         return Float.NaN;
     }
 
+    /**
+     * Renvoie la valeur de la variance
+     * @return valeur de la variance calculée
+     * */
     public float getVariance() {
         return Float.NaN;
     }
 
+    /**
+     * Renvoie la liste contenant les échantillons de bruit générés
+     * @return liste contenant les échantillons de bruit générés
+     * */
     public Information<Float> getBruitList() {
         return this.bruitList;
     }
