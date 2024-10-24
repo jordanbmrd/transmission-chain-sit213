@@ -1,4 +1,4 @@
-/*
+/**
 * Tests unitaires
 * */
 package tests;

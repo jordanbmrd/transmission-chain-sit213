@@ -1,4 +1,40 @@
-# SIT213
+<!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
+<a id="readme-top"></a>
+
+[![Tests Status](https://gitlab-df.imt-atlantique.fr/m23maque/sit213/badges/main/pipeline.svg)](https://gitlab-df.imt-atlantique.fr/m23maque/sit213/-/jobs)
+
+<!-- PROJECT LOGO -->
+<div align="center">
+  <a href="https://github.com/othneildrew/Best-README-Template">
+    <img src="https://cdn-icons-png.flaticon.com/512/17/17239.png" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">SIT213 - Simulateur de chaîne de transmission</h3>
+
+  <p align="center">
+    Simulation d'un système de chaîne de transmission analogique en Java
+    <br />
+    <br />
+    <a href="https://sit213-m23maque-03224fc893efd631ee75b3492a771a16117a0b8b074f6be.gitlab-df-pages.imt-atlantique.fr">Accéder à la Javadoc</a>
+    ·
+    <a href="https://gitlab-df.imt-atlantique.fr/m23maque/sit213/-/raw/main/deliverables/step-5/BAUMARD.GUILLOU.MAQUENNE.SIT213.Etape5.pdf?ref_type=heads&inline=false">Télécharger le rapport final</a>
+  </p>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table des matières</summary>
+  <ol>
+    <li><a href="#tp6-cas-détude">TP6: Cas d'étude</a></li>
+    <li><a href="#tp5-transmission-analogique-avec-un-codage-de-canal">TP5: Transmission analogique avec un codage de canal</a></li>
+    <li><a href="#tp4-transmission-analogique-avec-un-canal-bruité-à-trajets-multiples">TP4: Transmission analogique avec un canal bruité à trajets multiples</a></li>
+    <li><a href="#tp3-transmission-analogique-avec-un-bruit-gaussien">TP3: Transmission analogique avec un bruit gaussien</a></li>
+    <li><a href="#tp2-transmission-analogique-non-bruitée">TP2: Transmission analogique non bruitée</a></li>
+    <li><a href="#tp1-transmission-élémentaire-back-to-back">TP1: Transmission élémentaire back-to-back</a></li>
+  </ol>
+</details>
+
+## TP6: Cas d'étude
 
 ## TP5: Transmission analogique avec un codage de canal
 
@@ -77,14 +113,14 @@ Ce répertoire contient des scripts utiles au projet et aux tests visuels :
 
 - `-form [string]`: Choix du form à utiliser. Valeur par défaut : RZ. Les options disponibles sont :
   - `NRZ`
-  - `NRZT`
-  - `RZ`
+- `NRZT`
+- `RZ`
 - `-ampl [float] [float]`: Choix de l'amplitude, la première valeur est l'amplitude minimale et la seconde est l'amplitude maximale. Valeurs par défaut : 0 et 1.
 - `-nbEch [int]`: Choix du nombre d'échantillons par bit. Valeur par défaut : 30.
 
 ### Ajout du répertoire `librairies`
 
-Ce répertoire contient un ensemble de fichiers .jar qui permettent d'importer des fonctionnalités déjà codées.
+Ce répertoire contient un ensemble de fichiers .jar qui permettent d'importer des fonctionnalités déjà codées.  
 Il contient les fichiers suivant :
 - `easymock-5.4.0.jar`: Permet de simuler le résultat de fonctions.
 - `junit-4.13.1.jar`: Permet de réaliser des tests unitaires pour tester le bon fonctionnement des méthodes.
