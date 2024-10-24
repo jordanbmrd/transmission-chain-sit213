@@ -36,11 +36,24 @@
 
 ## TP6: Cas d'étude
 
+### Objectifs
+
+- Utiliser le simulateur sur un cas d'étude précis (voir sujet).
+
+### Modifications des scripts
+
+- `plot_teb_comparaison.py` : Trace la courbe du TEB théorique et du TEB pratique pour la modulation NRZ.
+- Suppression des scripts `plot_teb_theorique.py` et `plot_teb_pratique.py`.
+
+### Modifications des classes
+
+- Ajout des classes `ExportCSVEnvironnement1` et `ExportCSVEnvironnement2` pour générer des valeurs en fonction de différents paramètres et trouver les combinaisons qui répondent aux attentes du cas d'étude.
+
 ## TP5: Transmission analogique avec un codage de canal
 
 ### Objectifs
 
-- Rajouter la possibilité d'utiliser un codage de canal pour permettre de :
+- Ajouter la possibilité d'utiliser un codage de canal pour permettre de :
   - Repérer et réparer des erreurs eventuelles lors de la transmission.
   - Réduire le taux d'erreur binaire de la chaîne de transmission.
 - Mesurer les améliorations.
@@ -63,7 +76,7 @@
 
 ### Objectifs
 
-- Rajouter la possibilité d'utiliser une transmission multi-trajets.
+- Ajouter la possibilité d'utiliser une transmission multi-trajets.
 
 ### Ajout de nouveaux flags au CLI
 
