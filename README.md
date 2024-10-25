@@ -43,7 +43,7 @@
 ### Modifications des scripts
 
 - `plot_teb_comparaison.py` : Trace la courbe du TEB théorique et du TEB pratique pour la modulation NRZ.
-- Suppression des scripts `plot_teb_theorique.py` et `plot_teb_pratique.py`.
+- Suppression des scripts `plot_teb_vs_snr.py` et `plot_proba_erreur_vs_ebn0.py`.
 
 ### Modifications des classes
 
