@@ -1,11 +1,10 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a>
+[![Tests Status](https://github.com/jordanbmrd/SIT213/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/USERNAME/REPOSITORY/actions/workflows/WORKFLOW_FILE.yml)
 
 > ### ⚠️ Disclaimer
 >
 > **Attention aux étudiants d'IMT Atlantique :** Ce projet est destiné à des fins pédagogiques. Toute reproduction non autorisée constitue une infraction aux règles académiques et peut entraîner des sanctions. Utilisez-le uniquement comme référence pour votre apprentissage.
-
-[![Tests Status](https://github.com/jordanbmrd/SIT213/actions/workflows/WORKFLOW_FILE.yml/badge.svg)](https://github.com/USERNAME/REPOSITORY/actions/workflows/WORKFLOW_FILE.yml)
 
 <!-- PROJECT LOGO -->
 <div align="center">
