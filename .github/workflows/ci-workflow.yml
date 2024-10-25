@@ -1,0 +1,87 @@
+name: CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  # Test stage
+  run-tests:
+    runs-on: ubuntu-latest
+    container: openjdk:24-slim-bookworm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make runTests executable
+        run: chmod +x ./runTests
+
+      - name: Run tests
+        run: ./runTests
+
+  # Build stage: Generate Javadoc
+  generate_javadoc:
+    runs-on: ubuntu-latest
+    container: openjdk:24-slim-bookworm
+    needs: run-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make genDoc executable
+        run: chmod +x ./genDoc
+
+      - name: Generate Javadoc
+        run: ./genDoc
+
+      - name: Upload Javadoc artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: javadoc
+          path: docs
+
+  # Build stage: Generate deliverable
+  generate_deliverable:
+    runs-on: ubuntu-latest
+    container: openjdk:24-slim-bookworm
+    needs: run-tests
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Make genDeliverable executable
+        run: chmod +x ./genDeliverable
+
+      - name: Generate deliverable
+        run: ./genDeliverable
+
+      - name: Upload deliverable artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: deliverable
+          path: ${{ env.DELIVERABLE_PATH }}
+
+  # Deploy stage: Deploy Javadoc to GitHub Pages
+  deploy_javadoc:
+    runs-on: ubuntu-latest
+    needs: generate_javadoc
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download Javadoc artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: javadoc
+          path: docs
+
+      - name: Prepare docs for GitHub Pages
+        run: mv docs public
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public

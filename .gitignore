@@ -6,7 +6,7 @@ docs/
 *.csv
 
 ### Docs ###
-deliverables/**/~$*.docx
+reports/**/~$*.docx
 
 ### IntelliJ IDEA ###
 .idea/
