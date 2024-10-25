@@ -1,6 +1,6 @@
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a>
-[![Tests Status](https://github.com/jordanbmrd/communication-chain-simulator-sit213/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/USERNAME/REPOSITORY/actions/workflows/WORKFLOW_FILE.yml)
+[![Tests Status](https://github.com/jordanbmrd/transmission-chain-sit213/actions/workflows/ci-workflow.yml/badge.svg)](https://github.com/USERNAME/REPOSITORY/actions/workflows/WORKFLOW_FILE.yml)
 
 > ### ⚠️ Disclaimer
 >
@@ -16,9 +16,9 @@
     Simulation d'un système de chaîne de transmission analogique en Java
     <br />
     <br />
-    <a href="https://jordanbmrd.github.io/communication-chain-simulator-sit213/">Accéder à la Javadoc</a>
+    <a href="https://jordanbmrd.github.io/transmission-chain-sit213/">Accéder à la Javadoc</a>
     ·
-    <a href="https://github.com/jordanbmrd/communication-chain-simulator-sit213/blob/main/reports/step-5/step-5-report.pdf">Accéder au dernier rapport</a>
+    <a href="https://github.com/jordanbmrd/transmission-chain-sit213/blob/main/reports/step-5/step-5-report.pdf">Accéder au dernier rapport</a>
   </p>
 </div>
 
