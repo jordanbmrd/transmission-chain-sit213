@@ -16,9 +16,9 @@
     Simulation d'un système de chaîne de transmission analogique en Java
     <br />
     <br />
-    <a href="https://sit213-m23maque-03224fc893efd631ee75b3492a771a16117a0b8b074f6be.gitlab-df-pages.imt-atlantique.fr">Accéder à la Javadoc</a>
+    <a href="https://jordanbmrd.github.io/SIT213/">Accéder à la Javadoc</a>
     ·
-    <a href="https://gitlab-df.imt-atlantique.fr/m23maque/sit213/-/raw/main/reports/step-5/step-5-report.pdf?ref_type=heads&inline=false">Télécharger le rapport "Étape 5"</a>
+    <a href="https://github.com/jordanbmrd/SIT213/blob/main/reports/step-5/step-5-report.pdf">Accéder au dernier rapport</a>
   </p>
 </div>
 
