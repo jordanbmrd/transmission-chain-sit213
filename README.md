@@ -127,6 +127,7 @@ Le simulateur accepte divers paramètres pour configurer la transmission :
 - Ajout des classes `Codeur` et `Decodeur` pour utiliser un canal de codage.
 - Ajout de la classe `CodeurDecodeurTest` pour tester le comportement des classes `Codeur` et `Décodeur`.
 - Modification de la classe `Simulateur` pour prendre en compte le flag `-codeur`.
+- Ajout de la classe `ExportCSVTEBComparaisonCodeur` pour comparer les performances avec et sans codeur.
 
 ## TP4: Transmission analogique avec un canal bruité à trajets multiples
 
