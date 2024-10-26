@@ -48,8 +48,8 @@ public class ExportCSVTEBComparaison {
     private void lancerSimulations() {
         System.out.println("Lancement des simulations pour " + this.fichierCSV + "...");
 
-        // Calcul du nombre total d'itérations (Eb/N0 de -10 à 9, soit 20 valeurs)
-        int totalIterations = 20;
+        // Calcul du nombre total d'itérations (Eb/N0 de -10 à 15, soit 25 valeurs)
+        int totalIterations = 25;
         int currentIteration = 0;
 
         try (FileWriter csvWriter = new FileWriter(fichierCSV)) {

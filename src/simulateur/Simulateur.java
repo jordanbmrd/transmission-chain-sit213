@@ -171,7 +171,7 @@ public class Simulateur {
 
         this.emetteur = new Emetteur(nbEch, aMax, aMin, form);
         // Sonde de l'émetteur
-         if (affichage)
+        if (affichage)
             this.emetteur.connecter(new SondeAnalogique("Émetteur " + form));
 
         // Connexion du codeur si l'option est définie
@@ -206,7 +206,7 @@ public class Simulateur {
         }
 
         // Sonde du transmetteur analogique
-         if (affichage)
+        if (affichage)
             this.transmetteurAnalogique.connecter(new SondeAnalogique("Transmetteur analogique " + form));
 
         if (ti != null) {
@@ -219,7 +219,7 @@ public class Simulateur {
             this.transmetteurMultiTrajets.connecter(this.transmetteurAnalogique);
 
             // Sonde du transmetteur multi-trajets
-             if (affichage)
+            if (affichage)
                 this.transmetteurMultiTrajets.connecter(new SondeAnalogique("Transmetteur multi-trajets " + form));
         } else {
             // Connexion de l'émetteur au transmetteur analogique
@@ -511,7 +511,7 @@ public class Simulateur {
 
     public double calculProbaErreur() {
         // Conversion du rapport Eb/N0 en linéaire
-        float ebN0Lin = (float) Math.pow(10, this.transmetteurAnalogique.getEbN0dB() / 10);
+        float ebN0Lin = (float) Math.pow(10, this.snrpb / 10);
 
         // Formule de calcul de la probabilité d'erreur
         return 0.5 * Erf.erfc(Math.sqrt(ebN0Lin));
