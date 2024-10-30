@@ -26,6 +26,9 @@ public class CodeurDecodeurTest {
         bitsApresCodageAttendu = new Information<>(new Boolean[]{true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false}); // 101 010 101 010 101 010
     }
 
+    /*
+    Vérifie que l'encodeur et le décodeur fonctionnent correctement
+     */
     @Test
     public void testCodeur() throws Exception {
         // Créer un codeur
@@ -42,7 +45,7 @@ public class CodeurDecodeurTest {
     }
 
     /*
-    Vérifiez que l'encodeur transforme correctement les bits selon les règles spécifiées :
+    Vérifie que l'encodeur transforme correctement les bits selon les règles spécifiées :
         0 -> 010
         1 -> 101
     */
@@ -57,7 +60,7 @@ public class CodeurDecodeurTest {
     }
 
     /*
-   Vérfier que l'ensemble de la chaine fonctionne
+   Vérfie que l'ensemble de la chaine de transmission est fonctionnel
    */
     @Test
     public void testChaine() throws Exception {
@@ -92,7 +95,7 @@ public class CodeurDecodeurTest {
     }
 
     /*
-    test de perfomances en faisant un avant-après (TEB,SNR, profiler)
+    test de perfomances en faisant un avant-après (TEB, SNR)
     */
     @Test
     public void testPerfomance() throws Exception {
@@ -123,7 +126,7 @@ public class CodeurDecodeurTest {
     }
 
     /*
-    Vérifiez le comportement du simulateur avec des entrées invalides ou des conditions extrêmes (très faible ou très fort SNR)
+    Vérifie le comportement du simulateur avec des entrées invalides ou des conditions extrêmes (très faible ou très fort SNR)
     */
     @Test
     public void testSNR() throws Exception {

@@ -18,7 +18,7 @@
     <br />
     <a href="https://jordanbmrd.github.io/transmission-chain-sit213/">Accéder à la Javadoc</a>
     ·
-    <a href="https://github.com/jordanbmrd/transmission-chain-sit213/blob/main/reports/step-5/step-5-report.pdf">Accéder au dernier rapport</a>
+    <a href="https://github.com/jordanbmrd/transmission-chain-sit213/blob/main/reports/final-report.pdf">Accéder au dernier rapport</a>
   </p>
 </div>
 
